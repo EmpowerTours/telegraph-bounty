@@ -15,3 +15,6 @@ runs = 1000
 runs = 256
 depth = 64
 fail_on_revert = false
+
+[lint]
+lint_on_build = false

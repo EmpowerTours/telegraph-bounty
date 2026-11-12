@@ -1,0 +1,12 @@
+{"intent": "SMART_CONTRACT_AUDIT", "prefix": true, "miner_count": 0, "request_params": []}
+{"intent": "SMART_CONTRACT_AUDIT_GENERAL", "prefix": null, "miner_count": 17, "request_params": []}
+{"intent": "VULNERABILITY_TRIAGE", "prefix": true, "miner_count": 0, "request_params": ["cve_id"]}
+{"intent": "VULNERABILITY_TRIAGE_GENERAL", "prefix": null, "miner_count": 37, "request_params": ["cve_id"]}
+{"intent": "SECURITY_REVIEW", "prefix": true, "miner_count": 0, "request_params": ["target"]}
+{"intent": "SECURITY_REVIEW_GENERAL", "prefix": null, "miner_count": 32, "request_params": ["target"]}
+{"intent": "CODE_PATCH_VERIFY", "prefix": true, "miner_count": 0, "request_params": ["patch"]}
+{"intent": "CODE_PATCH_VERIFY_GENERAL", "prefix": null, "miner_count": 24, "request_params": ["patch"]}
+{"intent": "REGRESSION_VERIFY", "prefix": true, "miner_count": 0, "request_params": ["change"]}
+{"intent": "REGRESSION_VERIFY_GENERAL", "prefix": null, "miner_count": 20, "request_params": ["change"]}
+{"intent": "CODE_REVIEW", "prefix": true, "miner_count": 0, "request_params": ["code"]}
+{"intent": "CODE_REVIEW_GENERAL", "prefix": null, "miner_count": 17, "request_params": ["code"]}

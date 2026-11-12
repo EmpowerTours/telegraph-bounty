@@ -5,7 +5,7 @@
   "description": "Bug bounty paid to the machine that proved the bug: deterministic Foundry/anvil proof verification, on-chain escrow payout, Telegraph-paid triage.",
   "scripts": {
     "build": "forge build",
-    "test": "forge test && node --test test-js/",
+    "test": "forge test && node --test test-js/*.test.js",
     "verify": "node verifier/cli.js",
     "mock": "node mock/ask-server.js",
     "demo": "node scripts/demo.js",

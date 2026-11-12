@@ -1,0 +1,71 @@
+{
+  "at": "2026-11-12T22:04:07.936Z",
+  "telegraph_mode": "mock",
+  "chain": "local anvil (chainid 31337)",
+  "invariant": "address(vault).balance >= vault.totalDeposits()",
+  "escrow": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "post": {
+    "tx": "0x8b46285a0da00d8930bc241f26d4906b90a2a978d7b597b0201b044b9a58fde3",
+    "events": [
+      {
+        "event": "Posted",
+        "args": {
+          "id": "0",
+          "poster": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "verifier": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "reward": "1000000000000000000",
+          "deadline": "1767830400",
+          "targetHash": "0xfbdce705d055ac24db879eb65c7a77f94d54726458685c5226ff747e65af08e3",
+          "invariantHash": "0x3a6268437a4aa29fa3f3fd74cc10202268bb8fbd5e27ea2b92e3eb17beb7098c"
+        }
+      }
+    ]
+  },
+  "break_it": [
+    {
+      "file": "proofs/bogus/NoopExploit.sol",
+      "submit_tx": "0x6ddccae8ac9aaf06f639f74cdd364881ea84a26dfbe584f008837bd929cd2516",
+      "hunter": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "proofHash": "0x1683c6258a2068139471e6f1eae7e408a144b4598f9e7fe4e872554233daa84d",
+      "verdictHash": "0x0aa87554a8549b04d4d60b263d114a805f2d52af2b652b98b6c82a9fd5dd20a5",
+      "valid": false,
+      "reason": "invariant still holds on the vulnerable target",
+      "resolveTx": "0x64096ace113317184328340ddcb4905d60bb9dfb05685b18c67b85522aa97ef6",
+      "verdictFile": "evidence/verdicts/0x1683c6258a2068139471e6f1eae7e408a144b4598f9e7fe4e872554233daa84d.json",
+      "events": [
+        {
+          "event": "Rejected",
+          "args": {
+            "id": "0",
+            "proofHash": "0x1683c6258a2068139471e6f1eae7e408a144b4598f9e7fe4e872554233daa84d",
+            "hunter": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "verdictHash": "0x0aa87554a8549b04d4d60b263d114a805f2d52af2b652b98b6c82a9fd5dd20a5"
+          }
+        }
+      ]
+    },
+    {
+      "file": "proofs/bogus/ForceFeedExploit.sol",
+      "submit_tx": "0x5a7d86992b9990d5cc05e6e9631e2ec3c12e857316ba91c06d08b1bc280b6580",
+      "hunter": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "proofHash": "0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e",
+      "verdictHash": "0xacfd44b5a4808b26cad48c6cf3551fb70685018b9822b5dc0f3fb91e06fe3863",
+      "valid": false,
+      "reason": "invariant still holds on the vulnerable target",
+      "resolveTx": "0xb68a0dd0bd6621977e5c1029979eb05b7a8ecb3d1d2defd1416848e8dd6b0edd",
+      "verdictFile": "evidence/verdicts/0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e.json",
+      "events": [
+        {
+          "event": "Rejected",
+          "args": {
+            "id": "0",
+            "proofHash": "0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e",
+            "hunter": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "verdictHash": "0xacfd44b5a4808b26cad48c6cf3551fb70685018b9822b5dc0f3fb91e06fe3863"
+          }
+        }
+      ]
+    }
+  ],
+  "break_it_owed_wei": "0"
+}

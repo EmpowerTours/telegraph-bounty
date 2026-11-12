@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 /// @notice ABI shared by the vulnerable and patched demo vaults.
-/// Stated bounty invariant: address(vault).balance == vault.totalDeposits()
+/// Stated bounty invariant (solvency): address(vault).balance >= vault.totalDeposits()
 interface IVault {
     function deposit() external payable;
     function withdrawAll() external;

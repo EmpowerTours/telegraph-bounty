@@ -1,0 +1,101 @@
+{
+  "captured_at": "2026-11-12T21:47:35.175Z",
+  "source": "POST https://devnode.telegraphprotocol.com/engine/v1/ask (unpaid)",
+  "status": 402,
+  "headers": {
+    "payment-required": "eyJhY2NlcHRzIjpbeyJhbW91bnQiOiIxMDAwMCIsImFzc2V0IjoiMHhjYzE5NGUxYTg0M0I2NTg1MjZEMEQ1QzQzMWY2NzAwMjg1ODJBZTE3IiwiZXh0cmEiOnsibmFtZSI6IlVTRCBDb2luIiwidmVyc2lvbiI6IjIifSwibWF4VGltZW91dFNlY29uZHMiOjYwLCJuZXR3b3JrIjoiZWlwMTU1OjExMTU1MTExIiwicGF5VG8iOiIweDM2MjRFQjAxMkI1RTk5OEJCNTdCNmJFNkM5Q2ZjOWM0YmM1ZWI5OWIiLCJzY2hlbWUiOiJleGFjdCJ9LHsiYW1vdW50IjoiMTAwMDAiLCJhc3NldCI6IjB4MDM2Q2JENTM4NDJjNTQyNjYzNGU3OTI5NTQxZUMyMzE4ZjNkQ0Y3ZSIsImV4dHJhIjp7Im5hbWUiOiJVU0RDIiwidmVyc2lvbiI6IjIifSwibWF4VGltZW91dFNlY29uZHMiOjYwLCJuZXR3b3JrIjoiZWlwMTU1Ojg0NTMyIiwicGF5VG8iOiIweEMwQTNGQjZkM0YxZjRCNTQ2MTdkMjlmZmJkQTQ2NjNBZjVGOTZlMmUiLCJzY2hlbWUiOiJleGFjdCJ9LHsiYW1vdW50IjoiMTAwMDAiLCJhc3NldCI6IjR6TU1DOXNydDVSaTVYMTRHQWdYaGFIaWkzR25QQUVFUllQSmdaSkRuY0RVIiwiZXh0cmEiOnsiZmVlUGF5ZXIiOiJDN2NrRXpINHZhck1wQlFzYUQ5YkpaU0NuV1Z5azR6QUtZQTg1c3B1dU5iUiJ9LCJtYXhUaW1lb3V0U2Vjb25kcyI6NjAsIm5ldHdvcmsiOiJzb2xhbmE6RXRXVFJBQlphWXE2aU1mZVlLb3VSdTE2NlZVMnhxYTEiLCJwYXlUbyI6Ikc1M0ViZVRaU05zQW43Ymo2aU1GVVFucTN6cERkRWJIaEtrUFJ5d284Yml4Iiwic2NoZW1lIjoiZXhhY3QifSx7ImFtb3VudCI6IjEwMDAwIiwiZXh0cmEiOnsiZGVzY3JpcHRpb24iOiJEZWR1Y3QgZnJvbSB0aGUgY2FsbGVyJ3MgVGVsZWdyYXBoIGVzY3JvdyBiYWxhbmNlIGF0IHRoZSBuZXh0IGVwb2NoIGNsb3NlLiBGdW5kIGl0IG9uY2Ugd2l0aCBFc2Nyb3dGYWNldC5kZXBvc2l0VVNEQyhhbW91bnQpOyBubyBwZXItcmVxdWVzdCBzZXR0bGVtZW50LiIsIm1lc3NhZ2UiOiJUZWxlZ3JhcGggRXNjcm93IFBheW1lbnRcblxuV2FsbGV0OiB7ZnJvbX1cblBheSBUbzogMHgzNjI0ZWIwMTJiNWU5OThiYjU3YjZiZTZjOWNmYzljNGJjNWViOTliXG5OZXR3b3JrOiBlaXAxNTU6MTExNTUxMTFcbkFtb3VudDogMTAwMDAgdVVTRENcblJlc291cmNlOiAvdjEvYXNrXG5Ob25jZToge25vbmNlfVxuVmFsaWQgQWZ0ZXI6IHt2YWxpZEFmdGVyfVxuVmFsaWQgQmVmb3JlOiB7dmFsaWRCZWZvcmV9IiwicmVzb3VyY2UiOiIvdjEvYXNrIiwic2lnbldpdGgiOiJwZXJzb25hbF9zaWduIChFSVAtMTkxKSJ9LCJuZXR3b3JrIjoiZWlwMTU1OjExMTU1MTExIiwicGF5VG8iOiIweDM2MjRlYjAxMmI1ZTk5OGJiNTdiNmJlNmM5Y2ZjOWM0YmM1ZWI5OWIiLCJzY2hlbWUiOiJlc2Nyb3cifV0sImVycm9yIjoiUGF5bWVudCByZXF1aXJlZCIsInJlc291cmNlIjp7ImRlc2NyaXB0aW9uIjoiUGF5bWVudCByZXF1aXJlZCBmb3IgTExNLXJvdXRlZCBpbmZlcmVuY2UuIiwibWltZVR5cGUiOiJhcHBsaWNhdGlvbi9qc29uIiwidXJsIjoiaHR0cHM6Ly9kZXZub2RlLnRlbGVncmFwaHByb3RvY29sLmNvbS9lbmdpbmUvdjEvYXNrIn0sIng0MDJWZXJzaW9uIjoyfQ=="
+  },
+  "decoded_payment_required": {
+    "accepts": [
+      {
+        "amount": "10000",
+        "asset": "0xcc194e1a843B658526D0D5C431f670028582Ae17",
+        "extra": {
+          "name": "USD Coin",
+          "version": "2"
+        },
+        "maxTimeoutSeconds": 60,
+        "network": "eip155:11155111",
+        "payTo": "0x3624EB012B5E998BB57B6bE6C9Cfc9c4bc5eb99b",
+        "scheme": "exact"
+      },
+      {
+        "amount": "10000",
+        "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+        "extra": {
+          "name": "USDC",
+          "version": "2"
+        },
+        "maxTimeoutSeconds": 60,
+        "network": "eip155:84532",
+        "payTo": "0xC0A3FB6d3F1f4B54617d29ffbdA4663Af5F96e2e",
+        "scheme": "exact"
+      },
+      {
+        "amount": "10000",
+        "asset": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "extra": {
+          "feePayer": "C7ckEzH4varMpBQsaD9bJZSCnWVyk4zAKYA85spuuNbR"
+        },
+        "maxTimeoutSeconds": 60,
+        "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+        "payTo": "G53EbeTZSNsAn7bj6iMFUQnq3zpDdEbHhKkPRywo8bix",
+        "scheme": "exact"
+      },
+      {
+        "amount": "10000",
+        "extra": {
+          "description": "Deduct from the caller's Telegraph escrow balance at the next epoch close. Fund it once with EscrowFacet.depositUSDC(amount); no per-request settlement.",
+          "message": "Telegraph Escrow Payment\n\nWallet: {from}\nPay To: 0x3624eb012b5e998bb57b6be6c9cfc9c4bc5eb99b\nNetwork: eip155:11155111\nAmount: 10000 uUSDC\nResource: /v1/ask\nNonce: {nonce}\nValid After: {validAfter}\nValid Before: {validBefore}",
+          "resource": "/v1/ask",
+          "signWith": "personal_sign (EIP-191)"
+        },
+        "network": "eip155:11155111",
+        "payTo": "0x3624eb012b5e998bb57b6be6c9cfc9c4bc5eb99b",
+        "scheme": "escrow"
+      }
+    ],
+    "error": "Payment required",
+    "resource": {
+      "description": "Payment required for LLM-routed inference.",
+      "mimeType": "application/json",
+      "url": "https://devnode.telegraphprotocol.com/engine/v1/ask"
+    },
+    "x402Version": 2
+  },
+  "body": {
+    "error": "payment required",
+    "accepts": [
+      {
+        "scheme": "exact",
+        "price": "$0.01",
+        "network": "eip155:11155111",
+        "payTo": "0x3624EB012B5E998BB57B6bE6C9Cfc9c4bc5eb99b"
+      },
+      {
+        "scheme": "exact",
+        "price": "$0.01",
+        "network": "eip155:84532",
+        "payTo": "0xC0A3FB6d3F1f4B54617d29ffbdA4663Af5F96e2e"
+      },
+      {
+        "scheme": "exact",
+        "price": "$0.01",
+        "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+        "payTo": "G53EbeTZSNsAn7bj6iMFUQnq3zpDdEbHhKkPRywo8bix"
+      },
+      {
+        "extra": {
+          "description": "Deduct from the caller's Telegraph escrow balance at the next epoch close. Fund it once with EscrowFacet.depositUSDC(amount); no per-request settlement.",
+          "message": "Telegraph Escrow Payment\n\nWallet: {from}\nPay To: 0x3624eb012b5e998bb57b6be6c9cfc9c4bc5eb99b\nNetwork: eip155:11155111\nAmount: 10000 uUSDC\nResource: /v1/ask\nNonce: {nonce}\nValid After: {validAfter}\nValid Before: {validBefore}",
+          "resource": "/v1/ask",
+          "signWith": "personal_sign (EIP-191)"
+        },
+        "network": "eip155:11155111",
+        "payTo": "0x3624eb012b5e998bb57b6be6c9cfc9c4bc5eb99b",
+        "price": "$0.01",
+        "scheme": "escrow"
+      }
+    ]
+  }
+}

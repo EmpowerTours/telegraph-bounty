@@ -1,0 +1,43 @@
+{
+  "verdict_hash": "0xacfd44b5a4808b26cad48c6cf3551fb70685018b9822b5dc0f3fb91e06fe3863",
+  "schema": "telegraph-bounty/verdict@1",
+  "proof_hash": "0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e",
+  "target_hash": "0xfbdce705d055ac24db879eb65c7a77f94d54726458685c5226ff747e65af08e3",
+  "invariant": "address(vault).balance >= vault.totalDeposits()",
+  "invariant_hash": "0x3a6268437a4aa29fa3f3fd74cc10202268bb8fbd5e27ea2b92e3eb17beb7098c",
+  "scenario": {
+    "seed_deposits_wei": [
+      "3000000000000000000",
+      "3000000000000000000",
+      "4000000000000000000"
+    ],
+    "attack_value_wei": "1000000000000000000",
+    "run_gas": "5000000",
+    "genesis_timestamp": 1767225600
+  },
+  "valid": false,
+  "stage": "execute",
+  "reason": "invariant still holds on the vulnerable target",
+  "results": {
+    "vulnerable": {
+      "vault": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "28797",
+      "vault_balance_wei": "11000000000000000000",
+      "total_deposits_wei": "10000000000000000000",
+      "exploit_balance_wei": "0",
+      "invariant_holds": true
+    },
+    "patched": {
+      "vault": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "28797",
+      "vault_balance_wei": "11000000000000000000",
+      "total_deposits_wei": "10000000000000000000",
+      "exploit_balance_wei": "0",
+      "invariant_holds": true
+    }
+  }
+}
