@@ -1,0 +1,19 @@
+{
+  "name": "telegraph-bounty",
+  "private": true,
+  "type": "module",
+  "description": "Bug bounty paid to the machine that proved the bug: deterministic Foundry/anvil proof verification, on-chain escrow payout, Telegraph-paid triage.",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test && node --test test-js/",
+    "verify": "node verifier/cli.js",
+    "mock": "node mock/ask-server.js",
+    "demo": "node scripts/demo.js",
+    "break": "node scripts/demo.js --break-only"
+  },
+  "dependencies": {
+    "@x402/evm": "2.30.0",
+    "@x402/fetch": "2.30.0",
+    "viem": "2.57.19"
+  }
+}
