@@ -18,3 +18,12 @@ fail_on_revert = false
 
 [lint]
 lint_on_build = false
+
+# Held-out hunter targets (targets/). Kept out of the default profile so `forge test` and the
+# Ultrafuzz campaign see exactly the same sources as before. Run: FOUNDRY_PROFILE=targets forge test
+[profile.targets]
+src = "targets"
+test = "targets/test"
+script = "targets/test"
+out = "out-targets"
+cache_path = "cache-targets"
