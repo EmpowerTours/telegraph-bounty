@@ -213,3 +213,53 @@ test("a request with a param over 2000 chars is skipped, not bought", async () =
   assert.equal(bought, 0);
   assert.ok(r.skipped.some((s) => /over the 2000 limit/.test(s.reason)));
 });
+
+// ---------------- second opinion vs ground truth ----------------
+
+test("second opinion: scored against the verifier's result and the ground-truth class", async () => {
+  const { secondOpinion } = await import("../agent/real-hunter.js");
+  const truth = { class: "reentrancy" };
+  const review = (result, extra = {}) => ({
+    role: "review", miner_name: "Rev", miner_answered: true, cost_usd: 0.01, result, ...extra,
+  });
+  const run = (purchases, solved = true) => ({ solved, resolution: solved ? { valid: true } : undefined, purchases });
+  const none = { vulnerability_count: 0, issues: null, summary: "no security defect found" };
+  assert.equal(secondOpinion(run([review(none)]), truth).verdict, "wrong");
+  assert.equal(
+    secondOpinion(run([review({ vulnerability_count: 1, issues: ["Cross-function reentrancy in withdraw"] })]), truth).verdict,
+    "right",
+  );
+  assert.equal(
+    secondOpinion(run([review({ vulnerability_count: 1, issues: ["Missing access control on setFee"] })]), truth).verdict,
+    "wrong_class",
+  );
+  assert.equal(secondOpinion(run([review(none)], false), truth).verdict, "unscored");
+  assert.equal(secondOpinion(run([review(none, { miner_answered: false })]), truth).verdict, "no_second_opinion");
+  assert.equal(secondOpinion(run([]), truth).verdict, "no_second_opinion");
+  // A "no defect" review that merely mentions a class word is still "no defect".
+  assert.equal(secondOpinion(run([review({ ...none, summary: "no reentrancy issue found" })]), truth).review_defect_found, false);
+});
+
+test("second opinion: the recorded live run of 2026-11-24 scores every review as wrong", async () => {
+  const { secondOpinion } = await import("../agent/real-hunter.js");
+  const { loadGroundTruth } = await import("../targets/index.js");
+  const truth = loadGroundTruth();
+  const run = JSON.parse(fs.readFileSync(path.join(ROOT, "evidence/hunt/live-2026-11-24T03-34-53-159Z/run.json"), "utf8"));
+  for (const t of run.targets) assert.equal(secondOpinion(t, truth[t.target_id]).verdict, "wrong", t.target_id);
+});
+
+test("ground truth never reaches a prompt", async () => {
+  const { loadGroundTruth } = await import("../targets/index.js");
+  const truth = loadGroundTruth();
+  assert.deepEqual(Object.keys(truth).sort(), listTargetIds());
+  for (const id of listTargetIds()) {
+    const t = await loadTarget(id);
+    const p = buildPrompt(t, intel, [{ n: 1, model: "m", feedback: "f", code: "c" }]);
+    assert.ok(!p.includes(truth[id].label), `${id} prompt has the ground-truth label`);
+    assert.ok(!p.includes("ground-truth") && !SYSTEM_PROMPT.includes(truth[id].label));
+  }
+  for (const f of ["agent/real-hunter.js"]) {
+    const src = fs.readFileSync(path.join(ROOT, f), "utf8");
+    assert.ok(!src.includes("loadGroundTruth"), `${f} loads the ground truth`);
+  }
+});

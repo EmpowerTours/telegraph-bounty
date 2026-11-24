@@ -63,3 +63,13 @@ export async function loadTarget(id) {
     invariantHash: keccak256(toBytes(spec.invariant)),
   };
 }
+
+/**
+ * Poster-side ground truth (bug class per target). Used only after a hunt, to score what the
+ * paid third-party review said against what the deterministic verifier proved. Never prompted.
+ */
+export function loadGroundTruth() {
+  const j = JSON.parse(readTargetFile("ground-truth.json"));
+  delete j._note;
+  return j;
+}

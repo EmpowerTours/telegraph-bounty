@@ -1,0 +1,8 @@
+{
+  "_note": "Poster-side ground truth used only to score third-party reviews after the hunt. It is never put in a model prompt (test-js/real-hunter.test.js checks this).",
+  "hook-vault": { "class": "reentrancy", "label": "cross-function re-entrancy: withdraw() writes a cached balance back after the token's transfer hook, and transfer() is unguarded" },
+  "init-vault": { "class": "access-control", "label": "missing access control: initialize() can be called again by anyone" },
+  "lend-pool": { "class": "oracle-manipulation", "label": "collateral priced from the exchange's spot reserve ratio, which the attacker moves in the same transaction" },
+  "share-vault": { "class": "share-inflation", "label": "first-depositor share inflation via donation and rounding" },
+  "token-vault": { "class": "unchecked-return", "label": "deposit() ignores transferFrom's false return" }
+}

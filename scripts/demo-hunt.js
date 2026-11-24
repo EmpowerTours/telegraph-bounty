@@ -32,8 +32,8 @@ import {
   createReplayBackend,
 } from "../lib/llm.js";
 import { startMockServer } from "../mock/ask-server.js";
-import { loadTarget, listTargetIds } from "../targets/index.js";
-import { checkIntents, huntTarget, INTENTS } from "../agent/real-hunter.js";
+import { loadTarget, listTargetIds, loadGroundTruth } from "../targets/index.js";
+import { checkIntents, huntTarget, INTENTS, secondOpinion } from "../agent/real-hunter.js";
 import { resolveSubmission } from "../verifier/resolver.js";
 
 const HUNT_DIR = path.join(ROOT, "evidence", "hunt");
@@ -140,6 +140,7 @@ async function main() {
   const evidenceDir = path.join(HUNT_DIR, runId);
   fs.mkdirSync(evidenceDir, { recursive: true });
   const llm = await makeLlm(ids);
+  const groundTruth = loadGroundTruth();
   const { source: intentsSource, intents } = await intentsFor();
   const spentBefore = liveSpentAtomic();
   log(`== real hunter, run ${runId}`);
@@ -215,6 +216,8 @@ async function main() {
         log,
       });
       r.post_tx = postTx;
+      // Scored after the hunt; the hunter itself never sees the ground truth.
+      r.second_opinion = secondOpinion(r, groundTruth[id]);
       if (r.resolution) {
         const rc = await env.pub.getTransactionReceipt({
           hash: r.resolution.resolveTx,
@@ -257,6 +260,11 @@ async function main() {
       0,
     );
     run.solved = run.targets.filter((t) => t.resolution?.valid).length;
+    run.second_opinion_tally = run.targets.reduce((m, t) => {
+      const v = t.second_opinion?.verdict ?? "none";
+      m[v] = (m[v] ?? 0) + 1;
+      return m;
+    }, {});
     fs.writeFileSync(
       path.join(evidenceDir, "run.json"),
       JSON.stringify(run, null, 2) + "\n",
@@ -285,12 +293,17 @@ async function main() {
           ? `, paid ${formatEther(BigInt(paid.args.reward))} ETH (resolve tx ${t.resolution.resolveTx})`
           : ""),
     );
+    if (t.second_opinion) log(`  second opinion vs ground truth: ${t.second_opinion.line}`);
   }
   log(
     `\nsolved ${run.solved}/${run.targets.length}; model calls ${run.model_calls}` +
       ` (backend ${run.llm_backend}, reported cost $${run.model_cost_usd.toFixed(4)});` +
       ` Telegraph live spend this run $${run.telegraph_live_spend_this_run_usd.toFixed(2)}` +
       `; hunter withdrew ${formatEther(BigInt(run.hunter_owed_wei ?? 0))} ETH`,
+  );
+  log(
+    `second opinions: ${Object.entries(run.second_opinion_tally).map(([k, v]) => `${k} ${v}`).join(", ")}` +
+      " (payout was decided by the deterministic verifier in every case)",
   );
   log(`evidence: ${path.relative(ROOT, evidenceDir)}/`);
 }

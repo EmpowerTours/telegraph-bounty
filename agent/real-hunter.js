@@ -525,3 +525,89 @@ export async function huntTarget({
   out.resolution = await chain.handToVerifier(w.proof);
   return out;
 }
+
+// ---------------- second opinion vs ground truth (scoring only, after the hunt) ----------------
+
+/** Keyword patterns that map free review text to a bug class. */
+export const CLASS_PATTERNS = {
+  "access-control":
+    /access[- ]control|unauthori[sz]ed|re-?initiali[sz]|initiali[sz](er|e\(\)) .*(again|twice|anyone)|ownership takeover|anyone can (become|set) .*owner/i,
+  "share-inflation":
+    /inflation|first[- ]depositor|donation attack|share price manipulation|rounding/i,
+  "unchecked-return":
+    /unchecked (return|transfer)|return value|ignores? .{0,40}return|safeTransfer/i,
+  "oracle-manipulation":
+    /oracle|price manipulation|manipulat\w* .{0,30}price|spot price|flash[- ]?loan|reserve ratio/i,
+  reentrancy: /re-?entr(an|y)/i,
+};
+
+export function classesIn(text) {
+  return Object.entries(CLASS_PATTERNS)
+    .filter(([, re]) => re.test(text))
+    .map(([c]) => c);
+}
+
+/**
+ * What the paid Telegraph review said, against what the deterministic verifier proved.
+ * Pure. `result` is huntTarget()'s output; `truth` is { class, label } from the ground truth.
+ * The review is scored only on existence of a defect and on its class; payout never depends on it.
+ */
+export function secondOpinion(result, truth) {
+  const review = (result.purchases ?? []).find((p) => p.role === "review");
+  const proven = Boolean(result.solved && (result.resolution?.valid ?? true));
+  const out = {
+    reviewer: review ? (review.miner_name ?? review.miner_id) : null,
+    review_cost_usd: review?.cost_usd ?? null,
+    review_settle_tx: review?.settle_tx ?? null,
+    review_defect_found: null,
+    review_classes: [],
+    review_summary: null,
+    triage_cvss: (result.purchases ?? [])
+      .filter((p) => p.role === "triage" && p.miner_answered)
+      .map((p) => Number(p.result?.cvss_base_score))
+      .filter(Number.isFinite),
+    ground_truth_class: truth?.class ?? null,
+    verifier_proved_bug: proven,
+    verdict: null,
+    line: null,
+  };
+  const finish = () => {
+    if (review?.mode === "mock") {
+      out.mock = true;
+      out.line = `[mock answer, not a real review] ${out.line}`;
+    }
+    return out;
+  };
+  if (!review || !review.miner_answered) {
+    out.verdict = "no_second_opinion";
+    out.line = review
+      ? "no second opinion: the review was answered by the router's last-resort model, not a miner"
+      : "no second opinion: no review was bought";
+    return finish();
+  }
+  const r = review.result ?? {};
+  const issues = Array.isArray(r.issues) ? r.issues.map(String) : [];
+  const count = Number(r.vulnerability_count);
+  const text = typeof r === "string" ? r : [r.summary ?? "", r.verdict ?? "", ...issues].join(" ");
+  out.review_summary = (typeof r === "string" ? r : (r.summary ?? "")).slice(0, 300);
+  out.review_defect_found =
+    (Number.isFinite(count) && count > 0) || issues.length > 0 || (typeof r === "string" && classesIn(r).length > 0);
+  out.review_classes = out.review_defect_found ? classesIn(text) : [];
+  const said = out.review_defect_found
+    ? `reported a defect (${out.review_classes.join(", ") || "class not recognised"})`
+    : "reported no defect";
+  if (!proven) {
+    out.verdict = "unscored";
+    out.line = `${out.reviewer} ${said}; the verifier proved nothing this run, so the review cannot be scored`;
+  } else if (!out.review_defect_found) {
+    out.verdict = "wrong";
+    out.line = `${out.reviewer} ${said}; the verifier proved the bug (${truth?.class ?? "?"}): review WRONG (missed it)`;
+  } else if (out.review_classes.includes(truth?.class)) {
+    out.verdict = "right";
+    out.line = `${out.reviewer} ${said}; the verifier proved the bug (${truth.class}): review RIGHT`;
+  } else {
+    out.verdict = "wrong_class";
+    out.line = `${out.reviewer} ${said}; the verifier proved the bug (${truth?.class ?? "?"}): review found a defect, but not this one`;
+  }
+  return finish();
+}
