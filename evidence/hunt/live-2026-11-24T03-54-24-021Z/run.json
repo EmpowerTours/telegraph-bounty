@@ -1,0 +1,1288 @@
+{
+  "run_id": "live-2026-11-24T03-54-24-021Z",
+  "at": "2026-11-24T03:54:26.839Z",
+  "telegraph_mode": "live",
+  "llm_backend": "cli",
+  "llm_source": null,
+  "chain": "local anvil (chainid 31337)",
+  "intents_source": "live GET /engine/v1/intents/<NAME>",
+  "intents": {
+    "SMART_CONTRACT_AUDIT_GENERAL": {
+      "miner_count": 20,
+      "lifecycle": "registered",
+      "lifecycle_reasons": [
+        "output schema: it has no response format, its own or its family's",
+        "input schema: no response format declares inputs, its own or its family's"
+      ],
+      "request_params": [],
+      "usable": false,
+      "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+    },
+    "SECURITY_REVIEW_GENERAL": {
+      "miner_count": 37,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "target"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "VULNERABILITY_TRIAGE_GENERAL": {
+      "miner_count": 41,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "cve_id"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "CODE_PATCH_VERIFY_GENERAL": {
+      "miner_count": 25,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "patch"
+      ],
+      "usable": true,
+      "reason": null
+    }
+  },
+  "targets": [
+    {
+      "target_id": "hook-vault",
+      "target_hash": "0xedc5aeeac525e77f5a2cdeb75153f858f96974d7280ca882cb3ad9cf102a3e39",
+      "bounty_id": "0",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "905227",
+          "miner_name": "Salence",
+          "delivery": "specialist",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x02ded6314611934293def4e590918ddc2e7568f625c61c1d6a27b01a7fc45905",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGJkM2M0MjZiZTdkOTM4MmIyYjM1ZTJhMmNjYmJhNDc2YTcwZDZhNDUwZDYzYzJmMDIwY2EzNzE2Mzc3OWJhMzciLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTU3IiwiaW50ZW50IjoiU0VDVVJJVFlfUkVWSUVXX0dFTkVSQUwiLCJhbW91bnRfdXVzZGMiOiIxMDAwMCIsImVwb2NoX2lkIjowLCJzZXR0bGVtZW50Ijoib25jaGFpbiIsImNoYWluIjoiZWlwMTU1Ojg0NTMyIiwidHhfaGFzaCI6IjB4MDJkZWQ2MzE0NjExOTM0MjkzZGVmNGU1OTA5MThkZGMyZTc1NjhmNjI1YzYxYzFkNmEyN2IwMWE3ZmM0NTkwNSIsInRpbWVzdGFtcCI6MTc5NTQ5MjQ4MH0=",
+          "signal_hash": "0x4f235b50efa5102a30996a478232e120576882be4583351a67e0a85bdf00cc7e",
+          "warnings": [
+            "The response does not include: Vulnerability ids or weakness categories (CVE, GHSA, CWE, OWASP), most serious first",
+            "The response does not include: Security verdict"
+          ],
+          "result": {
+            "verdict": null,
+            "vulnerability_count": 0,
+            "issues": null,
+            "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result."
+          },
+          "at": "2026-11-24T03:54:40.319Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "302",
+          "miner_name": "ChainSight — Universal Intelligence & Data Oracle",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x34804ad40cf5d777a925f7c1bfc7ad9d48ba030fd61d9b896dc598cacc03848f",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDEyOTU0MWZkOWVmYmYxOTQyMDIzZDA3MjdhNzUxN2Y0NWYzOGQ1Yjk3YTRhYTQwODNjZmYwOThhMzFkZjI3ZTYiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTE5IiwiaW50ZW50IjoiVlVMTkVSQUJJTElUWV9UUklBR0VfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHgzNDgwNGFkNDBjZjVkNzc3YTkyNWY3YzFiZmM3YWQ5ZDQ4YmEwMzBmZDYxZDliODk2ZGM1OThjYWNjMDM4NDhmIiwidGltZXN0YW1wIjoxNzk1NDkyNDg2fQ==",
+          "signal_hash": "0xbec3cf771ed85158f62ddd3d0776f2e4a4eee7fab086c4067023d3acf3bfd410",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 2
+          },
+          "at": "2026-11-24T03:54:46.562Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "29001",
+          "miner_name": "Judge0 CE Patch Verify",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x086f77998ab5f13a96fda19794a9ea7eb9489051109a825f495d187381c8a199",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDUzNWQ0OTgxOWY0NzllNDc4MzFiZThlZjBlMWYwY2MwOTI1N2MwMGNiMTVlYzgwM2E5ODYzYzMwMWFhMDFjMmUiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiIyODQzIiwiaW50ZW50IjoiQ09ERV9QQVRDSF9WRVJJRllfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHgwODZmNzc5OThhYjVmMTNhOTZmZGExOTc5NGE5ZWE3ZWI5NDg5MDUxMTA5YTgyNWY0OTVkMTg3MzgxYzhhMTk5IiwidGltZXN0YW1wIjoxNzk1NDkyNTE3fQ==",
+          "signal_hash": "0x5d2131d260c3b8a3a93f7ae9b0f9443b2bca4c710aa8af78c635e565deaed91a",
+          "warnings": [
+            "The response does not include: Commit SHA or ref checked",
+            "The response does not include: Whether the patch's checks / tests passed",
+            "The response does not include: Name or URL of the CI run or pipeline"
+          ],
+          "result": {
+            "conclusion": "failure",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-24T03:55:17.574Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "from": "review",
+          "cvss": 2
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "hook-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "ef03a42f5cc81a0a9791bc2fcbdfa22cd95d1246e6c3c209ab3692afacee1014",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-24T03:54:46.565Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2723,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 2438,
+            "output_tokens_details": {
+              "thinking_tokens": 1479
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2723,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 2438,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2723,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2723
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.035276,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 20131,
+          "response_sha256": "0df11b94b04841e4888eda37c9114b6f12a5902f79ec9791199de1e7468de013",
+          "proof_hash": "0x08e98050af4a966302524889afddfddbf1240573312d1cca771297e84bdd8c22",
+          "verdict_hash": "0x064e084c8eece178deebb9b7d0a3dc80b3a497ef05067e03d8142792ca922e90",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "423823",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "reverted"
+                },
+                {
+                  "user": 1,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "reverted"
+                },
+                {
+                  "user": 2,
+                  "step": "withdraw",
+                  "amount": "4000000000000000000",
+                  "status": "reverted"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "honest_token_balance_wei": [
+                  "0",
+                  "0",
+                  "0"
+                ],
+                "vault_token_balance_wei": "0",
+                "total_deposits_wei": "0"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "425456",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "success"
+                },
+                {
+                  "user": 2,
+                  "step": "withdraw",
+                  "amount": "4000000000000000000",
+                  "status": "success"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "honest_token_balance_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "vault_token_balance_wei": "0",
+                "total_deposits_wei": "0"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 738
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x08e98050af4a966302524889afddfddbf1240573312d1cca771297e84bdd8c22",
+      "verdict_hash_selfcheck": "0x064e084c8eece178deebb9b7d0a3dc80b3a497ef05067e03d8142792ca922e90",
+      "submit_tx": "0x78566304d7fdffc225e65cb38201f8ef61b95290a326425141832426d634aea1",
+      "resolution": {
+        "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "proofHash": "0x08e98050af4a966302524889afddfddbf1240573312d1cca771297e84bdd8c22",
+        "verdictHash": "0x064e084c8eece178deebb9b7d0a3dc80b3a497ef05067e03d8142792ca922e90",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x889a4fff85b25ae299e7b58fbb0ff4dd326e1b795f5e162c349d4135503aaad9",
+        "verdictFile": "evidence/hunt/live-2026-11-24T03-54-24-021Z/verdicts/0x08e98050af4a966302524889afddfddbf1240573312d1cca771297e84bdd8c22.json"
+      },
+      "post_tx": "0x719d4239c291aec240774709d464eed07e180f28a590265748734e097ad1b518",
+      "second_opinion": {
+        "reviewer": "Salence",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": "0x02ded6314611934293def4e590918ddc2e7568f625c61c1d6a27b01a7fc45905",
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+        "triage_cvss": [
+          2
+        ],
+        "ground_truth_class": "reentrancy",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "Salence reported no defect; the verifier proved the bug (reentrancy): review WRONG (missed it)"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "0",
+            "proofHash": "0x08e98050af4a966302524889afddfddbf1240573312d1cca771297e84bdd8c22",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x064e084c8eece178deebb9b7d0a3dc80b3a497ef05067e03d8142792ca922e90"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "init-vault",
+      "target_hash": "0x325f76265e5727583fe4c99c52ab4b732b1a518308b983e46c667034be9c5500",
+      "bounty_id": "1",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "905227",
+          "miner_name": "Salence",
+          "delivery": "specialist",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x5f255d916c30781dd35719e7b02e871b1111606cae8b923fa23ee5789d398aff",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGFhYWMwNGYwMGZkNWJjNzA0YTUwYWY0ZTI2MWYzOWQzNTBhZTdkYTdjMTMxZWQ5MTdjMDA4MGYzNDRjZTEzYWIiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTU3IiwiaW50ZW50IjoiU0VDVVJJVFlfUkVWSUVXX0dFTkVSQUwiLCJhbW91bnRfdXVzZGMiOiIxMDAwMCIsImVwb2NoX2lkIjowLCJzZXR0bGVtZW50Ijoib25jaGFpbiIsImNoYWluIjoiZWlwMTU1Ojg0NTMyIiwidHhfaGFzaCI6IjB4NWYyNTVkOTE2YzMwNzgxZGQzNTcxOWU3YjAyZTg3MWIxMTExNjA2Y2FlOGI5MjNmYTIzZWU1Nzg5ZDM5OGFmZiIsInRpbWVzdGFtcCI6MTc5NTQ5MjUyOH0=",
+          "signal_hash": "0xa3e37d0098225fb462ab02de993e4c42ae7c8330ffccab741a5c30c0939b10e2",
+          "warnings": [
+            "The response does not include: Vulnerability ids or weakness categories (CVE, GHSA, CWE, OWASP), most serious first"
+          ],
+          "result": {
+            "verdict": "Secure",
+            "vulnerability_count": 0,
+            "issues": null,
+            "summary": "Two independent model reviews found no security defect in this Solidity code; runtime behaviour and other files were not seen."
+          },
+          "at": "2026-11-24T03:55:28.896Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "302",
+          "miner_name": "ChainSight — Universal Intelligence & Data Oracle",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x0829a923a59d9de6a0fc589573dc8664e24c14ddc84f953514ed288f3c46e352",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGFhZjg1Yzk4YWFjZjNlOGJkNDI0NWYyMjc0ZDUwYzFjM2Q4ODhmYTA0NmI1M2JjZGMyYTg0NWUzMGNkMTQ3MjIiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTE5IiwiaW50ZW50IjoiVlVMTkVSQUJJTElUWV9UUklBR0VfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHgwODI5YTkyM2E1OWQ5ZGU2YTBmYzU4OTU3M2RjODY2NGUyNGMxNGRkYzg0Zjk1MzUxNGVkMjg4ZjNjNDZlMzUyIiwidGltZXN0YW1wIjoxNzk1NDkyNTM0fQ==",
+          "signal_hash": "0x696667972a90b703da14eef6615b4a9c2369352fb1e9206c1dad37256c6eba41",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 0
+          },
+          "at": "2026-11-24T03:55:34.738Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "29001",
+          "miner_name": "Judge0 CE Patch Verify",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xd908770ef882e8650f5b40c4cbf3457b6bd463485febfd6ff9eb320a950336c4",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDJmMzc4YmFjODFkMDNkYWRiZDY1ODVkZTRlNDFhZmVmYzM4NzI0ODViMjRkNGVlMWQwMWI2ZmY1YWI5OTNjMmQiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiIyODQzIiwiaW50ZW50IjoiQ09ERV9QQVRDSF9WRVJJRllfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHhkOTA4NzcwZWY4ODJlODY1MGY1YjQwYzRjYmYzNDU3YjZiZDQ2MzQ4NWZlYmZkNmZmOWViMzIwYTk1MDMzNmM0IiwidGltZXN0YW1wIjoxNzk1NDkyNTUyfQ==",
+          "signal_hash": "0x46f36f9c91c05941e86c103a0775ccebaf108cdb0f9c6196c01e9196ade72e96",
+          "warnings": [
+            "The response does not include: Commit SHA or ref checked",
+            "The response does not include: Whether the patch's checks / tests passed",
+            "The response does not include: Name or URL of the CI run or pipeline"
+          ],
+          "result": {
+            "conclusion": "failure",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-24T03:55:52.408Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "Two independent model reviews found no security defect in this Solidity code; runtime behaviour and other files were not seen.",
+          "summary": "Two independent model reviews found no security defect in this Solidity code; runtime behaviour and other files were not seen.",
+          "from": "review",
+          "cvss": 0
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "init-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "ec76dccf4239e4f50e00d753d455263fb09902ef53b3447dcdbdb599d07f78ba",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-24T03:55:34.739Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2870,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 669,
+            "output_tokens_details": {
+              "thinking_tokens": 282
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2870,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 669,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2870,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2870
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.018174,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 7795,
+          "response_sha256": "3c3ac2e1f1a97a01055137823cde7388942de88f49256a1f1c5d6688b663d2cf",
+          "proof_hash": "0x975fe4f404c42342fc2d5f223dfa5b52c4f3d9d7083e4806ed7f9537bf363d65",
+          "verdict_hash": "0x29ce3e6eaf6bfa08075b755f4fc280a4a26c0ea7e7c2cf279dae21a41e467e14",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "71931",
+              "after": null,
+              "observed": {
+                "vault_balance_wei": "0",
+                "total_deposits_wei": "10000000000000000000"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "28820",
+              "after": null,
+              "observed": {
+                "vault_balance_wei": "10000000000000000000",
+                "total_deposits_wei": "10000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 608
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x975fe4f404c42342fc2d5f223dfa5b52c4f3d9d7083e4806ed7f9537bf363d65",
+      "verdict_hash_selfcheck": "0x29ce3e6eaf6bfa08075b755f4fc280a4a26c0ea7e7c2cf279dae21a41e467e14",
+      "submit_tx": "0x1a5309d41e32f2405f7e65efc3e2a373374e55ee5583a9a2ef20abfcff69914d",
+      "resolution": {
+        "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "proofHash": "0x975fe4f404c42342fc2d5f223dfa5b52c4f3d9d7083e4806ed7f9537bf363d65",
+        "verdictHash": "0x29ce3e6eaf6bfa08075b755f4fc280a4a26c0ea7e7c2cf279dae21a41e467e14",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x1e271855d534c821c8a1932aa4faab90ad4ad5e5f7f8d18a9eec5cb3f45a1716",
+        "verdictFile": "evidence/hunt/live-2026-11-24T03-54-24-021Z/verdicts/0x975fe4f404c42342fc2d5f223dfa5b52c4f3d9d7083e4806ed7f9537bf363d65.json"
+      },
+      "post_tx": "0x4552453988b2c447e676b0a70d0fea08ef1852a803ce984f3c8df95acf873b2d",
+      "second_opinion": {
+        "reviewer": "Salence",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": "0x5f255d916c30781dd35719e7b02e871b1111606cae8b923fa23ee5789d398aff",
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "Two independent model reviews found no security defect in this Solidity code; runtime behaviour and other files were not seen.",
+        "triage_cvss": [
+          0
+        ],
+        "ground_truth_class": "access-control",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "Salence reported no defect; the verifier proved the bug (access-control): review WRONG (missed it)"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "1",
+            "proofHash": "0x975fe4f404c42342fc2d5f223dfa5b52c4f3d9d7083e4806ed7f9537bf363d65",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x29ce3e6eaf6bfa08075b755f4fc280a4a26c0ea7e7c2cf279dae21a41e467e14"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "lend-pool",
+      "target_hash": "0x6cd37e86a767e3b2d07e7457299f0414b702ae60f650e337312bfbd34f5565c8",
+      "bounty_id": "2",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "905227",
+          "miner_name": "Salence",
+          "delivery": "specialist",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x561a3a3d6d1cf582ce9a81f9a2bcbb409f00833f296fe8b055172003518e06ee",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGU0M2E2MDZjZTk5YWM4ZmEyOWE4MjY0NGIwNmQ0MDdkNjk0MmY0NzkzMDY5N2VkM2NiYTBiNjVmMzhiOGY1YzciLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTU3IiwiaW50ZW50IjoiU0VDVVJJVFlfUkVWSUVXX0dFTkVSQUwiLCJhbW91bnRfdXVzZGMiOiIxMDAwMCIsImVwb2NoX2lkIjowLCJzZXR0bGVtZW50Ijoib25jaGFpbiIsImNoYWluIjoiZWlwMTU1Ojg0NTMyIiwidHhfaGFzaCI6IjB4NTYxYTNhM2Q2ZDFjZjU4MmNlOWE4MWY5YTJiY2JiNDA5ZjAwODMzZjI5NmZlOGIwNTUxNzIwMDM1MThlMDZlZSIsInRpbWVzdGFtcCI6MTc5NTQ5MjU2NH0=",
+          "signal_hash": "0x33a3e65ff17f72e88c96a1c5e9d74d9f8b660c2b3613698f9e42d3479b9c2e6b",
+          "warnings": [
+            "The response does not include: Vulnerability ids or weakness categories (CVE, GHSA, CWE, OWASP), most serious first",
+            "The response does not include: Security verdict"
+          ],
+          "result": {
+            "verdict": null,
+            "vulnerability_count": 0,
+            "issues": null,
+            "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result."
+          },
+          "at": "2026-11-24T03:56:05.018Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "302",
+          "miner_name": "ChainSight — Universal Intelligence & Data Oracle",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xf4445716b15a3e28134ef7b4411a6a945a00d1bfb7987a56f64030329a9471a6",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGVkOGMwMzNkZmJjNmNhZWEwZjhmYWViNmI5NmY4N2Q1OTI4ZDhhZDkyOWEzNzQ5MmEwNDk5ZmRkZmU2NGQ1OWMiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTE5IiwiaW50ZW50IjoiVlVMTkVSQUJJTElUWV9UUklBR0VfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHhmNDQ0NTcxNmIxNWEzZTI4MTM0ZWY3YjQ0MTFhNmE5NDVhMDBkMWJmYjc5ODdhNTZmNjQwMzAzMjlhOTQ3MWE2IiwidGltZXN0YW1wIjoxNzk1NDkyNTcwfQ==",
+          "signal_hash": "0xc4e5ea8ce20ef3bda9cfa5e34312350526d72ac6062f9244d9977102eea934b9",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 2.3
+          },
+          "at": "2026-11-24T03:56:10.484Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "29001",
+          "miner_name": "Judge0 CE Patch Verify",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x49d6f5af7d96f37322d2ae39268644f5d9a51790e19d26e84ef05e48d921e12f",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGFlODg2ZWU3OTJmYjc3ZDc3Yjg1Nzc3YTMxYWZjY2Q4YWQxNTgxYzJjYmYzNWY0OTViOWI5ZDE1NTc3NjhlOTIiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiIyODQzIiwiaW50ZW50IjoiQ09ERV9QQVRDSF9WRVJJRllfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHg0OWQ2ZjVhZjdkOTZmMzczMjJkMmFlMzkyNjg2NDRmNWQ5YTUxNzkwZTE5ZDI2ZTg0ZWYwNWU0OGQ5MjFlMTJmIiwidGltZXN0YW1wIjoxNzk1NDkyNTkwfQ==",
+          "signal_hash": "0x72e02eb276cf0148864d53f0061d4dc53dd017966748149dc45e432205b56b08",
+          "warnings": [
+            "The response does not include: Commit SHA or ref checked",
+            "The response does not include: Whether the patch's checks / tests passed",
+            "The response does not include: Name or URL of the CI run or pipeline"
+          ],
+          "result": {
+            "conclusion": "failure",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-24T03:56:30.742Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "from": "review",
+          "cvss": 2.3
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "lend-pool",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "4e8bd3b32f8e425ec1c0038d3fd75a56c22a31b54a74822ad5d837d1ebe61c83",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-24T03:56:10.489Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2951,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 1111,
+            "output_tokens_details": {
+              "thinking_tokens": 509
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2951,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 1111,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2951,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2951
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.022918,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 9805,
+          "response_sha256": "9b7456d74bdd882f9e8dd9adbe1cc89be361e77b6869292fe8e48a7bedfee19e",
+          "proof_hash": "0x3f12063e769b2ee26820f2fa51db7275d953a88a351a21605f4c9454e8a74b6a",
+          "verdict_hash": "0x00ec617d866fea2461c39fda6d2420e910b4cec68f58916c3a70d91c41e182f5",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "149142",
+              "after": null,
+              "observed": {
+                "total_collateral_gov_wei": "4992488733099649474211",
+                "collateral_value_at_fair_price_wei": "4992488733099649474",
+                "total_debt_wei": "10000000000000000000",
+                "exchange_reserve_eth_wei": "20000000000000000000",
+                "exchange_reserve_gov_wei": "5007511266900350525789"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "163996",
+              "after": null,
+              "observed": {
+                "total_collateral_gov_wei": "0",
+                "collateral_value_at_fair_price_wei": "0",
+                "total_debt_wei": "0",
+                "exchange_reserve_eth_wei": "10000000000000000000",
+                "exchange_reserve_gov_wei": "10000000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 586
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x3f12063e769b2ee26820f2fa51db7275d953a88a351a21605f4c9454e8a74b6a",
+      "verdict_hash_selfcheck": "0x00ec617d866fea2461c39fda6d2420e910b4cec68f58916c3a70d91c41e182f5",
+      "submit_tx": "0x815cd398a6483a4109f7143703ea8f426fdbecda71f31a8107eb0d3cc6630366",
+      "resolution": {
+        "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "proofHash": "0x3f12063e769b2ee26820f2fa51db7275d953a88a351a21605f4c9454e8a74b6a",
+        "verdictHash": "0x00ec617d866fea2461c39fda6d2420e910b4cec68f58916c3a70d91c41e182f5",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x3d8a0d78dcfc687f3d867234af0c5dcc17c30d088957b7baa0b05f166c21d8a7",
+        "verdictFile": "evidence/hunt/live-2026-11-24T03-54-24-021Z/verdicts/0x3f12063e769b2ee26820f2fa51db7275d953a88a351a21605f4c9454e8a74b6a.json"
+      },
+      "post_tx": "0x4000f5b74a22b37f6322cee92c7f505398b196efcdd6333853307e5dca2a7f7b",
+      "second_opinion": {
+        "reviewer": "Salence",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": "0x561a3a3d6d1cf582ce9a81f9a2bcbb409f00833f296fe8b055172003518e06ee",
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+        "triage_cvss": [
+          2.3
+        ],
+        "ground_truth_class": "oracle-manipulation",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "Salence reported no defect; the verifier proved the bug (oracle-manipulation): review WRONG (missed it)"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "2",
+            "proofHash": "0x3f12063e769b2ee26820f2fa51db7275d953a88a351a21605f4c9454e8a74b6a",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x00ec617d866fea2461c39fda6d2420e910b4cec68f58916c3a70d91c41e182f5"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "share-vault",
+      "target_hash": "0x5b6cf2cd4777ec588951ec76e0fc0cb627ddf0422a77d2522ac12196137b4c6e",
+      "bounty_id": "3",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "905227",
+          "miner_name": "Salence",
+          "delivery": "specialist",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xc689adc1b7a38c5cc8d640ff4058b392a7bfd9a39ebc7dc10976655181099c86",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDhjZWQyMTViNWU0MzViZjRlMjA1M2NlN2MzYmE2YzE1MDNmNmJiZjg1NGQ3ODJhZmZmODMyODczYTE4M2I1NmUiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTU3IiwiaW50ZW50IjoiU0VDVVJJVFlfUkVWSUVXX0dFTkVSQUwiLCJhbW91bnRfdXVzZGMiOiIxMDAwMCIsImVwb2NoX2lkIjowLCJzZXR0bGVtZW50Ijoib25jaGFpbiIsImNoYWluIjoiZWlwMTU1Ojg0NTMyIiwidHhfaGFzaCI6IjB4YzY4OWFkYzFiN2EzOGM1Y2M4ZDY0MGZmNDA1OGIzOTJhN2JmZDlhMzllYmM3ZGMxMDk3NjY1NTE4MTA5OWM4NiIsInRpbWVzdGFtcCI6MTc5NTQ5MjYwMX0=",
+          "signal_hash": "0x4a6c7e92a72e46cdeaaaf3b73da53f6c3bded6a6fb399bec239e89a27f51a719",
+          "warnings": [
+            "The response does not include: Vulnerability ids or weakness categories (CVE, GHSA, CWE, OWASP), most serious first",
+            "The response does not include: Security verdict"
+          ],
+          "result": {
+            "verdict": null,
+            "vulnerability_count": 0,
+            "issues": null,
+            "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result."
+          },
+          "at": "2026-11-24T03:56:41.484Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "302",
+          "miner_name": "ChainSight — Universal Intelligence & Data Oracle",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xebf01798b984773e660b30dcdf1654faa52bb6f4a34c1fa5f8b3b47de811a7ef",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDI5ZDRkNGM0ZTZjZTYzNTBiYTMxOWY5NWFiODczNGQyY2E4ODQ3MDc1YWE5MWZlYzE2NmQwYjliZGVkZWU3YTUiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTE5IiwiaW50ZW50IjoiVlVMTkVSQUJJTElUWV9UUklBR0VfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHhlYmYwMTc5OGI5ODQ3NzNlNjYwYjMwZGNkZjE2NTRmYWE1MmJiNmY0YTM0YzFmYTVmOGIzYjQ3ZGU4MTFhN2VmIiwidGltZXN0YW1wIjoxNzk1NDkyNjA2fQ==",
+          "signal_hash": "0xdd6fbfa9d1ba602daf03baf8458e4695e481c7aa5cbfd3f918b024406aaf3a3f",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 2
+          },
+          "at": "2026-11-24T03:56:46.244Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "29001",
+          "miner_name": "Judge0 CE Patch Verify",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xa5b873da61a32c79da5e759db2e0800010fd20b98801a8d07685ece0dc7eb89a",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGVlMjIxOGVmYmNiNWIxZmQ5ZGIxMTg1MGMyZWFkZWI2OWY3ZjhhOWFhYWU5YzNmNTU3Y2NlN2MxY2IzYzZjOGEiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiIyODQzIiwiaW50ZW50IjoiQ09ERV9QQVRDSF9WRVJJRllfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHhhNWI4NzNkYTYxYTMyYzc5ZGE1ZTc1OWRiMmUwODAwMDEwZmQyMGI5ODgwMWE4ZDA3Njg1ZWNlMGRjN2ViODlhIiwidGltZXN0YW1wIjoxNzk1NDkyNjI5fQ==",
+          "signal_hash": "0x36d15d94847e81c363b5ab496012d213190eec3feaa413e50ecbdf857f12ff54",
+          "warnings": [
+            "The response does not include: Commit SHA or ref checked",
+            "The response does not include: Whether the patch's checks / tests passed",
+            "The response does not include: Name or URL of the CI run or pipeline"
+          ],
+          "result": {
+            "conclusion": "failure",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-24T03:57:09.186Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "from": "review",
+          "cvss": 2
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "share-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "51b7f82554ea9c5e0d5c76608ff37f2137a85acde06e6ec1440a0e581de55121",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-24T03:56:46.247Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 351,
+            "cache_read_input_tokens": 2205,
+            "output_tokens": 1184,
+            "output_tokens_details": {
+              "thinking_tokens": 659
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 351,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 1184,
+                "cache_read_input_tokens": 2205,
+                "cache_creation_input_tokens": 351,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 351
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.013468500000000001,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 10204,
+          "response_sha256": "8b5a0d1e8865a8dfb2ba38a61e3c38aa39661c8a42064e356b439e72cec7ee59",
+          "proof_hash": "0xbf9494c8fa7e4bbe5740c34303b9291fda9cfb6b45a7eb3eeb04a3eb40918560",
+          "verdict_hash": "0x912b89559ddf14b87f80eddd7b20b10d6e94817f138c01fccf0e793299463769",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "117071",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "2",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "0",
+                  "status": "skipped"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "2000000000000000000",
+                  "500000000000000000"
+                ],
+                "redeemed_wei": [
+                  "2333333333333333333",
+                  "0"
+                ]
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "117354",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "3999999999",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "999999999",
+                  "status": "success"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "2000000000000000000",
+                  "500000000000000000"
+                ],
+                "redeemed_wei": [
+                  "2000000000071428572",
+                  "499999999642857142"
+                ]
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 538
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0xbf9494c8fa7e4bbe5740c34303b9291fda9cfb6b45a7eb3eeb04a3eb40918560",
+      "verdict_hash_selfcheck": "0x912b89559ddf14b87f80eddd7b20b10d6e94817f138c01fccf0e793299463769",
+      "submit_tx": "0x04313fe6fa776d5a9c0452b97a69b65b526e33b12db8484b85a63cd77a2d4e03",
+      "resolution": {
+        "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "proofHash": "0xbf9494c8fa7e4bbe5740c34303b9291fda9cfb6b45a7eb3eeb04a3eb40918560",
+        "verdictHash": "0x912b89559ddf14b87f80eddd7b20b10d6e94817f138c01fccf0e793299463769",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0xf115e825c2576e0da06f75586c1917851b47ca20dcfc9ed0ee1a7c8314d9de85",
+        "verdictFile": "evidence/hunt/live-2026-11-24T03-54-24-021Z/verdicts/0xbf9494c8fa7e4bbe5740c34303b9291fda9cfb6b45a7eb3eeb04a3eb40918560.json"
+      },
+      "post_tx": "0xdb0874265b52a170bf7a659be40561d74bdc106dbd274be04b91c2aa264c6bd4",
+      "second_opinion": {
+        "reviewer": "Salence",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": "0xc689adc1b7a38c5cc8d640ff4058b392a7bfd9a39ebc7dc10976655181099c86",
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+        "triage_cvss": [
+          2
+        ],
+        "ground_truth_class": "share-inflation",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "Salence reported no defect; the verifier proved the bug (share-inflation): review WRONG (missed it)"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "3",
+            "proofHash": "0xbf9494c8fa7e4bbe5740c34303b9291fda9cfb6b45a7eb3eeb04a3eb40918560",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x912b89559ddf14b87f80eddd7b20b10d6e94817f138c01fccf0e793299463769"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "token-vault",
+      "target_hash": "0x2189c57cb3f951f764cb12bb5b854152c6758a9efcbaf2dfb1b0ff4bcd78be31",
+      "bounty_id": "4",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "905227",
+          "miner_name": "Salence",
+          "delivery": "specialist",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0x89bf0894cdf7740bbfef6297dabc7b6d15cda806c3abb3bb0508ccbaf7247dc7",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGY0N2ZmYTk5OGI5YzM0ZWU5ZjU1ZjUzMTllMGU1NTBlYjkwOTRjOTQzMmEwZDE0OTYzYzM2YmEzYzQwZjY4MDYiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTU3IiwiaW50ZW50IjoiU0VDVVJJVFlfUkVWSUVXX0dFTkVSQUwiLCJhbW91bnRfdXVzZGMiOiIxMDAwMCIsImVwb2NoX2lkIjowLCJzZXR0bGVtZW50Ijoib25jaGFpbiIsImNoYWluIjoiZWlwMTU1Ojg0NTMyIiwidHhfaGFzaCI6IjB4ODliZjA4OTRjZGY3NzQwYmJmZWY2Mjk3ZGFiYzdiNmQxNWNkYTgwNmMzYWJiM2JiMDUwOGNjYmFmNzI0N2RjNyIsInRpbWVzdGFtcCI6MTc5NTQ5MjY0MX0=",
+          "signal_hash": "0x237d24a500292834effa1df4410596fa8c30182f51bfdf11c177a0d9a690924b",
+          "warnings": [
+            "The response does not include: Vulnerability ids or weakness categories (CVE, GHSA, CWE, OWASP), most serious first",
+            "The response does not include: Security verdict"
+          ],
+          "result": {
+            "verdict": null,
+            "vulnerability_count": 0,
+            "issues": null,
+            "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result."
+          },
+          "at": "2026-11-24T03:57:21.884Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "302",
+          "miner_name": "ChainSight — Universal Intelligence & Data Oracle",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xdc7b0a5265a2ae8d797ea5435a61695333405d2fdbd455c24c46eb03c9c52667",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDBjZWY5YjY3YjY4ZWQwZWVmMDllYzUzM2JkMjcyM2Q4NjRmNjYzNWFjZDY3OGQ0MmZjZDZiMzExYWVhMjczNmEiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTE5IiwiaW50ZW50IjoiVlVMTkVSQUJJTElUWV9UUklBR0VfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHhkYzdiMGE1MjY1YTJhZThkNzk3ZWE1NDM1YTYxNjk1MzMzNDA1ZDJmZGJkNDU1YzI0YzQ2ZWIwM2M5YzUyNjY3IiwidGltZXN0YW1wIjoxNzk1NDkyNjQ2fQ==",
+          "signal_hash": "0xb3f0ce18584a9dac2d175977b087f601a76bcfbf4a99f18aca974e3d97affc3e",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 2
+          },
+          "at": "2026-11-24T03:57:26.590Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 200,
+          "miner_id": "29001",
+          "miner_name": "Judge0 CE Patch Verify",
+          "delivery": "ranked_fallback",
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": "0xd7a2b7a8eb3fc49565b12a0d131b1b246b52ea3a8274f0f0f2cadf3f6285530b",
+          "receipt": "eyJyZWNlaXB0X2hhc2giOiIweDNlMmRhN2NjODhhMWY4NjU3ODM5ZWZmZmM1NmFlYWMwYmM5MTYzNDRlMGUzODRiOGM1ZWMyYWVhOWUyMDI2OTQiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiIyODQzIiwiaW50ZW50IjoiQ09ERV9QQVRDSF9WRVJJRllfR0VORVJBTCIsImFtb3VudF91dXNkYyI6IjEwMDAwIiwiZXBvY2hfaWQiOjAsInNldHRsZW1lbnQiOiJvbmNoYWluIiwiY2hhaW4iOiJlaXAxNTU6ODQ1MzIiLCJ0eF9oYXNoIjoiMHhkN2EyYjdhOGViM2ZjNDk1NjViMTJhMGQxMzFiMWIyNDZiNTJlYTNhODI3NGYwZjBmMmNhZGYzZjYyODU1MzBiIiwidGltZXN0YW1wIjoxNzk1NDkyNjYxfQ==",
+          "signal_hash": "0x3bd1ddd1d9fe2d2ed010091e2547c87f34cd465cd963ed19d4aa52533f2710a6",
+          "warnings": [
+            "The response does not include: Commit SHA or ref checked",
+            "The response does not include: Whether the patch's checks / tests passed",
+            "The response does not include: Name or URL of the CI run or pipeline"
+          ],
+          "result": {
+            "conclusion": "failure",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-24T03:57:41.632Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+          "from": "review",
+          "cvss": 2
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "token-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "121eb902a3e1f19b803edca21a7feebda1faf1dee10eb0f01c8cc2885417ebb8",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-24T03:57:26.592Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2954,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 559,
+            "output_tokens_details": {
+              "thinking_tokens": 227
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2954,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 559,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2954,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2954
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.017410000000000002,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 6024,
+          "response_sha256": "b8491ce8aed470c355ab3e6dd5cf474c921fdd6bb39419dead2eade6d8b90b41",
+          "proof_hash": "0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb",
+          "verdict_hash": "0x81b36ba254d3288932ecf555fe05aa384fcccd0588bdc8634c5a6d5fb99c00f5",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "61024",
+              "after": null,
+              "observed": {
+                "vault_token_balance": "10000000000000000000",
+                "total_deposits": "11000000000000000000"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "32304",
+              "after": null,
+              "observed": {
+                "vault_token_balance": "10000000000000000000",
+                "total_deposits": "10000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 652
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb",
+      "verdict_hash_selfcheck": "0x81b36ba254d3288932ecf555fe05aa384fcccd0588bdc8634c5a6d5fb99c00f5",
+      "submit_tx": "0xc3c8f7f6da87f9f6656bd4760d51b9decedda024852b162220a8c0107977134f",
+      "resolution": {
+        "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "proofHash": "0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb",
+        "verdictHash": "0x81b36ba254d3288932ecf555fe05aa384fcccd0588bdc8634c5a6d5fb99c00f5",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x5e3cf6b34dccea0cf2c6dcce55d0e15d0362e005fedb6703450244dedf0043d3",
+        "verdictFile": "evidence/hunt/live-2026-11-24T03-54-24-021Z/verdicts/0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb.json"
+      },
+      "post_tx": "0xb2c27f643d0d686fd89a6aa417f18af7e0518c27c7503fdf7c5bb0b32301f711",
+      "second_opinion": {
+        "reviewer": "Salence",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": "0x89bf0894cdf7740bbfef6297dabc7b6d15cda806c3abb3bb0508ccbaf7247dc7",
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.",
+        "triage_cvss": [
+          2
+        ],
+        "ground_truth_class": "unchecked-return",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "Salence reported no defect; the verifier proved the bug (unchecked-return): review WRONG (missed it)"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "4",
+            "proofHash": "0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x81b36ba254d3288932ecf555fe05aa384fcccd0588bdc8634c5a6d5fb99c00f5"
+          }
+        }
+      ]
+    }
+  ],
+  "escrow": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "hunter_owed_wei": "5000000000000000000",
+  "withdraw": {
+    "tx": "0xb6ac39bcaafd4a86e62380f85a36e427d51fa7a81014ddd793b8b9681f3eb4e0",
+    "events": [
+      {
+        "event": "Withdrawn",
+        "args": {
+          "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "amount": "5000000000000000000"
+        }
+      }
+    ]
+  },
+  "telegraph_live_spend_this_run_usd": 0.15,
+  "attempts_total": 5,
+  "model_calls": 5,
+  "model_cost_usd": 0.1072465,
+  "solved": 5,
+  "second_opinion_tally": {
+    "wrong": 5
+  }
+}
