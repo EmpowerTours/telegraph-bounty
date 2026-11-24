@@ -14,15 +14,15 @@ Scope: every contract tested here is written in this repo. `VulnerableVault` is 
 vulnerable and exists only as a demo bounty target. Nothing here targets third-party or deployed
 contracts, and nothing has been deployed to any chain.
 
-## Status (2026-11-12)
+## Status (2026-11-23)
 
 | Item | State |
 |---|---|
 | Contracts, forge tests (unit, fuzz, invariant) | done, 23/23 pass |
 | Deterministic verifier and JS tests | done, 9/9 pass |
 | End-to-end local demo (escrow on anvil, payout, Break it) | done |
-| Real paid Telegraph request | **not yet**. The testnet wallet `0x7dBe…6274` holds 0 test USDC on Base Sepolia and on Sepolia. The real endpoint rejected the signed payment with `insufficient_funds` (see `evidence/telegraph-receipts.ndjson`, `mode:"live"`). |
-| Telegraph purchase in the demo | **MOCK**. A local replay of the recorded real 402 challenge, with a canned answer (see below) |
+| Real paid Telegraph request | **done 2026-11-23**: `SECURITY_REVIEW_GENERAL`, $0.01 test USDC on Base Sepolia, settled on-chain in tx `0x670f7fe100f43f9f572a68d02e0664005f71399f35e81fb9cbce445a8bae7423` (status 1, block 62835685). Recorded in `evidence/telegraph-receipts.ndjson` (`mode:"live"`). |
+| Telegraph purchase in the demo | **live** with `TELEGRAPH_MODE=live` (real endpoint, real payment); the default `npm run demo` still uses the local mock so it runs without funds |
 | Ultrafuzz campaign | **not run**. It is a hard gate before any deploy |
 | Deploy | none, by design. The code stops at "ready to deploy" |
 

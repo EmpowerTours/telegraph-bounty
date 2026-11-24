@@ -1,6 +1,6 @@
 {
-  "at": "2026-11-12T22:04:40.711Z",
-  "telegraph_mode": "mock",
+  "at": "2026-11-24T02:56:41.816Z",
+  "telegraph_mode": "live",
   "chain": "local anvil (chainid 31337)",
   "invariant": "address(vault).balance >= vault.totalDeposits()",
   "escrow": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
@@ -107,20 +107,19 @@
     "hunter_balance_delta_wei": "999967352524663711",
     "escrow_balance_after_wei": "0",
     "telegraph_purchase": {
-      "mode": "mock",
-      "endpoint": "http://127.0.0.1:39393/engine/v1/ask",
+      "mode": "live",
+      "endpoint": "https://devnode.telegraphprotocol.com/engine/v1/ask",
       "status": 200,
       "intent": "SECURITY_REVIEW_GENERAL",
-      "miner_id": "mock-miner",
+      "miner_id": "905227",
       "cost_usd": 0.01,
-      "signal_hash": "0x6122f1de41b9c6beab6b6b71bdf3dc57c29c4a51fcc6f2a0da681e52272dbeaa",
-      "receipt": "mock-receipt-6122f1de41b9c6be",
+      "signal_hash": "0xe1ae0b8fb561cb40c3399368546eaab7e7d0b449ea2a54bfe365c3c68126b0fe",
+      "receipt": "eyJyZWNlaXB0X2hhc2giOiIweGI1ODIzMzEyZmRlNGJiMmJjN2MxYTZhNDY5ZmIwYmVkMjlhZmI0NWY1NmVkMmE0NmE1YzkyZjE4NTM5NWUwZjkiLCJyYWlsIjoieDQwMiIsInBheWVyIjoiMHg3ZGJlOWY3Y2RmZGY0MjRlYmI2YTU3Y2FkNDQxOTc2YzY4YWU2Mjc0IiwibWluZXIiOiI2MTU3IiwiaW50ZW50IjoiU0VDVVJJVFlfUkVWSUVXX0dFTkVSQUwiLCJhbW91bnRfdXVzZGMiOiIxMDAwMCIsImVwb2NoX2lkIjowLCJzZXR0bGVtZW50Ijoib25jaGFpbiIsImNoYWluIjoiZWlwMTU1Ojg0NTMyIiwidHhfaGFzaCI6IjB4NjcwZjdmZTEwMGY0M2Y5ZjU3MmE2OGQwMmUwNjY0MDA1ZjcxMzk5ZjM1ZTgxZmI5Y2JjZTQ0NWE4YmFlNzQyMyIsInRpbWVzdGFtcCI6MTc5NTQ4OTAxOH0=",
       "payment": {
         "success": true,
-        "transaction": "",
-        "network": "eip155:84532",
-        "payer": "0x057a6B4F37Ad25BAc2d08428920aee09f62B7C6a",
-        "mock": true
+        "payer": "0x7dbe9f7cdfdf424ebb6a57cad441976c68ae6274",
+        "transaction": "0x670f7fe100f43f9f572a68d02e0664005f71399f35e81fb9cbce445a8bae7423",
+        "network": "eip155:84532"
       },
       "payment_required_error": null,
       "ledger": "evidence/telegraph-receipts.ndjson"
