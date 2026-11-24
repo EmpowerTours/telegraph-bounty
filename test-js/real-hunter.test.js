@@ -180,3 +180,34 @@ test("no-reference rule (runtime): a full mocked hunt touches no reference file 
   for (const c of llm.calls)
     for (const ref of refTexts) assert.ok(!c.prompt.includes(ref) && !c.system.includes(ref));
 });
+
+// ---------------- Telegraph param limit (found in the first live run) ----------------
+
+test("review params are compacted under the router's 2000-char limit and still compile to the same ABI", async () => {
+  const { compactSolidity, MAX_PARAM_CHARS } = await import("../agent/real-hunter.js");
+  const { compileTargetFile } = await import("../verifier/verify-target.js");
+  for (const id of listTargetIds()) {
+    const t = await loadTarget(id);
+    const c = compactSolidity(t.vulnerableSource);
+    assert.ok(c.length <= MAX_PARAM_CHARS, `${id}: ${c.length}`);
+    const a = compileTargetFile(t.vulnerableSource, t.vulnerable.file).contracts;
+    const b = compileTargetFile("// SPDX-License-Identifier: MIT\n" + c, t.vulnerable.file).contracts;
+    for (const name of Object.keys(a))
+      assert.deepEqual(b[name].abi.filter((x) => x.type !== "event"), a[name].abi.filter((x) => x.type !== "event"), `${id}.${name}`);
+  }
+});
+
+test("a request with a param over 2000 chars is skipped, not bought", async () => {
+  const { buyIntel } = await import("../agent/real-hunter.js");
+  const t = await loadTarget("init-vault");
+  const big = { ...t, vulnerableSource: t.vulnerableSource + "\n" + "contract Pad { uint256 x; }\n".repeat(200) };
+  let bought = 0;
+  const r = await buyIntel({
+    target: big,
+    telegraph: { mode: "mock" },
+    intents: { SECURITY_REVIEW_GENERAL: { usable: true }, VULNERABILITY_TRIAGE_GENERAL: { usable: true } },
+    buy: async () => { bought++; throw new Error("must not be called"); },
+  });
+  assert.equal(bought, 0);
+  assert.ok(r.skipped.some((s) => /over the 2000 limit/.test(s.reason)));
+});

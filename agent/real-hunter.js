@@ -101,6 +101,31 @@ function purchaseSummary(role, p) {
   };
 }
 
+/**
+ * The router rejects any string param over 2000 characters ("invalid_params ... over the 2000
+ * limit") and then answers from its last-resort general model, not a miner. Measured on the live
+ * run of 2026-11-24 (evidence/hunt/live-2026-11-24T03-31-07-896Z).
+ */
+export const MAX_PARAM_CHARS = 2000;
+
+/**
+ * Same code, fewer characters: drops comments, event declarations and emit statements, and
+ * collapses whitespace. Nothing that changes what the contract does is removed.
+ */
+export function compactSolidity(src) {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "")
+    .replace(/^\s*event\s[^;]*;/gm, "")
+    .replace(/\s*emit\s[^;]*;/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/ ?([(){};=,<>+\-*/!&|:?[\]]) ?/g, "$1")
+    .trim();
+}
+
+/** One statement per line, so a diff of two compacted sources stays readable. */
+const statementLines = (src) => compactSolidity(src).replace(/([;{}])/g, "$1\n");
+
 function unifiedDiff(a, b, nameA, nameB) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "hunter-diff-"));
   try {
@@ -132,6 +157,16 @@ export async function buyIntel({
   const purchases = [];
   const skipped = [];
   const ask = async (role, body) => {
+    const tooLong = Object.entries(body.params ?? {}).find(
+      ([, v]) => typeof v === "string" && v.length > MAX_PARAM_CHARS,
+    );
+    if (tooLong) {
+      // Do not pay for a request the router is known to reject.
+      const reason = `param ${tooLong[0]} is ${tooLong[1].length} chars, over the ${MAX_PARAM_CHARS} limit; not bought`;
+      skipped.push({ intent: body.intent, reason });
+      log(`  telegraph skip ${body.intent}: ${reason}`);
+      return null;
+    }
     const p = await buy(body, {
       ...telegraph,
       purpose: `real-hunter ${role} for ${target.id}`,
@@ -156,17 +191,17 @@ export async function buyIntel({
   if (usable(INTENTS.audit)) {
     const s = await ask("audit", {
       intent: INTENTS.audit,
-      params: { contract: target.vulnerableSource },
+      params: { contract: compactSolidity(target.vulnerableSource) },
     });
-    if (s.miner_answered)
+    if (s?.miner_answered)
       findings.push({ source: "audit", miner: s.miner_name, text: s.result });
   }
   if (usable(INTENTS.review)) {
     const s = await ask("review", {
       intent: INTENTS.review,
-      params: { target: target.vulnerableSource },
+      params: { target: compactSolidity(target.vulnerableSource) },
     });
-    if (s.miner_answered)
+    if (s?.miner_answered)
       findings.push({ source: "review", miner: s.miner_name, text: s.result });
   }
 
@@ -203,6 +238,7 @@ export async function buyIntel({
             ),
         },
       });
+      if (!s) continue;
       const score = Number(s.result?.cvss_base_score);
       ranked.push({
         ...c,
@@ -438,33 +474,33 @@ export async function huntTarget({
 
   if (intents[INTENTS.patchVerify]?.usable) {
     const diff = unifiedDiff(
-      target.vulnerableSource,
-      target.patchedSource,
+      statementLines(target.vulnerableSource),
+      statementLines(target.patchedSource),
       target.vulnerable.file,
       target.patched.file,
     );
-    const top =
-      intel.ranked[0]?.summary || intel.findings[0]?.text || "the bug";
-    const p = await buy(
-      {
-        intent: INTENTS.patchVerify,
-        params: {
-          patch:
-            `Verify whether this Solidity patch (unified diff of our own demo code) closes the hole ` +
-            `described here and name any remaining bug. Finding: ${typeof top === "string" ? top : JSON.stringify(top)}`.slice(
-              0,
-              700,
-            ) +
-            `\n${diff}`,
-        },
-      },
-      { ...telegraph, purpose: `real-hunter patch_verify for ${target.id}` },
-    );
-    const s = purchaseSummary("patch_verify", p);
-    out.purchases.push(s);
-    log(
-      `  telegraph patch_verify: status ${s.status}, miner ${s.miner_name ?? s.miner_id}, result ${JSON.stringify(s.result)} (informational only)`,
-    );
+    const top = intel.ranked[0]?.summary || intel.findings[0]?.text || "the bug";
+    const head =
+      "Verify whether this Solidity patch (unified diff of our own demo code, one statement per " +
+      "line) closes the hole described here and name any remaining bug. Finding: ";
+    const room = MAX_PARAM_CHARS - head.length - diff.length - 1;
+    const finding = (typeof top === "string" ? top : JSON.stringify(top)).slice(0, Math.max(0, room));
+    if (room < 20) {
+      const reason = `diff is ${diff.length} chars; with the request text it exceeds the ${MAX_PARAM_CHARS} limit; not bought`;
+      out.skipped_intents.push({ intent: INTENTS.patchVerify, reason });
+      log(`  telegraph skip ${INTENTS.patchVerify}: ${reason}`);
+    } else {
+      const p = await buy(
+        { intent: INTENTS.patchVerify, params: { patch: `${head}${finding}\n${diff}` } },
+        { ...telegraph, purpose: `real-hunter patch_verify for ${target.id}` },
+      );
+      const s = purchaseSummary("patch_verify", p);
+      out.purchases.push(s);
+      log(
+        `  telegraph patch_verify: status ${s.status}, miner ${s.miner_name ?? s.miner_id}` +
+          `${s.miner_answered ? "" : " (NOT a miner answer)"}, result ${JSON.stringify(s.result).slice(0, 300)} (informational only)`,
+      );
+    }
   } else {
     out.skipped_intents.push({
       intent: INTENTS.patchVerify,
