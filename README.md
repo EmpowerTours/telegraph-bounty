@@ -23,6 +23,7 @@ contracts, and nothing has been deployed to any chain.
 | End-to-end local demo (escrow on anvil, payout, Break it) | done |
 | Real paid Telegraph request | **done 2026-11-23**: `SECURITY_REVIEW_GENERAL`, $0.01 test USDC on Base Sepolia, settled on-chain in tx `0x670f7fe100f43f9f572a68d02e0664005f71399f35e81fb9cbce445a8bae7423` (status 1, block 62835685). Recorded in `evidence/telegraph-receipts.ndjson` (`mode:"live"`). |
 | Telegraph purchase in the demo | **live** with `TELEGRAPH_MODE=live` (real endpoint, real payment); the default `npm run demo` still uses the local mock so it runs without funds |
+| Real hunter on 3 held-out targets (mission 14) | **done 2026-11-24**, live: 3/3 solved, each on the first model attempt, in both live runs. See "Real hunter" below |
 | Ultrafuzz campaign | **not run**. It is a hard gate before any deploy |
 | Deploy | none, by design. The code stops at "ready to deploy" |
 
@@ -37,7 +38,14 @@ proofs/bogus/*.sol                Break-it proofs that must be rejected
 verifier/verify.js        the deterministic verifier
 verifier/resolver.js      verifier service: checks the on-chain commit, verifies, calls resolve()
 verifier/cli.js           npm run verify -- <proof.sol>
-agent/hunter.js           hunter agent: Telegraph purchase, ranks templates, self-check, commit, hand off
+agent/hunter.js           template hunter (original demo): Telegraph purchase, ranks templates, self-check, commit
+agent/real-hunter.js      real hunter: Telegraph findings, LLM-written exploit, verifier self-check loop, commit
+lib/llm.js                model backends (Anthropic SDK / headless Claude CLI / replay) and spend guards
+targets/<id>/             held-out targets: vulnerable + patched source, target.js (invariant + scenario)
+targets/_reference/       one reference exploit per target, for tests only (the hunter never reads it)
+targets/test/             forge tests for the targets (FOUNDRY_PROFILE=targets)
+verifier/verify-target.js the deterministic verifier for the held-out targets
+scripts/demo-hunt.js      npm run demo:hunt
 lib/telegraph.js          x402 client (same stack as the reference ask.js) with spend guards and an append-only ledger
 mock/ask-server.js        local stand-in for /engine/v1/ask (replays mock/recorded-402.json)
 scripts/demo.js           end-to-end run on local anvil
@@ -71,7 +79,7 @@ TELEGRAPH_MODE=live npm run demo
 ## Check it
 
 ```bash
-npm test                 # forge test (23) + node --test (9)
+npm test                 # forge test (23) + targets profile forge test (8) + node --test (36)
 npm run verify -- proofs/ReentrancyExploit.sol      # exit 0, valid
 npm run verify -- proofs/bogus/NoopExploit.sol      # exit 1, rejected
 ```
@@ -190,6 +198,119 @@ verify step would:
 It settles nothing. It returns a canned `SECURITY_REVIEW` answer marked `mock: true`. In mock mode
 the payer is an in-memory throwaway key that never holds funds. The real testnet wallet is used only
 in live mode, its key is read from `~/.empowertours/telegraph-sepolia.json`, and it is never printed.
+
+## Real hunter (mission 14: autonomous bug bounty hunter)
+
+`agent/hunter.js` only picks from pre-written exploit templates. `agent/real-hunter.js` hunts
+three held-out targets it has no exploit for, and proves the bugs it finds with the same
+deterministic rule as above.
+
+```bash
+npm run demo:hunt                         # offline: Telegraph mock + replay of the recorded live model outputs
+TELEGRAPH_MODE=live npm run demo:hunt     # live Telegraph + a real model (API if ANTHROPIC_API_KEY, else local claude CLI)
+LLM_BACKEND=api|cli|replay  TARGETS=init-vault,share-vault   # overrides
+```
+
+### Targets
+
+| Target | Bug class | Stated invariant |
+|---|---|---|
+| `init-vault` | missing access control: the `initializer` modifier never sets its flag, so anyone can re-initialize, become owner, pause and sweep | `address(vault).balance >= vault.totalDeposits()` |
+| `share-vault` | rounding / first-depositor share inflation (shares priced on the raw balance; patch: virtual shares, offset 1e9) | every honest user who deposits after the attacker redeems at least 99% of their deposit |
+| `token-vault` | unchecked return: `deposit()` ignores `transferFrom`'s `false` from a legacy token | `token.balanceOf(vault) >= vault.totalDeposits()` |
+
+Each target is `targets/<id>/` with the vulnerable source, the patched source and `target.js`
+(invariant plus scenario: deploy, honest setup, attack, honest follow-up, check). The vulnerable
+sources say that a bug exists but not where. The target hash binds all three files, so a bounty
+commits to the exact scenario. The proof shape is the same as for the demo vault:
+`contract Exploit { constructor(address) payable; run() }`. One reference exploit per target lives in
+`targets/_reference/`. Tests use it to show that each target is exploitable and that each patch holds.
+The hunter reads target files only through `targets/index.js`, which refuses `_`-prefixed
+directories. Three tests enforce the rule: a static check, a loader check, and a runtime fs spy
+over a full mocked hunt that also checks the prompts.
+
+### How the hunter works
+
+1. **Intent check (free).** `GET /engine/v1/intents/<NAME>` for each intent. An intent is used only
+   if it is `active` and has miners. The snapshot goes to `evidence/hunt/intents-latest.json`.
+2. **Telegraph purchases** through the existing x402 client and ledger: Base Sepolia test USDC,
+   $0.01 each, $0.02 per-payment cap, and a $1.50 ledger cap (raised from $0.30).
+   - `SECURITY_REVIEW_GENERAL` gets the vulnerable source, compacted to fit the router's
+     2000-character parameter limit.
+   - `VULNERABILITY_TRIAGE_GENERAL` ranks each candidate issue. Its only parameter is `cve_id`,
+     and these findings have no CVE, so the candidate description goes in that field.
+   - After a proof self-checks, `CODE_PATCH_VERIFY_GENERAL` gets the vulnerable-to-patched diff.
+     This purchase is informational only.
+
+   An answer that the router produced with its last-resort general model is recorded but never
+   used as a finding.
+3. **Exploit writing.** The model gets the vulnerable source, the invariant, the scenario and the
+   purchased findings (marked untrusted). It never gets the patched source. It writes a proof, and
+   the hunter self-checks it with `verifier/verify-target.js` (forge plus fresh anvil chains). On a
+   failure, the verdict goes back to the model: stage, reason, up to 40 lines of forge output, and
+   the observed state on both sides. There are up to 4 attempts, `claude-sonnet-5-5` x3, then
+   `claude-opus-5-5` for the last one. Every attempt is logged to
+   `evidence/hunt/<run>/<target>/attempt-N.{json,prompt.txt,response.txt,sol}`. The JSON holds the
+   prompt sha256, the model, usage, the cost and the forge result.
+4. Only a self-checked valid proof is committed on the local-anvil `BountyEscrow`. The verifier
+   service re-runs the check and calls `resolve()`.
+
+**Spend guards** (`lib/llm.js`):
+
+- **API mode:** a USD 3 cap per run, computed from the reported usage at list price. Before each
+  call, the worst case (an input upper bound plus `max_tokens` of output) is reserved. A call that
+  could pass the cap is refused. An unknown model price, missing usage, or a response from a
+  different model fails closed.
+- **CLI mode:** a hard cap of 12 model calls per run. Every spawn counts, including failed ones.
+  The CLI runs as `claude -p --model <m> --output-format json --max-turns 1 --tools "" --strict-mcp-config --setting-sources ""`,
+  with the prompt on stdin, from an empty temp directory, and with a 420 s timeout.
+
+### Telegraph intents (checked live 2026-11-24)
+
+| Intent | Miners | Used? | What actually answered |
+|---|---|---|---|
+| `SMART_CONTRACT_AUDIT_GENERAL` | 20 | **skipped** | The intent is `registered`, not `active` (it has no input or output schema). Two probes ($0.02) were answered by the router's last-resort general model, not a miner |
+| `SECURITY_REVIEW_GENERAL` | 37 | yes | Salence (miner 905227). Parameters over 2000 characters are rejected and fall to the last-resort model |
+| `VULNERABILITY_TRIAGE_GENERAL` | 41 | yes | ChainSight. It returns only `cvss_base_score`. A `vulnerability` parameter is rejected; only `cve_id` is accepted |
+| `CODE_PATCH_VERIFY_GENERAL` | 25 | yes | Judge0 CE (a compile-and-run sandbox). It always returned `conclusion: failure` for Solidity, so it is uninformative. The LLM patch-verify miner (CodeWire) was never selected by the router |
+
+### Measured results (live, Telegraph live + local Claude CLI)
+
+| Run | Telegraph | init-vault | share-vault | token-vault | Model calls | Model cost (CLI-reported) | Telegraph spend |
+|---|---|---|---|---|---|---|---|
+| `live-2026-11-24T03-31-07-896Z` | every review was over 2000 characters, so last-resort answers only: **no findings reached the model** | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | 3 (sonnet) | $0.0535 | $0.06 |
+| `live-2026-11-24T03-34-53-159Z` (after the 2000-character fix) | Salence said "no security defect" for all three (wrong); ChainSight scored that 2.0 to 2.3 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | 3 (sonnet) | $0.0571 | $0.09 |
+
+In both runs each bounty paid 1 ETH on the local anvil escrow, and the hunter withdrew 3 ETH.
+Second-run tx hashes are in `evidence/hunt/live-2026-11-24T03-34-53-159Z/run.json`:
+- resolve txs: `0x0e9a4946…c315`, `0x7e603b1d…002d`, `0xf75a0817…7f11`
+- withdraw: `0xdb878e30…f6eb`
+
+These are local anvil txs from a deterministic chain, so the same inputs reproduce the same hashes.
+The Base Sepolia settlement tx of each purchase is in `run.json` and in the ledger. Total live
+Telegraph spend for this work: $0.22 (7 probes, then 6 and 9 purchases), all settled. The whole
+ledger stands at $0.25 of the $1.50 cap.
+
+### Limitations
+
+- **The targets are textbook bug classes.** All three were solved on the first attempt, so the live
+  runs never exercised the feedback loop or the Opus fallback. Unit tests with a mocked model cover
+  them. This shows that the pipeline works end to end on unseen code. It does not show that the
+  hunter finds subtle bugs.
+- **Telegraph did not help find these bugs.** In run 1, no finding reached the model. In run 2, the
+  only review miner reported no defect, which was wrong. The model found the bugs from the source,
+  the invariant and the scenario. The purchases are real, settled and ledgered, but today they are
+  evidence of machine-to-machine payment, not of better hunting.
+- **Each intent is used with workarounds:**
+  - triage puts free text in `cve_id`;
+  - the review gets compacted code (comments and events removed);
+  - patch-verify routed to a sandbox that cannot compile Solidity.
+- The scenario and invariant check are poster-written JS (`target.js`). It is bound by the target
+  hash, but a verifier must trust that code, as it trusts the Solidity scenario of the demo vault.
+- The reference exploits are committed in this repo. The model ran with no tools from an empty
+  directory and saw only the prompt in `attempt-N.prompt.txt`, so it could not read them. The model
+  output nevertheless matches the canonical attacks for these classes, as expected for textbook bugs.
+- The offline `npm run demo:hunt` replays recorded model outputs (labelled `replay`). It calls no model.
 
 ## Remaining before deploy / submission
 
