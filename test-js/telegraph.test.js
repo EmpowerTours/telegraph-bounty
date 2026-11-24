@@ -101,3 +101,31 @@ test("mock: a tampered payment signature is rejected with 402", async () => {
     await s.close();
   }
 });
+
+test("live wallet: TELEGRAPH_PRIVATE_KEY wins, then TELEGRAPH_WALLET_FILE; bad input fails without echoing it", async () => {
+  const { loadLiveAccount } = await import("../lib/telegraph.js");
+  const { generatePrivateKey, privateKeyToAccount } = await import("viem/accounts");
+  const os = await import("node:os");
+  const k1 = generatePrivateKey();
+  const k2 = generatePrivateKey();
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tg-wallet-"));
+  const file = path.join(dir, "w.json");
+  fs.writeFileSync(file, JSON.stringify({ private_key: k2 }));
+  try {
+    assert.equal(
+      loadLiveAccount({ TELEGRAPH_PRIVATE_KEY: k1, TELEGRAPH_WALLET_FILE: file }).address,
+      privateKeyToAccount(k1).address,
+    );
+    assert.equal(loadLiveAccount({ TELEGRAPH_WALLET_FILE: file }).address, privateKeyToAccount(k2).address);
+    assert.throws(
+      () => loadLiveAccount({ TELEGRAPH_PRIVATE_KEY: "0xnot-a-key-secretvalue" }),
+      (e) => /must be a 0x-prefixed/.test(e.message) && !e.message.includes("secretvalue"),
+    );
+    assert.throws(
+      () => loadLiveAccount({ TELEGRAPH_WALLET_FILE: path.join(dir, "missing.json") }),
+      /TELEGRAPH_PRIVATE_KEY or TELEGRAPH_WALLET_FILE/,
+    );
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

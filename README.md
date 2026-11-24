@@ -62,6 +62,36 @@ npm install
 npm run demo                     # Break it, then hunt, verify, pay, withdraw (Telegraph mock)
 ```
 
+### Run it with your own keys (live mode)
+
+Offline demos (`npm run demo`, `npm run demo:hunt`) need no keys. Live mode makes real x402
+purchases on Telegraph and real model calls, paid by **you**:
+
+1. **Testnet wallet with test USDC.** Create a fresh wallet used only for this, and get free test
+   USDC on Base Sepolia from Circle's faucet (https://faucet.circle.com, pick Base Sepolia). The x402
+   payment is gasless for the payer, so no Base Sepolia ETH is needed. Each Telegraph purchase costs
+   $0.01; a full 5-target hunt makes 15 purchases ($0.15). Then give the hunter the key, either way:
+   ```bash
+   export TELEGRAPH_PRIVATE_KEY=0x...        # testnet-only key
+   # or
+   export TELEGRAPH_WALLET_FILE=/path/to/wallet.json   # {"private_key": "0x..."}
+   ```
+2. **Anthropic API key** for the exploit-writing model (about $0.02 to $0.04 per target with
+   `claude-sonnet-5-5`; a hard cap of USD 3 per run, failing closed):
+   ```bash
+   export ANTHROPIC_API_KEY=sk-ant-...
+   ```
+   Without it, the hunter falls back to a locally installed, logged-in `claude` CLI.
+3. Run:
+   ```bash
+   TELEGRAPH_MODE=live npm run demo:hunt
+   ```
+   Purchases are appended to `evidence/telegraph-receipts.ndjson`. The ledger refuses new live
+   purchases once its recorded live total reaches $1.50, so for a large run start from a fresh ledger.
+
+Never use a wallet that holds real funds. Keys are read from the environment or the file and are
+never printed or logged.
+
 The demo starts a private anvil, deploys `BountyEscrow`, and has the poster lock 1 ETH. Then:
 
 1. Break it. A second hunter commits two bogus proofs. The verifier rejects both on-chain
@@ -197,7 +227,7 @@ verify step would:
 
 It settles nothing. It returns a canned `SECURITY_REVIEW` answer marked `mock: true`. In mock mode
 the payer is an in-memory throwaway key that never holds funds. The real testnet wallet is used only
-in live mode, its key is read from `~/.empowertours/telegraph-sepolia.json`, and it is never printed.
+in live mode, its key comes from `TELEGRAPH_PRIVATE_KEY`, `TELEGRAPH_WALLET_FILE` or (on the authors' machine) `~/.empowertours/telegraph-sepolia.json`, and it is never printed.
 
 ## Real hunter (mission 14: autonomous bug bounty hunter)
 
