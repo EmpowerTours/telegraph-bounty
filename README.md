@@ -76,12 +76,12 @@ purchases on Telegraph and real model calls, paid by **you**:
    # or
    export TELEGRAPH_WALLET_FILE=/path/to/wallet.json   # {"private_key": "0x..."}
    ```
-2. **Anthropic API key** for the exploit-writing model (about $0.02 to $0.04 per target with
-   `claude-sonnet-5-5`; a hard cap of USD 3 per run, failing closed):
-   ```bash
-   export ANTHROPIC_API_KEY=sk-ant-...
-   ```
-   Without it, the hunter falls back to a locally installed, logged-in `claude` CLI.
+2. **The model, on your own Claude account.** Pick one:
+   - **Your Claude login (no API key).** Install Claude Code (https://claude.com/claude-code), run
+     `claude` once and log in. The hunter then calls `claude -p` headlessly, so model usage comes out
+     of your own Claude plan. Leave `ANTHROPIC_API_KEY` unset. A hard cap of 12 model calls per run applies.
+   - **An Anthropic API key.** `export ANTHROPIC_API_KEY=sk-ant-...` (about $0.02 to $0.04 per target
+     with `claude-sonnet-5-5`; hard cap of USD 3 per run, failing closed).
 3. Run:
    ```bash
    TELEGRAPH_MODE=live npm run demo:hunt
