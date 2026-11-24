@@ -103,7 +103,9 @@ test("extractSolidity takes the last solidity block", () => {
 
 test("prompts carry the vulnerable source and invariant, never the patched source", async () => {
   const patchedOnly = {
+    "hook-vault": "function transfer(address to, uint amount) external nonReentrant",
     "init-vault": "_initialized = true;",
+    "lend-pool": "oraclePrice",
     "share-vault": "VIRTUAL_SHARES",
     "token-vault": "token transferFrom failed",
   };
@@ -132,7 +134,7 @@ test("no-reference rule (static): hunter code never names the reference director
 
 test("no-reference rule (loader): the reference directory is not a target and cannot be read", () => {
   assert.ok(fs.existsSync(REF_DIR));
-  assert.deepEqual(listTargetIds(), ["init-vault", "share-vault", "token-vault"]);
+  assert.deepEqual(listTargetIds(), ["hook-vault", "init-vault", "lend-pool", "share-vault", "token-vault"]);
   assert.throws(() => readTargetFile("_reference/InitVaultExploit.sol"), /hidden/);
   assert.throws(() => readTargetFile("init-vault/../_reference/ShareVaultExploit.sol"), /hidden/);
   assert.throws(() => readTargetFile("../package.json"), /outside/);

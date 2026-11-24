@@ -6,7 +6,13 @@ import { loadTarget, listTargetIds, targetHashOf, TARGETS_DIR } from "../targets
 import { verifyTargetProof } from "../verifier/verify-target.js";
 
 // Tests may read the reference exploits; the hunter may not (see real-hunter.test.js).
-const REF = { "init-vault": "InitVaultExploit.sol", "share-vault": "ShareVaultExploit.sol", "token-vault": "TokenVaultExploit.sol" };
+const REF = {
+  "hook-vault": "HookVaultExploit.sol",
+  "init-vault": "InitVaultExploit.sol",
+  "lend-pool": "LendPoolExploit.sol",
+  "share-vault": "ShareVaultExploit.sol",
+  "token-vault": "TokenVaultExploit.sol",
+};
 const ref = (id) => fs.readFileSync(path.join(TARGETS_DIR, "_reference", REF[id]), "utf8");
 const NOOP =
   "pragma solidity 0.8.28; contract Exploit { constructor(address) payable {} function run() external {} receive() external payable {} }";
