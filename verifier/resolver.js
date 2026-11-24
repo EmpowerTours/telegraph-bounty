@@ -5,6 +5,7 @@ import path from "node:path";
 import { ROOT, targetHash, invariantHash } from "../lib/chain.js";
 import { ESCROW_ABI } from "../lib/escrow-abi.js";
 import { verifyProof, proofHashOf } from "./verify.js";
+import { verifyTargetProof } from "./verify-target.js";
 
 export const VERDICT_DIR = path.join(ROOT, "evidence", "verdicts");
 
@@ -15,6 +16,8 @@ export async function resolveSubmission({
   verifier,
   proofSource,
   log = console.log,
+  target = null, // a loaded held-out target (targets/index.js); null = the original demo vault
+  verdictDir = VERDICT_DIR,
 }) {
   const proofHash = proofHashOf(proofSource);
   const [, , , vAddr, , tHash, iHash] = await env.pub.readContract({
@@ -25,7 +28,9 @@ export async function resolveSubmission({
   });
   if (vAddr.toLowerCase() !== verifier.toLowerCase())
     throw new Error("this service is not the bounty's verifier");
-  if (tHash !== targetHash() || iHash !== invariantHash())
+  const expectT = target ? target.targetHash : targetHash();
+  const expectI = target ? target.invariantHash : invariantHash();
+  if (tHash !== expectT || iHash !== expectI)
     throw new Error("bounty does not match local target/invariant");
   const hunter = await env.pub.readContract({
     address: escrow,
@@ -36,9 +41,11 @@ export async function resolveSubmission({
   if (/^0x0{40}$/i.test(hunter))
     throw new Error("proof hash was never committed on-chain");
 
-  const { verdict, verdictHash } = await verifyProof(proofSource);
-  fs.mkdirSync(VERDICT_DIR, { recursive: true });
-  const file = path.join(VERDICT_DIR, `${proofHash}.json`);
+  const { verdict, verdictHash } = target
+    ? await verifyTargetProof(proofSource, target)
+    : await verifyProof(proofSource);
+  fs.mkdirSync(verdictDir, { recursive: true });
+  const file = path.join(verdictDir, `${proofHash}.json`);
   fs.writeFileSync(
     file,
     JSON.stringify({ verdict_hash: verdictHash, ...verdict }, null, 2) + "\n",

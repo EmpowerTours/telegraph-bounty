@@ -31,6 +31,15 @@ const CANNED = {
     summary:
       "MOCK ANSWER. withdrawAll() sends ether before zeroing the caller's balance, so a re-entrant caller is paid repeatedly.",
   },
+  // Generic placeholders for the real hunter's other purchases. They carry no information about
+  // any target, so an offline run cannot be helped by them.
+  VULNERABILITY_TRIAGE_GENERAL: { cvss_base_score: 5 },
+  CODE_PATCH_VERIFY_GENERAL: {
+    conclusion: "neutral",
+    passed: null,
+    commit: null,
+    pipeline: null,
+  },
 };
 
 function sendJson(res, status, obj, headers = {}) {
@@ -122,7 +131,17 @@ export function startMockServer(port = 0) {
       verdict = "malformed_payment";
     }
     if (typeof verdict === "string") return challenge(res, verdict);
-    const result = CANNED[body.intent];
+    // The canned review describes the original demo vault only; for any other code it says nothing.
+    const result =
+      body.intent === "SECURITY_REVIEW_GENERAL" &&
+      !String(body.params?.target ?? "").includes("VulnerableVault")
+        ? {
+            verdict: "Needs changes",
+            vulnerability_count: 0,
+            issues: [],
+            summary: "MOCK ANSWER. No analysis was performed.",
+          }
+        : CANNED[body.intent];
     if (!result)
       return sendJson(res, 422, {
         error: `mock has no canned answer for ${body.intent}`,

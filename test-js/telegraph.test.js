@@ -13,22 +13,22 @@ import {
 const tmpLedger = () =>
   path.join(fs.mkdtempSync(path.join(os.tmpdir(), "ledger-")), "r.ndjson");
 
-test("budget guard refuses once conservative live spend would pass $0.30", () => {
+test("budget guard refuses once conservative live spend would pass $1.50", () => {
   const ledger = tmpLedger();
   assert.equal(assertBudget(ledger), 0n);
   const row =
     JSON.stringify({ mode: "live", signed_amount_atomic: "10000" }) + "\n";
-  fs.writeFileSync(ledger, row.repeat(28)); // 0.28 spent: 0.28 + 0.02 cap = 0.30, still allowed
-  assert.equal(liveSpentAtomic(ledger), 280000n);
+  fs.writeFileSync(ledger, row.repeat(148)); // 1.48 spent: 1.48 + 0.02 cap = 1.50, still allowed
+  assert.equal(liveSpentAtomic(ledger), 1480000n);
   assert.doesNotThrow(() => assertBudget(ledger));
-  fs.appendFileSync(ledger, row); // 0.29 + 0.02 > 0.30
+  fs.appendFileSync(ledger, row); // 1.49 + 0.02 > 1.50
   assert.throws(() => assertBudget(ledger), /budget guard/);
   // mock rows never count
   fs.appendFileSync(
     ledger,
     JSON.stringify({ mode: "mock", signed_amount_atomic: "10000" }) + "\n",
   );
-  assert.equal(liveSpentAtomic(ledger), 290000n);
+  assert.equal(liveSpentAtomic(ledger), 1490000n);
 });
 
 test("mock: real x402 client pays the recorded challenge and gets a labelled mock answer", async () => {

@@ -33,9 +33,9 @@ import {
 export const MAX_PROOF_BYTES = 32 * 1024;
 const SEED = [parseEther("3"), parseEther("3"), parseEther("4")];
 const ATTACK_VALUE = parseEther("1");
-const RUN_GAS = 5_000_000n;
+export const RUN_GAS = 5_000_000n;
 
-function canonical(value) {
+export function canonical(value) {
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
   if (value && typeof value === "object") {
     return `{${Object.keys(value)
@@ -50,7 +50,7 @@ export function proofHashOf(source) {
   return keccak256(toBytes(source));
 }
 
-function staticCheck(source) {
+export function staticCheck(source) {
   if (Buffer.byteLength(source) > MAX_PROOF_BYTES)
     return `proof larger than ${MAX_PROOF_BYTES} bytes`;
   const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
@@ -61,7 +61,8 @@ function staticCheck(source) {
   return null;
 }
 
-function compileProof(source) {
+/** @param {{errorLines?: number}} [opts] how many trailing forge output lines go into the error */
+export function compileProof(source, { errorLines = 6 } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bounty-proof-"));
   try {
     fs.mkdirSync(path.join(dir, "src"));
@@ -79,7 +80,7 @@ function compileProof(source) {
       const msg = String(e.stderr || e.stdout || e.message)
         .split("\n")
         .filter(Boolean)
-        .slice(-6)
+        .slice(-errorLines)
         .join(" | ");
       return { error: `compile failed: ${msg}` };
     }
