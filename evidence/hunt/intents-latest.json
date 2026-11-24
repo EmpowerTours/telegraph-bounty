@@ -1,0 +1,46 @@
+{
+  "at": "2026-11-24T03:31:09.900Z",
+  "intents": {
+    "SMART_CONTRACT_AUDIT_GENERAL": {
+      "miner_count": 20,
+      "lifecycle": "registered",
+      "lifecycle_reasons": [
+        "output schema: it has no response format, its own or its family's",
+        "input schema: no response format declares inputs, its own or its family's"
+      ],
+      "request_params": [],
+      "usable": false,
+      "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+    },
+    "SECURITY_REVIEW_GENERAL": {
+      "miner_count": 37,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "target"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "VULNERABILITY_TRIAGE_GENERAL": {
+      "miner_count": 41,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "cve_id"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "CODE_PATCH_VERIFY_GENERAL": {
+      "miner_count": 25,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "patch"
+      ],
+      "usable": true,
+      "reason": null
+    }
+  }
+}

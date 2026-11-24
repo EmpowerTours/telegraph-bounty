@@ -1,0 +1,43 @@
+{
+  "verdict_hash": "0x81b36ba254d3288932ecf555fe05aa384fcccd0588bdc8634c5a6d5fb99c00f5",
+  "schema": "telegraph-bounty/verdict@2",
+  "target_id": "token-vault",
+  "proof_hash": "0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb",
+  "target_hash": "0x2189c57cb3f951f764cb12bb5b854152c6758a9efcbaf2dfb1b0ff4bcd78be31",
+  "invariant": "token.balanceOf(address(vault)) >= vault.totalDeposits()",
+  "invariant_hash": "0x5a1b326de632b6e875c9607a869ced86c6739bac430b034b3465c33b8897cbe5",
+  "scenario": {
+    "attack_value_wei": "1000000000000000000",
+    "run_gas": "5000000",
+    "genesis_timestamp": 1767225600
+  },
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "results": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "61024",
+      "after": null,
+      "observed": {
+        "vault_token_balance": "10000000000000000000",
+        "total_deposits": "11000000000000000000"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "32304",
+      "after": null,
+      "observed": {
+        "vault_token_balance": "10000000000000000000",
+        "total_deposits": "10000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  }
+}

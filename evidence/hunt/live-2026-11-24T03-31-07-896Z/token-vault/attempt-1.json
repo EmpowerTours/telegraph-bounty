@@ -1,0 +1,80 @@
+{
+  "target_id": "token-vault",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "cli",
+  "prompt_sha256": "5c9baf5e2a249520421030801207af49646fe0caa6096723514b7892e46b782d",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-24T03:32:32.369Z",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 2709,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 554,
+    "output_tokens_details": {
+      "thinking_tokens": 236
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2709,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 554,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 2709,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2709
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "cost_usd": 0.01638,
+  "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+  "stop_reason": "end_turn",
+  "llm_ms": 6221,
+  "response_sha256": "0364a6648177bd10edf546a5adc63d5b8d68112464e44847e0cac11c0b5f340a",
+  "proof_hash": "0x60e459f98cc71e2b4c88f8a5a139de936f228adb34ca03b7911f1791fe500afb",
+  "verdict_hash": "0x81b36ba254d3288932ecf555fe05aa384fcccd0588bdc8634c5a6d5fb99c00f5",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "61024",
+      "after": null,
+      "observed": {
+        "vault_token_balance": "10000000000000000000",
+        "total_deposits": "11000000000000000000"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "32304",
+      "after": null,
+      "observed": {
+        "vault_token_balance": "10000000000000000000",
+        "total_deposits": "10000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 648
+}

