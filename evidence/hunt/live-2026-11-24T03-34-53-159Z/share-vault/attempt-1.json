@@ -1,0 +1,134 @@
+{
+  "target_id": "share-vault",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "cli",
+  "prompt_sha256": "51b7f82554ea9c5e0d5c76608ff37f2137a85acde06e6ec1440a0e581de55121",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-24T03:35:55.648Z",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 2556,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 1092,
+    "output_tokens_details": {
+      "thinking_tokens": 635
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2556,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 1092,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 2556,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2556
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "cost_usd": 0.021148,
+  "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+  "stop_reason": "end_turn",
+  "llm_ms": 10060,
+  "response_sha256": "ea4ff15eaee3159003978c819564c9d60b140605e6f497d9ecc5a1e153db3207",
+  "proof_hash": "0xd28661ecb274cd625c39922d4311017b69581e21d1d1634ceeae9fbd4e0b4941",
+  "verdict_hash": "0x4a64eb972676b67bb337d033d681051c7d6e3abd56fa8858b3d03c905e000f16",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "117085",
+      "after": [
+        {
+          "user": 0,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "2",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "0",
+          "status": "skipped"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "2000000000000000000",
+          "500000000000000000"
+        ],
+        "redeemed_wei": [
+          "2333333333333333333",
+          "0"
+        ]
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "117368",
+      "after": [
+        {
+          "user": 0,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "3999999999",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "999999999",
+          "status": "success"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "2000000000000000000",
+          "500000000000000000"
+        ],
+        "redeemed_wei": [
+          "2000000000071428572",
+          "499999999642857142"
+        ]
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 535
+}

