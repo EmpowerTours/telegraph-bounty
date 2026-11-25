@@ -195,13 +195,14 @@ async function main() {
       log(
         `\n== target ${id}: bounty #${bountyId}, 1 ETH, invariant: ${target.invariant}`,
       );
-      const handToVerifier = (proofSource) =>
+      const handToVerifier = (proofSource, hunterAddr) =>
         resolveSubmission({
           env,
           escrow,
           bountyId,
           verifier,
           proofSource,
+          hunter: hunterAddr,
           log: (m) => log(`  ${m}`),
           target,
           verdictDir: path.join(evidenceDir, "verdicts"),
