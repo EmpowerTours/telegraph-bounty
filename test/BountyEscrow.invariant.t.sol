@@ -11,12 +11,26 @@ contract EscrowHandler is Test {
     address[3] public posters = [address(0x501), address(0x502), address(0x503)];
     address[3] public hunters = [address(0x601), address(0x602), address(0x603)];
     address public constant VERIFIER = address(0x7001);
+    address public constant ATTACKER = address(0xBAD);
+
+    struct Key {
+        uint256 id;
+        bytes32 proofHash;
+        address hunter;
+    }
 
     uint256 public ghostDeposited;
     uint256 public ghostWithdrawn;
     uint256 public ghostOpenRewards;
     uint256 public ghostPayouts; // number of bounties settled (paid or reclaimed)
     mapping(uint256 => uint256) public settleCount;
+    mapping(uint256 => mapping(bytes32 => mapping(address => bool))) public honestlyCommitted;
+    mapping(uint256 => mapping(bytes32 => mapping(address => uint256))) public resolveCount;
+    Key[] public resolvedKeys;
+    Key[] public committedKeys;
+    uint256 public ghostPaidVerdicts;
+    uint256 public ghostResolvedUncommitted; // resolves accepted for a key its hunter never committed
+    uint256 public ghostWrongPayee; // a settlement that credited anyone but the claimed hunter
     uint256[] public ids;
 
     constructor(BountyEscrow e) {
@@ -39,22 +53,56 @@ contract EscrowHandler is Test {
         if (ids.length == 0) return;
         uint256 id = ids[idSeed % ids.length];
         bytes32 h = keccak256(abi.encode(proofSeed % 4));
-        vm.prank(hunters[who % 3]);
-        try escrow.submit(id, h) {} catch {}
+        address hu = hunters[who % 3];
+        bytes32 c = escrow.commitmentOf(id, h, hu); // before the prank: a view call would consume it
+        vm.prank(hu);
+        try escrow.submit(id, c) {
+            honestlyCommitted[id][h][hu] = true;
+            committedKeys.push(Key(id, h, hu));
+        } catch {}
     }
 
-    function resolve(uint256 idSeed, uint8 proofSeed, bool valid) external {
+    /// The attacker copies any honest hunter's commitment (as seen in the mempool or on-chain),
+    /// on the same bounty or on another one, and also commits its own bogus commitments.
+    function attackerCopy(uint256 idSeed, uint256 otherIdSeed, uint256 who, uint8 proofSeed) external {
         if (ids.length == 0) return;
         uint256 id = ids[idSeed % ids.length];
+        uint256 onId = ids[otherIdSeed % ids.length];
         bytes32 h = keccak256(abi.encode(proofSeed % 4));
+        bytes32 c = escrow.commitmentOf(id, h, hunters[who % 3]);
+        vm.prank(ATTACKER);
+        try escrow.submit(onId, c) {} catch {}
+    }
+
+    /// Resolves a random honest commitment (so the campaign reaches real verdicts), sometimes
+    /// claiming it for the attacker instead, and sometimes a random (possibly uncommitted) key.
+    function resolve(uint256 seed, uint256 idSeed, uint256 who, uint8 proofSeed, uint8 mode, bool valid) external {
+        if (ids.length == 0) return;
+        uint256 id;
+        bytes32 h;
+        address claimed;
+        if (committedKeys.length > 0 && mode % 3 != 2) {
+            Key memory k = committedKeys[seed % committedKeys.length];
+            (id, h, claimed) = (k.id, k.proofHash, mode % 3 == 1 ? ATTACKER : k.hunter);
+        } else {
+            id = ids[idSeed % ids.length];
+            h = keccak256(abi.encode(proofSeed % 4));
+            claimed = who % 4 == 3 ? ATTACKER : hunters[who % 3];
+        }
         (,, bool settledBefore,, uint96 reward,,) = escrow.bounties(id);
+        uint256 owedBefore = escrow.owed(claimed);
         vm.prank(VERIFIER);
-        try escrow.resolve(id, h, valid, bytes32(0)) {
+        try escrow.resolve(id, h, claimed, valid, bytes32(0)) {
+            resolveCount[id][h][claimed]++;
+            if (resolveCount[id][h][claimed] == 1) resolvedKeys.push(Key(id, h, claimed));
+            if (!honestlyCommitted[id][h][claimed]) ghostResolvedUncommitted++;
             (,, bool settledAfter,,,,) = escrow.bounties(id);
             if (!settledBefore && settledAfter) {
                 ghostOpenRewards -= reward;
                 settleCount[id]++;
                 ghostPayouts++;
+                ghostPaidVerdicts++;
+                if (escrow.owed(claimed) != owedBefore + reward) ghostWrongPayee++;
             }
         } catch {}
     }
@@ -72,7 +120,7 @@ contract EscrowHandler is Test {
     }
 
     function withdraw(uint256 who, bool isPoster) external {
-        address a = isPoster ? posters[who % 3] : hunters[who % 3];
+        address a = isPoster ? posters[who % 3] : (who % 4 == 3 ? ATTACKER : hunters[who % 3]);
         uint256 amt = escrow.owed(a);
         vm.prank(a);
         try escrow.withdraw() {
@@ -84,6 +132,14 @@ contract EscrowHandler is Test {
         vm.warp(block.timestamp + bound(secs, 1, 10 days));
     }
 
+    function committedKeysLength() external view returns (uint256) {
+        return committedKeys.length;
+    }
+
+    function resolvedKeysLength() external view returns (uint256) {
+        return resolvedKeys.length;
+    }
+
     function idsLength() external view returns (uint256) {
         return ids.length;
     }
@@ -92,6 +148,7 @@ contract EscrowHandler is Test {
         for (uint256 i; i < 3; i++) {
             s += escrow.owed(posters[i]) + escrow.owed(hunters[i]);
         }
+        s += escrow.owed(ATTACKER) + escrow.owed(VERIFIER);
     }
 }
 
@@ -123,10 +180,32 @@ contract BountyEscrowInvariantTest is Test {
         }
     }
 
+    /// Only the committing hunter can be paid: the attacker, who only ever copies other hunters'
+    /// commitments, is never credited anything, and no resolve was ever accepted for a
+    /// (bounty, proof, hunter) key that hunter did not commit itself.
+    function invariant_onlyCommittingHunterPaid() public view {
+        assertEq(escrow.owed(handler.ATTACKER()), 0);
+        assertEq(handler.ghostResolvedUncommitted(), 0);
+        assertEq(handler.ghostWrongPayee(), 0);
+    }
+
+    /// Each commitment is resolved at most once (one stored verdict, never re-rejected/flipped).
+    function invariant_commitmentResolvedAtMostOnce() public view {
+        uint256 n = handler.resolvedKeysLength();
+        for (uint256 i; i < n; i++) {
+            (uint256 id, bytes32 h, address hu) = handler.resolvedKeys(i);
+            assertEq(handler.resolveCount(id, h, hu), 1);
+            assertTrue(escrow.verdictOf(id, h, hu) != BountyEscrow.Verdict.None);
+        }
+    }
+
     /// Coverage evidence: shows the campaign actually reaches payouts/reclaims (-vv to see it).
     function afterInvariant() external view {
         console2.log("bounties posted", handler.idsLength());
         console2.log("bounties settled", handler.ghostPayouts());
         console2.log("wei withdrawn", handler.ghostWithdrawn());
+        console2.log("honest commitments", handler.committedKeysLength());
+        console2.log("paid verdicts", handler.ghostPaidVerdicts());
+        console2.log("commitments resolved", handler.resolvedKeysLength());
     }
 }

@@ -1,13 +1,14 @@
 // Hunter agent: reads an open bounty from the escrow, buys a security review from Telegraph
 // (the autonomous machine-to-machine purchase), uses the answer to rank its exploit templates,
-// self-checks candidates with the same deterministic verifier the bounty uses, commits the
-// winning proof's hash on-chain, and hands the proof to the bounty's verifier.
+// self-checks candidates with the same deterministic verifier the bounty uses, commits
+// keccak256(abi.encode(proofHash, hunter, bountyId)) on-chain, and hands the proof plus its own
+// address to the bounty's verifier.
 //
 // The Telegraph answer only ORDERS the candidates. Whether anything gets paid is decided by the
 // verifier's forge/anvil run, never by the model answer.
 import fs from "node:fs";
 import path from "node:path";
-import { ROOT, targetHash, invariantHash } from "../lib/chain.js";
+import { ROOT, targetHash, invariantHash, commitmentOf } from "../lib/chain.js";
 import { askTelegraph } from "../lib/telegraph.js";
 import { verifyProof, proofHashOf } from "../verifier/verify.js";
 import { ESCROW_ABI } from "../lib/escrow-abi.js";
@@ -55,7 +56,7 @@ export function rankTemplates(answer) {
  * @param {bigint} o.bountyId
  * @param {string} o.hunter        hunter account address (anvil dev account)
  * @param {{mode: "live"|"mock", endpoint?: string, network?: string}} o.telegraph
- * @param {(proofSource: string) => Promise<object>} o.handToVerifier
+ * @param {(proofSource: string, hunter: string) => Promise<object>} o.handToVerifier
  * @param {(msg: string) => void} [o.log]
  */
 export async function runHunter({
@@ -109,27 +110,39 @@ export async function runHunter({
     );
     if (!verdict.valid) continue;
 
-    // 3. Commit the proof hash on-chain (only the hash; the exploit stays off-chain).
+    // 3. Commit on-chain, bound to this hunter and this bounty. Neither the exploit nor its
+    // hash is revealed; a copier of the commitment can never be paid for it.
     const proofHash = proofHashOf(source);
+    const commitment = commitmentOf(proofHash, hunter, bountyId);
     const hash = await env.wallet.writeContract({
       account: hunter,
       address: escrow,
       abi: ESCROW_ABI,
       functionName: "submit",
-      args: [bountyId, proofHash],
+      args: [bountyId, commitment],
     });
     const rcpt = await env.pub.waitForTransactionReceipt({ hash });
     if (rcpt.status !== "success") throw new Error("submit reverted");
-    log(`hunter: committed proof ${proofHash.slice(0, 10)}… in tx ${hash}`);
+    log(
+      `hunter: committed ${commitment.slice(0, 10)}… (proof ${proofHash.slice(0, 10)}…) in tx ${hash}`,
+    );
 
-    // 4. Hand the proof to the bounty's verifier.
-    const resolution = await handToVerifier(source);
-    return { purchase, proofFile: file, proofHash, submitTx: hash, resolution };
+    // 4. Hand the proof and the committing address to the bounty's verifier (off-chain).
+    const resolution = await handToVerifier(source, hunter);
+    return {
+      purchase,
+      proofFile: file,
+      proofHash,
+      commitment,
+      submitTx: hash,
+      resolution,
+    };
   }
   return {
     purchase,
     proofFile: null,
     proofHash: null,
+    commitment: null,
     submitTx: null,
     resolution: null,
   };

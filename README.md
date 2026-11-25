@@ -5,10 +5,11 @@ Entry for Telegraph Hackathon Season II, Apps & Agents track, mission "Web3 Nati
 
 A poster locks a reward in `BountyEscrow` for a target (a hash of the vulnerable and the patched
 source) and a stated invariant. A hunter agent buys a security review from Telegraph over x402,
-writes or picks a proof, commits the proof's hash on-chain, and hands the proof to the bounty's
-verifier. The verifier decides with a deterministic forge build plus anvil run. No model opinion
+writes or picks a proof, commits `keccak256(abi.encode(proofHash, hunter, bountyId))` on-chain, and
+hands the proof plus its own address to the bounty's verifier. The verifier decides with a deterministic forge build plus anvil run. No model opinion
 is involved. A proof is valid only if it breaks the invariant on the vulnerable code and does not
-break it on the patched code. A valid proof credits the reward to the address that committed it.
+break it on the patched code. A valid proof credits the reward to the address that committed it;
+a copy of someone else's commitment can never be paid (see "Security fixes after Ultrafuzz").
 
 Scope: every contract tested here is written in this repo. `VulnerableVault` is deliberately
 vulnerable and exists only as a demo bounty target. Nothing here targets third-party or deployed
@@ -18,13 +19,13 @@ contracts, and nothing has been deployed to any chain.
 
 | Item | State |
 |---|---|
-| Contracts, forge tests (unit, fuzz, invariant) | done, 23/23 pass |
-| Deterministic verifier and JS tests | done, 9/9 pass |
+| Contracts, forge tests (unit, fuzz, invariant) | done, 39/39 pass (after the Ultrafuzz fixes, 2026-11-24) |
+| Deterministic verifier and JS tests | done, 45/45 pass |
 | End-to-end local demo (escrow on anvil, payout, Break it) | done |
 | Real paid Telegraph request | **done 2026-11-23**: `SECURITY_REVIEW_GENERAL`, $0.01 test USDC on Base Sepolia, settled on-chain in tx `0x670f7fe100f43f9f572a68d02e0664005f71399f35e81fb9cbce445a8bae7423` (status 1, block 62835685). Recorded in `evidence/telegraph-receipts.ndjson` (`mode:"live"`). |
 | Telegraph purchase in the demo | **live** with `TELEGRAPH_MODE=live` (real endpoint, real payment); the default `npm run demo` still uses the local mock so it runs without funds |
 | Real hunter on 5 held-out targets (mission 14) | **done 2026-11-24**, live: 3/3 solved in two runs, then 5/5 in a third run with 2 harder multi-step targets, every one on the first model attempt. See "Real hunter" below |
-| Ultrafuzz campaign | **not run**. It is a hard gate before any deploy |
+| Ultrafuzz campaign | **run 2026-11-24** (bounty-002): 1 High, 1 Medium, 2 Low, all fixed on branch `fix-escrow-commit`; re-run on the fixed commit pending. It is a hard gate before any deploy |
 | Deploy | none, by design. The code stops at "ready to deploy" |
 
 ## Layout
@@ -32,11 +33,11 @@ contracts, and nothing has been deployed to any chain.
 ```
 src/VulnerableVault.sol   demo target, re-entrancy bug in withdrawAll() (never deploy)
 src/PatchedVault.sol      the fix (checks-effects-interactions)
-src/BountyEscrow.sol      post / submit(proofHash) / resolve / reclaim / withdraw (pull payments)
+src/BountyEscrow.sol      post / submit(commitment) / resolve(proofHash, hunter) / reclaim / withdraw (pull payments)
 proofs/ReentrancyExploit.sol      valid proof
 proofs/bogus/*.sol                Break-it proofs that must be rejected
 verifier/verify.js        the deterministic verifier
-verifier/resolver.js      verifier service: checks the on-chain commit, verifies, calls resolve()
+verifier/resolver.js      verifier service: checks the hunter's own on-chain commitment, verifies, calls resolve()
 verifier/cli.js           npm run verify -- <proof.sol>
 agent/hunter.js           template hunter (original demo): Telegraph purchase, ranks templates, self-check, commit
 agent/real-hunter.js      real hunter: Telegraph findings, LLM-written exploit, verifier self-check loop, commit
@@ -95,10 +96,14 @@ never printed or logged.
 The demo starts a private anvil, deploys `BountyEscrow`, and has the poster lock 1 ETH. Then:
 
 1. Break it. A second hunter commits two bogus proofs. The verifier rejects both on-chain
-   (`Rejected` events) and the bogus hunter is owed 0.
+   (`Rejected` events, stored as a final verdict) and the bogus hunter is owed 0.
 2. The hunter agent buys `SECURITY_REVIEW_GENERAL`, ranks its templates from the answer, and
-   self-checks the proof. It commits the proof hash, and the verifier resolves it as valid (`Paid`).
-   The hunter then withdraws 1 ETH (minus gas).
+   self-checks the proof. It commits `keccak256(abi.encode(proofHash, hunter, bountyId))` and hands
+   the proof and its address to the verifier.
+3. Break it, part 2. Before the verifier runs, the second hunter replays the hunter's commitment
+   from the chain. The verifier service refuses to pay the copier, and so does the contract
+   (`NotSubmitted`). The verifier resolves the hunter's proof as valid (`Paid`), and the hunter
+   withdraws 1 ETH (minus gas). A recorded run is in `evidence/demo-run-mock-after-fix.json`.
 
 Live mode pays the real endpoint from the testnet-only wallet. It needs test USDC first:
 
@@ -109,7 +114,7 @@ TELEGRAPH_MODE=live npm run demo
 ## Check it
 
 ```bash
-npm test                 # forge test (23) + targets profile forge test (15) + node --test (43)
+npm test                 # forge test (39) + targets profile forge test (15) + node --test (45)
 npm run verify -- proofs/ReentrancyExploit.sol      # exit 0, valid
 npm run verify -- proofs/bogus/NoopExploit.sol      # exit 1, rejected
 ```
@@ -139,8 +144,9 @@ Design notes (why it is strict):
   check without exploiting anything. Force-feeding only raises the balance, so it cannot fake
   insolvency. `proofs/bogus/ForceFeedExploit.sol` shows this, and so does
   `test_forceFeed_cannotFakeInsolvency`.
-- `BountyEscrow` binds the payout to the first address that committed the proof hash. Only the
-  hash goes on-chain, so committing does not leak the exploit.
+- `BountyEscrow` pays only the address that itself committed
+  `keccak256(abi.encode(proofHash, hunter, bountyId))`. Only the commitment goes on-chain, so
+  committing leaks neither the exploit nor its hash; the proof hash is revealed at `resolve()`.
 
 ## Inspect it
 
@@ -149,7 +155,10 @@ Design notes (why it is strict):
   signal_hash, the decoded `PAYMENT-RESPONSE`, `X-TELEGRAPH-RECEIPT`, and the rejection reason on a
   402. Live rows are the real endpoint. Mock rows say `"mode":"mock"` and carry `mock-receipt-…`.
 - `evidence/demo-run.json` holds escrow tx hashes, decoded events (`Posted`, `Submitted`,
-  `Rejected`, `Paid`, `Withdrawn`), balances, and the Telegraph purchase record.
+  `Rejected`, `Paid`, `Withdrawn`), balances, and the Telegraph purchase record. It is the live run
+  from 2026-11-23, made with the escrow as it was before the Ultrafuzz fixes (`submit(proofHash)`).
+  `evidence/demo-run-mock-after-fix.json` is a mock-mode run of the fixed escrow, including the
+  copier step. The recorded `evidence/hunt/live-*` runs also predate the fix.
 - `evidence/verdicts/<proofHash>.json` holds the full verdict for each proof the verifier resolved.
 - `evidence/intents-snapshot.ndjson` holds the miner counts per intent (captured 2026-11-12).
 - `mock/recorded-402.json` is the real 402 challenge captured from the endpoint.
@@ -171,12 +180,52 @@ npm run break     # only the bogus-proof part of the demo
 On-chain checks (forge tests):
 
 - only the verifier can resolve
-- no payout without a commit
-- the same proof hash cannot be committed twice (no copying a hunter's hash)
+- no payout without a commit by the paid hunter itself
+- a copied commitment is never payable to the copier and does not block the hunter
+  (`test_frontRun_legacyPaysTheCopier` shows the old contract paying the copier;
+  `test_frontRun_fixedRefusesTheCopier` shows the fix refusing it)
+- a commitment cannot be replayed on another bounty
+- each commitment gets one stored verdict: no re-rejecting, no flipping Rejected to Paid
+- the poster cannot be the bounty's verifier
 - a bounty pays at most once
 - no submissions after the deadline
 - the poster reclaims only after `deadline + 1 day`, which also closes `resolve`
 - a hunter whose receive() reverts cannot block others
+
+## Security fixes after Ultrafuzz
+
+The Ultrafuzz campaign of 2026-11-24 (bounty-002) reported four distinct findings on
+`BountyEscrow` and the deploy gate. Several stages reported each one; they are deduplicated here.
+
+| # | Severity | Finding | Fix | Tests |
+|---|---|---|---|---|
+| 1 | High | `submit(id, proofHash)` recorded the first sender of a proof hash, and the hash is public in the mempool. A copier front-runs it and is paid when the verifier approves the real hunter's proof. Once confirmed, the same hash could also be replayed on another bounty for the same target. | The hunter commits `keccak256(abi.encode(proofHash, hunter, id))`. It is stored under the sender's own address (`commits[id][commitment][sender]`). `resolve(id, proofHash, hunter, valid, verdictHash)` recomputes the commitment and requires that `hunter` itself committed it. A copy lands under the copier's address, which is not in the commitment, so it never matches. It also does not block the hunter's own commit. The bounty id is in the commitment, so it cannot be replayed on another bounty. | `test_frontRun_legacyPaysTheCopier` (old contract, kept test-only in `test/legacy/`: copier owed 1 ETH, hunter 0), `test_frontRun_fixedRefusesTheCopier` (fixed: hunter 1 ETH, copier 0), `test_frontRun_copyAloneIsNeverPayable`, `test_crossBountyReplay_refused`, `testFuzz_onlyCommittingHunterCanBePaid`, `invariant_onlyCommittingHunterPaid`, and `test-js/escrow-commit.test.js` on anvil |
+| 2 | Medium | The poster could name itself as verifier and decide instantly. | `post` reverts with `VerifierIsPoster`. No challenge window was added (see below). | `test_posterCannotBeVerifier`, `testFuzz_posterCannotBeVerifier`, JS test |
+| 3 | Low | `Rejected` wrote no state. A proof could be rejected repeatedly with conflicting verdicts, or rejected and later paid. | Each commitment stores one verdict (`None`, `Rejected`, `Paid`, readable with `verdictOf`). A resolved commitment reverts `AlreadyResolved`. `Paid` also settles the bounty, so it is final. | `test_rejectedIsStoredAndFinal`, `test_paidIsFinal`, `test_rejectedOneProof_otherProofStillPayable`, `invariant_commitmentResolvedAtMostOnce` |
+| 4 | Low | The deploy gate took the first `audit/ultrafuzz-*.md` with `Triage: done` and never tied it to the code being deployed. | The gate checks every report. It needs `Triage: done` plus `Commit: <sha>` or `Source-tree: <git tree hash of src/>`, and that commit's `src/` tree must equal HEAD's. It also refuses uncommitted changes in `src/`, `lib/forge-std`, `foundry.toml` and `foundry.lock`. It states that `VulnerableVault` is deployed on purpose as the deliberately vulnerable demo target. | `script/deploy-monad-testnet.sh --check` |
+
+The invariant campaign adds an attacker actor that copies every honest commitment, on the same
+bounty and on others. The invariants are: the attacker is never owed anything, no resolve is
+accepted for a key its hunter did not commit, each commitment is resolved at most once, and wei is
+conserved (`invariant_conservation`, `invariant_solvency`). Two mutants were checked against the
+suite: a commitment that leaves the hunter out, and a `resolve` that drops the one-verdict check.
+The invariant suite and the unit tests catch both.
+
+**No challenge window, on purpose.** A window before `Paid` becomes withdrawable only helps if
+someone can act during it, and this contract has no arbiter or dispute path. The verifier is the
+only oracle, and with finding 3 a `Paid` verdict is final, so nothing could reverse a payout
+during the window. A window would delay every honest payout and would not stop a poster who runs
+the verifier from a second address. The remaining defence against a dishonest verifier is
+off-chain: the check is public and deterministic, so anyone can re-run it and compare
+`verdictHash`. Each commitment's `committedAt` is stored, so it is visible on-chain when an earlier
+honest commitment was passed over. Making this enforceable would take a real dispute mechanism
+(several verifiers, or a bonded challenger), which is out of scope here. The demo flow is
+unchanged: resolving right after the commit still pays.
+
+Residual, by design: the commitment protects the proof before `resolve()`. Once a proof body is
+published (for example in `evidence/`), anyone holding it can make an honest commitment of their
+own on another open bounty for the same target. The verifier should pay the earliest commitment,
+which it can read from `commits(...).committedAt`.
 
 ## Reproduce it
 
@@ -289,8 +338,9 @@ over a full mocked hunt that also checks the prompts.
    `claude-opus-5-5` for the last one. Every attempt is logged to
    `evidence/hunt/<run>/<target>/attempt-N.{json,prompt.txt,response.txt,sol}`. The JSON holds the
    prompt sha256, the model, usage, the cost and the forge result.
-4. Only a self-checked valid proof is committed on the local-anvil `BountyEscrow`. The verifier
-   service re-runs the check and calls `resolve()`.
+4. Only a self-checked valid proof is committed on the local-anvil `BountyEscrow`, as a commitment
+   bound to the hunter and the bounty. The verifier service checks that commitment, re-runs the
+   check and calls `resolve(id, proofHash, hunter, ...)`.
 
 **Spend guards** (`lib/llm.js`):
 
@@ -395,15 +445,20 @@ other miners or about larger codebases.
 1. Fund the testnet wallet with test USDC and run `TELEGRAPH_MODE=live npm run demo`. That records a
    real receipt (`miner_id`, `signal_hash`, `X-TELEGRAPH-RECEIPT`, `PAYMENT-RESPONSE`). The
    hackathon requires at least one real machine-to-machine purchase.
-2. Run an Ultrafuzz campaign on `BountyEscrow` and triage its findings. This is a hard gate before
-   any deploy. `VulnerableVault` is a demo target and must never be deployed with funds.
+2. Re-run Ultrafuzz on the fixed commit and triage it. This is a hard gate before any deploy:
+   `script/deploy-monad-testnet.sh` refuses unless an `audit/ultrafuzz-*.md` report says
+   `Triage: done` and names a `Commit:` (or `Source-tree:`, i.e. `git rev-parse HEAD:src`) whose
+   `src/` equals the `src/` being deployed (`--check` runs the gate alone). `VulnerableVault` is the
+   deliberately vulnerable demo target; the script deploys it on purpose, to testnet only, and it
+   must never be deployed with funds.
 3. Optional, per the mission page ("bounty payout simulated on Sepolia"): deploy `BountyEscrow` to a
    testnet after step 2.
 4. Record the 2-5 min demo video and fill in the submission.
 
 Known limits (for mainnet readiness):
 
-- The verifier is a single key chosen by the poster. It is trusted to run the public deterministic
-  check honestly, and anyone can re-run it and compare `verdict_hash`.
+- The verifier is a single key chosen by the poster (it may not be the poster's own address, but a
+  second address the poster controls is not detectable on-chain). It is trusted to run the public
+  deterministic check honestly, and anyone can re-run it and compare `verdict_hash`.
 - The proof is handed to the verifier off-chain.
 - The reward is native ETH only.
