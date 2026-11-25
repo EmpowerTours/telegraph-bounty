@@ -36,9 +36,12 @@ for r in audit/ultrafuzz-*.md; do
   done < <(sed -n 's/^Source-tree: *\([0-9a-f]\{40\}\).*/\1/p' "$r")
   while read -r c; do
     [ -n "$c" ] || continue
-    t=$(git rev-parse --verify --quiet "$c^{commit}:src" 2>/dev/null || true)
-    [ -n "$t" ] && [ "$t" = "$HEAD_SRC" ] && matched="Commit $c (src tree $t)"
-  done < <(sed -n 's/^Commit: *\([0-9a-f]\{7,40\}\).*/\1/p' "$r")
+    # Full 40-hex SHAs only: a short SHA is resolved as a ref name first, so a tag or branch
+    # named after it could point the gate at HEAD.
+    [ "$(git cat-file -t "$c" || true)" = "commit" ] || { echo "skip Commit $c in $r: not a commit object here"; continue; }
+    t=$(git rev-parse --verify "$c:src")
+    [ "$t" = "$HEAD_SRC" ] && matched="Commit $c (src tree $t)"
+  done < <(sed -n 's/^Commit: *\([0-9a-f]\{40\}\)\b.*/\1/p' "$r")
   if [ -n "$matched" ]; then REPORT=$r; echo "gate: $r audited $matched == HEAD src tree"; break; fi
   echo "skip $r: names no Commit/Source-tree whose src/ equals HEAD's src/ ($HEAD_SRC)"
 done
@@ -56,12 +59,25 @@ RPC=${RPC:-https://testnet-rpc.monad.xyz}
 KEY=$(python3 -c 'import json,os;print(json.load(open(os.path.expanduser("~/.empowertours/telegraph-sepolia.json")))["private_key"])')
 mkdir -p deployments
 OUT=deployments/monad-testnet.json
-echo "{\"chainId\":10143,\"commit\":\"$(git rev-parse HEAD)\",\"srcTree\":\"$HEAD_SRC\",\"audit\":\"$REPORT\"," > "$OUT.tmp"
+declare -A ADDR
 for c in BountyEscrow VulnerableVault PatchedVault; do
-  addr=$(forge create "src/$c.sol:$c" --rpc-url "$RPC" --private-key "$KEY" --broadcast --json | python3 -c 'import json,sys;print(json.load(sys.stdin)["deployedTo"])')
-  echo "  $c $addr"
-  echo "\"$c\":\"$addr\"," >> "$OUT.tmp"
+  ADDR[$c]=$(forge create "src/$c.sol:$c" --rpc-url "$RPC" --private-key "$KEY" --broadcast --json | python3 -c 'import json,sys;print(json.load(sys.stdin)["deployedTo"])')
+  echo "  $c ${ADDR[$c]}"
 done
-echo "\"deployedAt\":\"$(date -u +%FT%TZ)\"}" >> "$OUT.tmp"
-python3 -c "import json;json.dump(json.loads(open('$OUT.tmp').read()),open('$OUT','w'),indent=1)" && rm "$OUT.tmp"
+OUT="$OUT" COMMIT="$(git rev-parse HEAD)" SRC_TREE="$HEAD_SRC" REPORT="$REPORT" \
+  BountyEscrow="${ADDR[BountyEscrow]}" VulnerableVault="${ADDR[VulnerableVault]}" PatchedVault="${ADDR[PatchedVault]}" \
+  python3 - <<'PY' || { echo "refusing: manifest write failed; $OUT not updated"; exit 1; }
+import datetime, json, os, re
+e = os.environ
+addrs = {c: e[c] for c in ("BountyEscrow", "VulnerableVault", "PatchedVault")}
+for c, a in addrs.items():
+    if not re.fullmatch(r"0x[0-9a-fA-F]{40}", a):
+        raise SystemExit(f"bad address for {c}: {a!r}")
+m = {"chainId": 10143, "commit": e["COMMIT"], "srcTree": e["SRC_TREE"], "audit": e["REPORT"], **addrs,
+     "deployedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+tmp = e["OUT"] + ".tmp"
+with open(tmp, "w") as f:
+    json.dump(m, f, indent=1)
+os.replace(tmp, e["OUT"])
+PY
 echo "wrote $OUT"
