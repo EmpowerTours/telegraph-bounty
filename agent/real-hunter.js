@@ -9,8 +9,9 @@
 //      the purchased findings, and writes a proof in the verifier's shape. The proof is
 //      self-checked with the same deterministic verifier the bounty uses; on failure the verifier
 //      output is fed back. Up to 4 attempts: claude-sonnet-5-5, then claude-opus-5-5 last.
-//   3. Only a self-checked valid proof is used: patch-verify purchase, then the proof hash is
-//      committed on-chain and the proof handed to the bounty's verifier, which resolves it.
+//   3. Only a self-checked valid proof is used: patch-verify purchase, then a commitment bound to
+//      (proofHash, hunter, bountyId) is sent on-chain and the proof plus the hunter's address are
+//      handed to the bounty's verifier, which resolves it.
 //
 // The hunter never sees the patched source in an LLM prompt (it goes only to the
 // CODE_PATCH_VERIFY purchase after a proof is found, and to the verifier). It reads target files
@@ -22,6 +23,7 @@ import { execFileSync } from "node:child_process";
 import { askTelegraph } from "../lib/telegraph.js";
 import { BudgetExceeded, sha256 } from "../lib/llm.js";
 import { ESCROW_ABI } from "../lib/escrow-abi.js";
+import { commitmentOf } from "../lib/chain.js";
 import { proofHashOf } from "../verifier/verify.js";
 import { verifyTargetProof } from "../verifier/verify-target.js";
 
@@ -435,7 +437,7 @@ export async function huntTarget({
   verify = verifyTargetProof,
   buy = askTelegraph,
   evidenceDir = null,
-  chain = null, // { env, escrow, bountyId, hunter, handToVerifier }
+  chain = null, // { env, escrow, bountyId, hunter, handToVerifier(proofSource, hunter) }
   log = console.log,
 }) {
   const out = { target_id: target.id, target_hash: target.targetHash };
@@ -511,18 +513,22 @@ export async function huntTarget({
   out.proof_hash = proofHashOf(w.proof);
   out.verdict_hash_selfcheck = w.attempts.at(-1).verdict_hash;
   if (!chain) return out;
+  // Commitment bound to this hunter and bounty: a mempool copier can never be paid for it.
+  out.commitment = commitmentOf(out.proof_hash, chain.hunter, chain.bountyId);
   const hash = await chain.env.wallet.writeContract({
     account: chain.hunter,
     address: chain.escrow,
     abi: ESCROW_ABI,
     functionName: "submit",
-    args: [chain.bountyId, out.proof_hash],
+    args: [chain.bountyId, out.commitment],
   });
   const rcpt = await chain.env.pub.waitForTransactionReceipt({ hash });
   if (rcpt.status !== "success") throw new Error("submit reverted");
   out.submit_tx = hash;
-  log(`  committed proof ${out.proof_hash.slice(0, 10)}… in tx ${hash}`);
-  out.resolution = await chain.handToVerifier(w.proof);
+  log(
+    `  committed ${out.commitment.slice(0, 10)}… (proof ${out.proof_hash.slice(0, 10)}…) in tx ${hash}`,
+  );
+  out.resolution = await chain.handToVerifier(w.proof, chain.hunter);
   return out;
 }
 

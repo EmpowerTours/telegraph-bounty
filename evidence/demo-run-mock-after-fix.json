@@ -1,0 +1,143 @@
+{
+  "at": "2026-11-24T22:02:49.011Z",
+  "telegraph_mode": "mock",
+  "chain": "local anvil (chainid 31337)",
+  "invariant": "address(vault).balance >= vault.totalDeposits()",
+  "escrow": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "post": {
+    "tx": "0x151b7b166b876b9f22a9df83f760e6f0ed700982c3cb32904a23788cbbeeac1f",
+    "events": [
+      {
+        "event": "Posted",
+        "args": {
+          "id": "0",
+          "poster": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "verifier": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+          "reward": "1000000000000000000",
+          "deadline": "1767830401",
+          "targetHash": "0xfbdce705d055ac24db879eb65c7a77f94d54726458685c5226ff747e65af08e3",
+          "invariantHash": "0x3a6268437a4aa29fa3f3fd74cc10202268bb8fbd5e27ea2b92e3eb17beb7098c"
+        }
+      }
+    ]
+  },
+  "break_it": [
+    {
+      "file": "proofs/bogus/NoopExploit.sol",
+      "submit_tx": "0x454e7fd23c866cda0cec9302b45fc799e5c4739854273226a2fc0c80afe6f43b",
+      "hunter": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "proofHash": "0x1683c6258a2068139471e6f1eae7e408a144b4598f9e7fe4e872554233daa84d",
+      "commitment": "0x46eab5f1b856c61a6e6426fb0e075d6583940bd31f3078f5d436035f3dc1182f",
+      "committedAt": "1767225601",
+      "verdictHash": "0x0aa87554a8549b04d4d60b263d114a805f2d52af2b652b98b6c82a9fd5dd20a5",
+      "valid": false,
+      "reason": "invariant still holds on the vulnerable target",
+      "resolveTx": "0x04a14e097da11b4d4f9c31158ad1c6c2ed8ef642e36a649327789308aac5bf54",
+      "verdictFile": "evidence/verdicts/0x1683c6258a2068139471e6f1eae7e408a144b4598f9e7fe4e872554233daa84d.json",
+      "events": [
+        {
+          "event": "Rejected",
+          "args": {
+            "id": "0",
+            "proofHash": "0x1683c6258a2068139471e6f1eae7e408a144b4598f9e7fe4e872554233daa84d",
+            "hunter": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "verdictHash": "0x0aa87554a8549b04d4d60b263d114a805f2d52af2b652b98b6c82a9fd5dd20a5"
+          }
+        }
+      ]
+    },
+    {
+      "file": "proofs/bogus/ForceFeedExploit.sol",
+      "submit_tx": "0x7cdb8a9f880227abb41867e758438272477a005387f24fcab18fdd5ccc23df19",
+      "hunter": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "proofHash": "0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e",
+      "commitment": "0x41ddac2ac892c546f158954e3148a14e5dac961c9072436f9b5843a5f4412643",
+      "committedAt": "1767225601",
+      "verdictHash": "0xacfd44b5a4808b26cad48c6cf3551fb70685018b9822b5dc0f3fb91e06fe3863",
+      "valid": false,
+      "reason": "invariant still holds on the vulnerable target",
+      "resolveTx": "0x868ddacd1fe530af62d18d68302376cacc1ab2ad32dae2a42f421f77f158371a",
+      "verdictFile": "evidence/verdicts/0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e.json",
+      "events": [
+        {
+          "event": "Rejected",
+          "args": {
+            "id": "0",
+            "proofHash": "0xe91bd9f79846b3e0f552ce569b07da8fa32905092de711c7906919da90067a1e",
+            "hunter": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+            "verdictHash": "0xacfd44b5a4808b26cad48c6cf3551fb70685018b9822b5dc0f3fb91e06fe3863"
+          }
+        }
+      ]
+    }
+  ],
+  "break_it_owed_wei": "0",
+  "copier": {
+    "copier": "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+    "copied_commitment": "0x2ec4857d81b1ae4a0c62f6f66755e5da66ff2e637c27d684a2c869d3bb230ab2",
+    "copy_tx": "0x265b9cdd3f2c15db8ce80c0860133f84562784704c7f3c1874d4bf2a34234555",
+    "verifier_service_refusal": "no commitment for this proof by 0x90f79bf6eb2c4f870365e785982e1f101e93b906 on bounty #0 (never committed, or committed by someone else)",
+    "contract_refusal": "NotSubmitted"
+  },
+  "hunt": {
+    "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+    "proof_file": "proofs/ReentrancyExploit.sol",
+    "proof_hash": "0x01984cbf1643317c9d78b35cbb251047d5155cdf96052263a86615b22aac218b",
+    "commitment": "0x2ec4857d81b1ae4a0c62f6f66755e5da66ff2e637c27d684a2c869d3bb230ab2",
+    "submit_tx": "0x266ff9a9e9c1744aa0dcca5074a6f3dc970d035c5212590b044427bd5d1fbee2",
+    "resolution": {
+      "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+      "proofHash": "0x01984cbf1643317c9d78b35cbb251047d5155cdf96052263a86615b22aac218b",
+      "commitment": "0x2ec4857d81b1ae4a0c62f6f66755e5da66ff2e637c27d684a2c869d3bb230ab2",
+      "committedAt": "1767225602",
+      "verdictHash": "0x236b690911f776957a5218a8097ab8b66a29208596bc344a47999d5d453858f0",
+      "valid": true,
+      "reason": "breaks invariant on vulnerable, holds on patched",
+      "resolveTx": "0xfc79aaaaafb6ce43a1bbea534a454994d2c956f8345c73f4139108ddf87ac142",
+      "verdictFile": "evidence/verdicts/0x01984cbf1643317c9d78b35cbb251047d5155cdf96052263a86615b22aac218b.json"
+    },
+    "resolve_events": [
+      {
+        "event": "Paid",
+        "args": {
+          "id": "0",
+          "proofHash": "0x01984cbf1643317c9d78b35cbb251047d5155cdf96052263a86615b22aac218b",
+          "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "reward": "1000000000000000000",
+          "verdictHash": "0x236b690911f776957a5218a8097ab8b66a29208596bc344a47999d5d453858f0"
+        }
+      }
+    ],
+    "withdraw_tx": "0x594228e649296973807dc37928d4149d9886edbf30b01d0b498df9839deddf7f",
+    "withdraw_events": [
+      {
+        "event": "Withdrawn",
+        "args": {
+          "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "amount": "1000000000000000000"
+        }
+      }
+    ],
+    "hunter_balance_delta_wei": "999968640966628351",
+    "escrow_balance_after_wei": "0",
+    "telegraph_purchase": {
+      "mode": "mock",
+      "endpoint": "http://127.0.0.1:33613/engine/v1/ask",
+      "status": 200,
+      "intent": "SECURITY_REVIEW_GENERAL",
+      "miner_id": "mock-miner",
+      "cost_usd": 0.01,
+      "signal_hash": "0x6f77df3e461d91313cbbe2d7c09cdba1d12cd15a640f2420457ea50c852baea9",
+      "receipt": "mock-receipt-6f77df3e461d9131",
+      "payment": {
+        "success": true,
+        "transaction": "",
+        "network": "eip155:84532",
+        "payer": "0xe67b7De0CaC24D4903ED66D33AAE557079fAFE45",
+        "mock": true
+      },
+      "payment_required_error": null,
+      "ledger": "evidence/telegraph-receipts.ndjson"
+    }
+  }
+}

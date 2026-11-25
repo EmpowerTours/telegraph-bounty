@@ -26,6 +26,7 @@ import { startMockServer } from "../mock/ask-server.js";
 import { runHunter } from "../agent/hunter.js";
 import { resolveSubmission } from "../verifier/resolver.js";
 import { proofHashOf } from "../verifier/verify.js";
+import { commitmentOf } from "../lib/chain.js";
 
 const breakOnly = process.argv.includes("--break-only");
 const mode = process.env.TELEGRAPH_MODE === "live" ? "live" : "mock";
@@ -86,8 +87,16 @@ async function main() {
     const bountyId = 0n;
     run.post = { tx: postHash, events: events(postRcpt) };
 
-    const verifierService = (proofSource) =>
-      resolveSubmission({ env, escrow, bountyId, verifier, proofSource, log });
+    const verifierService = (proofSource, hunterAddr) =>
+      resolveSubmission({
+        env,
+        escrow,
+        bountyId,
+        verifier,
+        proofSource,
+        hunter: hunterAddr,
+        log,
+      });
 
     log("== Break it: a second hunter submits bogus proofs");
     run.break_it = [];
@@ -102,10 +111,10 @@ async function main() {
         address: escrow,
         abi: ESCROW_ABI,
         functionName: "submit",
-        args: [bountyId, proofHash],
+        args: [bountyId, commitmentOf(proofHash, bogusHunter, bountyId)],
       });
       await env.pub.waitForTransactionReceipt({ hash: tx });
-      const res = await verifierService(source);
+      const res = await verifierService(source, bogusHunter);
       const rcpt = await env.pub.getTransactionReceipt({ hash: res.resolveTx });
       run.break_it.push({ file, submit_tx: tx, ...res, events: events(rcpt) });
       if (res.valid) throw new Error(`BUG: bogus proof ${file} was accepted`);
@@ -125,6 +134,54 @@ async function main() {
     log(
       `== hunter agent (${hunter}) hunts bounty #${bountyId}; Telegraph mode: ${mode}`,
     );
+    // Break it, part 2: when the hunter hands its proof over, a copier (the bogus hunter) has
+    // already replayed the hunter's commitment from the chain. Neither the verifier service nor
+    // the contract will pay the copier for it.
+    const handToVerifier = async (proofSource, hunterAddr) => {
+      const proofHash = proofHashOf(proofSource);
+      const copied = commitmentOf(proofHash, hunterAddr, bountyId);
+      const copyTx = await env.wallet.writeContract({
+        account: bogusHunter,
+        address: escrow,
+        abi: ESCROW_ABI,
+        functionName: "submit",
+        args: [bountyId, copied],
+      });
+      await env.pub.waitForTransactionReceipt({ hash: copyTx });
+      let serviceRefusal = null;
+      try {
+        await verifierService(proofSource, bogusHunter);
+      } catch (e) {
+        serviceRefusal = e.message;
+      }
+      if (!serviceRefusal) throw new Error("BUG: verifier service paid the copier");
+      let contractRefusal = null;
+      try {
+        await env.pub.simulateContract({
+          account: verifier,
+          address: escrow,
+          abi: ESCROW_ABI,
+          functionName: "resolve",
+          args: [bountyId, proofHash, bogusHunter, true, `0x${"00".repeat(32)}`],
+        });
+      } catch (e) {
+        contractRefusal = e.cause?.data?.errorName ?? e.shortMessage ?? e.message;
+      }
+      if (!contractRefusal) throw new Error("BUG: contract would pay the copier");
+      log(
+        `break it: copier ${bogusHunter} replayed the hunter's commitment (tx ${copyTx}); ` +
+          `verifier service refused ("${serviceRefusal}"), contract refused (${contractRefusal})`,
+      );
+      run.copier = {
+        copier: bogusHunter,
+        copied_commitment: copied,
+        copy_tx: copyTx,
+        verifier_service_refusal: serviceRefusal,
+        contract_refusal: contractRefusal,
+      };
+      return verifierService(proofSource, hunterAddr);
+    };
+
     const before = await env.pub.getBalance({ address: hunter });
     const result = await runHunter({
       env,
@@ -132,7 +189,7 @@ async function main() {
       bountyId,
       hunter,
       telegraph: { mode, endpoint: mock?.url, network: "base" },
-      handToVerifier: verifierService,
+      handToVerifier,
       log,
     });
     if (!result.resolution?.valid)
@@ -160,6 +217,7 @@ async function main() {
       hunter,
       proof_file: result.proofFile,
       proof_hash: result.proofHash,
+      commitment: result.commitment,
       submit_tx: result.submitTx,
       resolution: result.resolution,
       resolve_events: events(resolveRcpt),

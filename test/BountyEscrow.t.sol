@@ -29,6 +29,11 @@ contract BountyEscrowTest is Test {
     bytes32 internal constant PROOF = keccak256("proof");
     bytes32 internal constant VERDICT = keccak256("verdict");
 
+    /// Computed locally (not via escrow.commitmentOf) so it does not consume a vm.prank.
+    function _c(uint256 id, bytes32 proofHash, address h) internal pure returns (bytes32) {
+        return keccak256(abi.encode(proofHash, h, id));
+    }
+
     function setUp() public {
         escrow = new BountyEscrow();
         vm.deal(poster, 100 ether);
@@ -42,9 +47,9 @@ contract BountyEscrowTest is Test {
     function test_happyPath_paysFirstSubmitter() public {
         uint256 id = _post(1 ether);
         vm.prank(hunter);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.prank(verifier);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, hunter, true, VERDICT);
         assertEq(escrow.owed(hunter), 1 ether);
         vm.prank(hunter);
         escrow.withdraw();
@@ -55,9 +60,9 @@ contract BountyEscrowTest is Test {
     function test_rejectedProof_paysNothing_bountyStaysOpen() public {
         uint256 id = _post(1 ether);
         vm.prank(hunter);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.prank(verifier);
-        escrow.resolve(id, PROOF, false, VERDICT);
+        escrow.resolve(id, PROOF, hunter, false, VERDICT);
         assertEq(escrow.owed(hunter), 0);
         (,, bool settled,,,,) = escrow.bounties(id);
         assertFalse(settled);
@@ -66,39 +71,39 @@ contract BountyEscrowTest is Test {
     function test_cannotPayTwice() public {
         uint256 id = _post(1 ether);
         vm.prank(hunter);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.prank(other);
-        escrow.submit(id, keccak256("proof2"));
+        escrow.submit(id, _c(id, keccak256("proof2"), other));
         vm.startPrank(verifier);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, hunter, true, VERDICT);
         vm.expectRevert(BountyEscrow.AlreadySettled.selector);
-        escrow.resolve(id, keccak256("proof2"), true, VERDICT);
+        escrow.resolve(id, keccak256("proof2"), other, true, VERDICT);
         vm.stopPrank();
     }
 
-    function test_frontRunCopyOfHashIsRejected() public {
+    function test_sameSenderCannotCommitTwice() public {
         uint256 id = _post(1 ether);
-        vm.prank(hunter);
-        escrow.submit(id, PROOF);
-        vm.prank(other);
+        vm.startPrank(hunter);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.expectRevert(BountyEscrow.AlreadySubmitted.selector);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
+        vm.stopPrank();
     }
 
     function test_onlyVerifierResolves() public {
         uint256 id = _post(1 ether);
         vm.prank(hunter);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.prank(hunter);
         vm.expectRevert(BountyEscrow.NotVerifier.selector);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, hunter, true, VERDICT);
     }
 
     function test_resolveRequiresSubmission() public {
         uint256 id = _post(1 ether);
         vm.prank(verifier);
         vm.expectRevert(BountyEscrow.NotSubmitted.selector);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, hunter, true, VERDICT);
     }
 
     function test_submitClosedAfterDeadline() public {
@@ -106,13 +111,13 @@ contract BountyEscrowTest is Test {
         vm.warp(block.timestamp + 7 days + 1);
         vm.prank(hunter);
         vm.expectRevert(BountyEscrow.SubmissionClosed.selector);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
     }
 
     function test_reclaimOnlyAfterWindow_andBlocksResolve() public {
         uint256 id = _post(1 ether);
         vm.prank(hunter);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.warp(block.timestamp + 7 days + 1 days);
         vm.prank(poster);
         vm.expectRevert(BountyEscrow.TooEarly.selector);
@@ -120,7 +125,7 @@ contract BountyEscrowTest is Test {
         vm.warp(block.timestamp + 1);
         vm.prank(verifier);
         vm.expectRevert(BountyEscrow.ResolveWindowClosed.selector);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, hunter, true, VERDICT);
         vm.prank(poster);
         escrow.reclaim(id);
         assertEq(escrow.owed(poster), 1 ether);
@@ -142,29 +147,31 @@ contract BountyEscrowTest is Test {
         escrow.post{value: 1}(address(0), uint64(block.timestamp + 1), TARGET, INV);
         vm.expectRevert(BountyEscrow.BadDeadline.selector);
         escrow.post{value: 1}(verifier, uint64(block.timestamp), TARGET, INV);
+        vm.expectRevert(BountyEscrow.VerifierIsPoster.selector);
+        escrow.post{value: 1}(poster, uint64(block.timestamp + 1), TARGET, INV);
         vm.stopPrank();
     }
 
     function test_unknownBounty() public {
         vm.expectRevert(BountyEscrow.UnknownBounty.selector);
-        escrow.submit(42, PROOF);
+        escrow.submit(42, _c(42, PROOF, other));
     }
 
     function test_revertingHunterCannotBlockOthers() public {
         RevertingReceiver r = new RevertingReceiver();
         uint256 id = _post(1 ether);
-        r.submit(escrow, id, PROOF);
+        r.submit(escrow, id, _c(id, PROOF, address(r)));
         vm.prank(verifier);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, address(r), true, VERDICT);
         vm.expectRevert(BountyEscrow.TransferFailed.selector);
         r.withdraw(escrow);
         // Funds stay credited to the hunter; a second bounty is unaffected.
         assertEq(escrow.owed(address(r)), 1 ether);
         uint256 id2 = _post(2 ether);
         vm.prank(hunter);
-        escrow.submit(id2, PROOF);
+        escrow.submit(id2, _c(id2, PROOF, hunter));
         vm.prank(verifier);
-        escrow.resolve(id2, PROOF, true, VERDICT);
+        escrow.resolve(id2, PROOF, hunter, true, VERDICT);
         vm.prank(hunter);
         escrow.withdraw();
         assertEq(hunter.balance, 2 ether);
@@ -177,9 +184,9 @@ contract BountyEscrowTest is Test {
         vm.deal(poster, uint256(reward));
         uint256 id = _post(reward);
         vm.prank(h);
-        escrow.submit(id, proofHash);
+        escrow.submit(id, _c(id, proofHash, h));
         vm.prank(verifier);
-        escrow.resolve(id, proofHash, true, VERDICT);
+        escrow.resolve(id, proofHash, h, true, VERDICT);
         uint256 before = h.balance;
         vm.prank(h);
         escrow.withdraw();
@@ -191,9 +198,9 @@ contract BountyEscrowTest is Test {
         vm.assume(caller != verifier);
         uint256 id = _post(1 ether);
         vm.prank(hunter);
-        escrow.submit(id, PROOF);
+        escrow.submit(id, _c(id, PROOF, hunter));
         vm.prank(caller);
         vm.expectRevert(BountyEscrow.NotVerifier.selector);
-        escrow.resolve(id, PROOF, true, VERDICT);
+        escrow.resolve(id, PROOF, hunter, true, VERDICT);
     }
 }
