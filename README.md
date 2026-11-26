@@ -13,7 +13,17 @@ a copy of someone else's commitment can never be paid (see "Security fixes after
 
 Scope: every contract tested here is written in this repo. `VulnerableVault` is deliberately
 vulnerable and exists only as a demo bounty target. Nothing here targets third-party or deployed
-contracts, and nothing has been deployed to any chain.
+contracts. The escrow and the two demo vaults are deployed on Monad testnet only (see Status); nothing
+is on a mainnet.
+
+```mermaid
+flowchart LR
+    A["1. Poster locks a reward<br/>in BountyEscrow, with an<br/>invariant the code must keep"] --> B["2. Hunter agent buys reviews<br/>from Telegraph over x402<br/>($0.01 test USDC each)"]
+    B --> C["3. Claude reads the findings<br/>and the source, and writes<br/>an exploit"]
+    C --> D["4. Deterministic verifier (Foundry):<br/>breaks the invariant on the vulnerable code,<br/>holds on the patched code"]
+    D -- valid --> E["Escrow pays the hunter<br/>that committed the proof"]
+    D -- invalid --> F["No payout"]
+```
 
 ## Status (2026-11-26)
 
