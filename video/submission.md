@@ -72,8 +72,9 @@ The README's "Run it" and "Run it with your own keys (live mode)" sections cover
 
 ## Original H2 updates (public)
 - LinkedIn, 2026-11-24: "I paid an AI security reviewer 8 times…"
-  https://www.linkedin.com/in/earvin-gallardo-a14b5989/recent-activity/all/ (TODO: exact post URL)
-- TODO: 1–2 more posts before 1 Dec.
+  https://www.linkedin.com/feed/update/urn:li:activity:7530853098945392640/
+- LinkedIn, 2026-11-26: "Update on my Telegraph hackathon build…" (explorer + demo video)
+  https://www.linkedin.com/feed/update/urn:li:activity:7531865583492112385/
 
 ## Showcase permission
 TODO: the user chooses on the H2 site.
