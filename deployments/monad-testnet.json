@@ -1,0 +1,10 @@
+{
+ "chainId": 10143,
+ "commit": "4095b832e8c15c180aa23ef5af48e546f5b0e34b",
+ "srcTree": "7ee64fdfaf057949d223ff87d230bc3e0cefee41",
+ "audit": "audit/ultrafuzz-bounty-003.md",
+ "BountyEscrow": "0x36dc4b67d1875D7c47ddb6fa29122219DC471Fec",
+ "VulnerableVault": "0xb663397b926E49DBA9283EAff0940b37eccfDdfd",
+ "PatchedVault": "0x55E0cED018F066a4e928B15893804a90FA68538d",
+ "deployedAt": "2026-11-25T16:15:05Z"
+}
