@@ -9,7 +9,8 @@ Fill in the fields marked TODO at submission time. Every claim below is backed b
 - **Mission:** 14 · Web3 Native and DeFi ("autonomous bug bounty hunter")
 - **Intents used:** SECURITY_REVIEW_GENERAL, VULNERABILITY_TRIAGE_GENERAL, CODE_PATCH_VERIFY_GENERAL.
   SMART_CONTRACT_AUDIT_GENERAL was skipped: it is registered but not active; see the README.
-- **Working link:** https://github.com/EmpowerTours/telegraph-bounty (offline demo needs no keys)
+- **Working link:** https://empowertours.github.io/telegraph-bounty/ (explorer of every recorded hunt);
+  code: https://github.com/EmpowerTours/telegraph-bounty (offline demo needs no keys)
 - **GitHub username that starred telegraphprotocol/bounties:** EmpowerTours
 - **Network:** Telegraph payments in test USDC on Base Sepolia (x402). Escrow deployed on Monad testnet
   (chain 10143): BountyEscrow 0x36dc4b67d1875D7c47ddb6fa29122219DC471Fec, demo targets VulnerableVault
