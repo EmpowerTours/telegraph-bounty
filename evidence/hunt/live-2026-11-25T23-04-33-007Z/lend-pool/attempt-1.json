@@ -1,0 +1,86 @@
+{
+  "target_id": "lend-pool",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "cli",
+  "prompt_sha256": "0cded5a6beb1d1bee1f6c6b295da14f76f1c1e03a2807d7dfe140177d532259d",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-25T23:05:59.979Z",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 2702,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 1145,
+    "output_tokens_details": {
+      "thinking_tokens": 629
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2702,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 1145,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 2702,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2702
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "cost_usd": 0.022262,
+  "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+  "stop_reason": "end_turn",
+  "llm_ms": 9718,
+  "response_sha256": "04776cd831dcbcb42e0baa69fce0f219ed1507abfa1dca78140e9c436a0c1684",
+  "proof_hash": "0x33fab78dcf932270c3bc91c7201e94f2f0af9e487454cf962757e8716be75fb8",
+  "verdict_hash": "0xf6281143b2f9aa1054970673c7a8946325a2a111b4e880fbc9524e86b711ae1b",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "148369",
+      "after": null,
+      "observed": {
+        "total_collateral_gov_wei": "4992488733099649474211",
+        "collateral_value_at_fair_price_wei": "4992488733099649474",
+        "total_debt_wei": "10000000000000000000",
+        "exchange_reserve_eth_wei": "20000000000000000000",
+        "exchange_reserve_gov_wei": "5007511266900350525789"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "reverted",
+      "run_gas_used": "163114",
+      "after": null,
+      "observed": {
+        "total_collateral_gov_wei": "0",
+        "collateral_value_at_fair_price_wei": "0",
+        "total_debt_wei": "0",
+        "exchange_reserve_eth_wei": "10000000000000000000",
+        "exchange_reserve_gov_wei": "10000000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 573
+}

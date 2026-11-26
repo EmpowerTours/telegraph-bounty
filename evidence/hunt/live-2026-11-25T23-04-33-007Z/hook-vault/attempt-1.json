@@ -1,0 +1,51 @@
+{
+  "target_id": "hook-vault",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "cli",
+  "prompt_sha256": "d33085effa86cfb17452ad298225122712034fda7f58cbda75b33dafd5dc2d84",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-25T23:04:40.970Z",
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 5033,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 1753,
+    "output_tokens_details": {
+      "thinking_tokens": 1531
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 5033,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 683,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 2558,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2558
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "cost_usd": 0.037669999999999995,
+  "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+  "stop_reason": "end_turn",
+  "llm_ms": 27331,
+  "response_sha256": "2b918af568522d1f0df45486858859508aead411549d07997aea278eea9771bf",
+  "valid": false,
+  "stage": "extract",
+  "reason": "no ```solidity code block in the response"
+}

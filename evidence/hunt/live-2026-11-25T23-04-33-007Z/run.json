@@ -1,0 +1,1145 @@
+{
+  "run_id": "live-2026-11-25T23-04-33-007Z",
+  "at": "2026-11-25T23:04:36.628Z",
+  "telegraph_mode": "live",
+  "llm_backend": "cli",
+  "llm_source": null,
+  "chain": "local anvil (chainid 31337)",
+  "intents_source": "live GET /engine/v1/intents/<NAME>",
+  "intents": {
+    "SMART_CONTRACT_AUDIT_GENERAL": {
+      "miner_count": 20,
+      "lifecycle": "registered",
+      "lifecycle_reasons": [
+        "output schema: it has no response format, its own or its family's",
+        "input schema: no response format declares inputs, its own or its family's"
+      ],
+      "request_params": [],
+      "usable": false,
+      "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+    },
+    "SECURITY_REVIEW_GENERAL": {
+      "miner_count": 37,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "target"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "VULNERABILITY_TRIAGE_GENERAL": {
+      "miner_count": 41,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "cve_id"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "CODE_PATCH_VERIFY_GENERAL": {
+      "miner_count": 25,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "patch"
+      ],
+      "usable": true,
+      "reason": null
+    }
+  },
+  "targets": [
+    {
+      "target_id": "hook-vault",
+      "target_hash": "0xedc5aeeac525e77f5a2cdeb75153f858f96974d7280ca882cb3ad9cf102a3e39",
+      "bounty_id": "0",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:04:40.964Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:05:34.092Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        },
+        {
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "reason": "no candidate issues to triage"
+        }
+      ],
+      "ranked_candidates": [],
+      "attempts": [
+        {
+          "target_id": "hook-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "d33085effa86cfb17452ad298225122712034fda7f58cbda75b33dafd5dc2d84",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-25T23:04:40.970Z",
+          "usage": {
+            "input_tokens": 4,
+            "cache_creation_input_tokens": 5033,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 1753,
+            "output_tokens_details": {
+              "thinking_tokens": 1531
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 5033,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 683,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2558,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2558
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.037669999999999995,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 27331,
+          "response_sha256": "2b918af568522d1f0df45486858859508aead411549d07997aea278eea9771bf",
+          "valid": false,
+          "stage": "extract",
+          "reason": "no ```solidity code block in the response"
+        },
+        {
+          "target_id": "hook-vault",
+          "attempt": 2,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "08ec4865f6ce7e9f55e7864a8698f588604e01e3009f8cf8899841b66191c7a2",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-25T23:05:08.304Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2537,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 2398,
+            "output_tokens_details": {
+              "thinking_tokens": 1594
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2537,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 2398,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2537,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2537
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.034132,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 21223,
+          "response_sha256": "7b8f0f03f3081cfb5e6259c9c48442af1eeb9d6e91ec9f1b299831345129e51f",
+          "proof_hash": "0xb845da377a513033d673faff8516859cab4c22f086e35ba9a0c5d015863e2c89",
+          "verdict_hash": "0x205438c7436797512672246f0439742a0e219be75b2b8dca0eaa61e2a312aa46",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "381749",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "reverted"
+                },
+                {
+                  "user": 1,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "reverted"
+                },
+                {
+                  "user": 2,
+                  "step": "withdraw",
+                  "amount": "4000000000000000000",
+                  "status": "reverted"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "honest_token_balance_wei": [
+                  "0",
+                  "0",
+                  "0"
+                ],
+                "vault_token_balance_wei": "0",
+                "total_deposits_wei": "0"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "365055",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "success"
+                },
+                {
+                  "user": 2,
+                  "step": "withdraw",
+                  "amount": "4000000000000000000",
+                  "status": "success"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "honest_token_balance_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "vault_token_balance_wei": "999999999999999988",
+                "total_deposits_wei": "999999999999999988"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 872
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0xb845da377a513033d673faff8516859cab4c22f086e35ba9a0c5d015863e2c89",
+      "verdict_hash_selfcheck": "0x205438c7436797512672246f0439742a0e219be75b2b8dca0eaa61e2a312aa46",
+      "commitment": "0xdcd783accc0c3aba71a70dd1459916379d5e8426b66b86cd645691d0135e8048",
+      "submit_tx": "0x18d9b89395dbd9cc2193cecd6b082c5365ed6494a31ee5dc2338348128a33738",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0xb845da377a513033d673faff8516859cab4c22f086e35ba9a0c5d015863e2c89",
+        "commitment": "0xdcd783accc0c3aba71a70dd1459916379d5e8426b66b86cd645691d0135e8048",
+        "committedAt": "1767225658",
+        "verdictHash": "0x205438c7436797512672246f0439742a0e219be75b2b8dca0eaa61e2a312aa46",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0xa4b2dee581fa8013853d63c44832f45babe13e1775c14757552c7d4ae726561f",
+        "verdictFile": "evidence/hunt/live-2026-11-25T23-04-33-007Z/verdicts/0xb845da377a513033d673faff8516859cab4c22f086e35ba9a0c5d015863e2c89.json"
+      },
+      "post_tx": "0xc338129891eb92f98c4237a29ba009ec46d6564a864d70462eaffe2c9c3fa047",
+      "second_opinion": {
+        "reviewer": null,
+        "review_cost_usd": null,
+        "review_settle_tx": null,
+        "review_defect_found": null,
+        "review_classes": [],
+        "review_summary": null,
+        "triage_cvss": [],
+        "ground_truth_class": "reentrancy",
+        "verifier_proved_bug": true,
+        "verdict": "no_second_opinion",
+        "line": "no second opinion: the review was answered by the router's last-resort model, not a miner"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "0",
+            "proofHash": "0xb845da377a513033d673faff8516859cab4c22f086e35ba9a0c5d015863e2c89",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x205438c7436797512672246f0439742a0e219be75b2b8dca0eaa61e2a312aa46"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "init-vault",
+      "target_hash": "0x325f76265e5727583fe4c99c52ab4b732b1a518308b983e46c667034be9c5500",
+      "bounty_id": "1",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:05:46.065Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:05:56.637Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        },
+        {
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "reason": "no candidate issues to triage"
+        }
+      ],
+      "ranked_candidates": [],
+      "attempts": [
+        {
+          "target_id": "init-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "d874d56ea508e0430fc2f031767ddfed28c6227d5140ed9ad12819841fa594d9",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-25T23:05:46.066Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2638,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 579,
+            "output_tokens_details": {
+              "thinking_tokens": 208
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2638,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 579,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2638,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2638
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.016346,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 6183,
+          "response_sha256": "2d98254519334fd257180283f9aabedea9932a97c71bf7945f23e06b4b2e5c83",
+          "proof_hash": "0x63eb709836698585a4ee642a12aa7f9cbd9aa2b2d556c54852dcb1eae8f3f6b3",
+          "verdict_hash": "0xbe15f20321dc65d338c1c3fd58fe199b56852ffdfaf555e094caeee465594eb9",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "71729",
+              "after": null,
+              "observed": {
+                "vault_balance_wei": "0",
+                "total_deposits_wei": "10000000000000000000"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "28826",
+              "after": null,
+              "observed": {
+                "vault_balance_wei": "10000000000000000000",
+                "total_deposits_wei": "10000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 604
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x63eb709836698585a4ee642a12aa7f9cbd9aa2b2d556c54852dcb1eae8f3f6b3",
+      "verdict_hash_selfcheck": "0xbe15f20321dc65d338c1c3fd58fe199b56852ffdfaf555e094caeee465594eb9",
+      "commitment": "0xa2bd9f9fcd86c3e170352ca959aef2f9cd12eae5e2d59c64091fc76268c64d1e",
+      "submit_tx": "0xfcf9b7a894c93e897c3d9793e6ab470b985afec57af822b9a16684584a5306db",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0x63eb709836698585a4ee642a12aa7f9cbd9aa2b2d556c54852dcb1eae8f3f6b3",
+        "commitment": "0xa2bd9f9fcd86c3e170352ca959aef2f9cd12eae5e2d59c64091fc76268c64d1e",
+        "committedAt": "1767225680",
+        "verdictHash": "0xbe15f20321dc65d338c1c3fd58fe199b56852ffdfaf555e094caeee465594eb9",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x21c46771694fde9a5eb35f499ccf44fcde1f16715424f34761eee3d3b11058a7",
+        "verdictFile": "evidence/hunt/live-2026-11-25T23-04-33-007Z/verdicts/0x63eb709836698585a4ee642a12aa7f9cbd9aa2b2d556c54852dcb1eae8f3f6b3.json"
+      },
+      "post_tx": "0xf659d776252ab7dc89c80847ce4f7a4b6f2fef6899719b9df075f3ef1bc1b952",
+      "second_opinion": {
+        "reviewer": null,
+        "review_cost_usd": null,
+        "review_settle_tx": null,
+        "review_defect_found": null,
+        "review_classes": [],
+        "review_summary": null,
+        "triage_cvss": [],
+        "ground_truth_class": "access-control",
+        "verifier_proved_bug": true,
+        "verdict": "no_second_opinion",
+        "line": "no second opinion: the review was answered by the router's last-resort model, not a miner"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "1",
+            "proofHash": "0x63eb709836698585a4ee642a12aa7f9cbd9aa2b2d556c54852dcb1eae8f3f6b3",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0xbe15f20321dc65d338c1c3fd58fe199b56852ffdfaf555e094caeee465594eb9"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "lend-pool",
+      "target_hash": "0x6cd37e86a767e3b2d07e7457299f0414b702ae60f650e337312bfbd34f5565c8",
+      "bounty_id": "2",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:05:59.978Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:06:14.676Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        },
+        {
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "reason": "no candidate issues to triage"
+        }
+      ],
+      "ranked_candidates": [],
+      "attempts": [
+        {
+          "target_id": "lend-pool",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "0cded5a6beb1d1bee1f6c6b295da14f76f1c1e03a2807d7dfe140177d532259d",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-25T23:05:59.979Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2702,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 1145,
+            "output_tokens_details": {
+              "thinking_tokens": 629
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2702,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 1145,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2702,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2702
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.022262,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 9718,
+          "response_sha256": "04776cd831dcbcb42e0baa69fce0f219ed1507abfa1dca78140e9c436a0c1684",
+          "proof_hash": "0x33fab78dcf932270c3bc91c7201e94f2f0af9e487454cf962757e8716be75fb8",
+          "verdict_hash": "0xf6281143b2f9aa1054970673c7a8946325a2a111b4e880fbc9524e86b711ae1b",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "148369",
+              "after": null,
+              "observed": {
+                "total_collateral_gov_wei": "4992488733099649474211",
+                "collateral_value_at_fair_price_wei": "4992488733099649474",
+                "total_debt_wei": "10000000000000000000",
+                "exchange_reserve_eth_wei": "20000000000000000000",
+                "exchange_reserve_gov_wei": "5007511266900350525789"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "163114",
+              "after": null,
+              "observed": {
+                "total_collateral_gov_wei": "0",
+                "collateral_value_at_fair_price_wei": "0",
+                "total_debt_wei": "0",
+                "exchange_reserve_eth_wei": "10000000000000000000",
+                "exchange_reserve_gov_wei": "10000000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 573
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x33fab78dcf932270c3bc91c7201e94f2f0af9e487454cf962757e8716be75fb8",
+      "verdict_hash_selfcheck": "0xf6281143b2f9aa1054970673c7a8946325a2a111b4e880fbc9524e86b711ae1b",
+      "commitment": "0x0d458e9f05141e176df97df369c13b2282d144cb099a431846403ed7d98e87b6",
+      "submit_tx": "0xdb1defd8fd828bdfb7dba381b12802425a9c2bad20a2826d8d06234f38ec6f9b",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0x33fab78dcf932270c3bc91c7201e94f2f0af9e487454cf962757e8716be75fb8",
+        "commitment": "0x0d458e9f05141e176df97df369c13b2282d144cb099a431846403ed7d98e87b6",
+        "committedAt": "1767225698",
+        "verdictHash": "0xf6281143b2f9aa1054970673c7a8946325a2a111b4e880fbc9524e86b711ae1b",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x35ef9f87f02849a349cc51649ee7544d3c3e63115dc73aef7e73c6766aa7aeb7",
+        "verdictFile": "evidence/hunt/live-2026-11-25T23-04-33-007Z/verdicts/0x33fab78dcf932270c3bc91c7201e94f2f0af9e487454cf962757e8716be75fb8.json"
+      },
+      "post_tx": "0xe05a5da60efbdd738a78bf59a9102d076efeebaffd35652ffbf5ed18a3ac8a01",
+      "second_opinion": {
+        "reviewer": null,
+        "review_cost_usd": null,
+        "review_settle_tx": null,
+        "review_defect_found": null,
+        "review_classes": [],
+        "review_summary": null,
+        "triage_cvss": [],
+        "ground_truth_class": "oracle-manipulation",
+        "verifier_proved_bug": true,
+        "verdict": "no_second_opinion",
+        "line": "no second opinion: the review was answered by the router's last-resort model, not a miner"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "2",
+            "proofHash": "0x33fab78dcf932270c3bc91c7201e94f2f0af9e487454cf962757e8716be75fb8",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0xf6281143b2f9aa1054970673c7a8946325a2a111b4e880fbc9524e86b711ae1b"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "share-vault",
+      "target_hash": "0x5b6cf2cd4777ec588951ec76e0fc0cb627ddf0422a77d2522ac12196137b4c6e",
+      "bounty_id": "3",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:06:18.353Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:06:31.465Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        },
+        {
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "reason": "no candidate issues to triage"
+        }
+      ],
+      "ranked_candidates": [],
+      "attempts": [
+        {
+          "target_id": "share-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "56ba13de4889a77c91608c911b50e6e7a863ca8a29308ee4d62d21140699fa4a",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-25T23:06:18.354Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2309,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 916,
+            "output_tokens_details": {
+              "thinking_tokens": 448
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2309,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 916,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2309,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2309
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.0184,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 8759,
+          "response_sha256": "59dde2369f521f2c4187cc5e26964c2f2424ada2213a664dbed1b4fe2de2dd30",
+          "proof_hash": "0xcc7d94b863acf7bb40176fd77e0eab2f339e3c0976ce7379a7e872e2665eebc9",
+          "verdict_hash": "0x73c089fd9b2f68991882007f9cea7d0337984c20c1a0c976f6ff6b4eff3459b1",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "117071",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "2",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "0",
+                  "status": "skipped"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "2000000000000000000",
+                  "500000000000000000"
+                ],
+                "redeemed_wei": [
+                  "2333333333333333333",
+                  "0"
+                ]
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "117354",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "3999999999",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "999999999",
+                  "status": "success"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "2000000000000000000",
+                  "500000000000000000"
+                ],
+                "redeemed_wei": [
+                  "2000000000071428572",
+                  "499999999642857142"
+                ]
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 537
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0xcc7d94b863acf7bb40176fd77e0eab2f339e3c0976ce7379a7e872e2665eebc9",
+      "verdict_hash_selfcheck": "0x73c089fd9b2f68991882007f9cea7d0337984c20c1a0c976f6ff6b4eff3459b1",
+      "commitment": "0xb80b85b81f16af998b9e027a99372209a6b7d9e6cafdfdcf9062745192cdb75e",
+      "submit_tx": "0x3861f098688b5ba0b2165a4503532527c49c2f1cf2aca8b9953c6d633d5e29c2",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0xcc7d94b863acf7bb40176fd77e0eab2f339e3c0976ce7379a7e872e2665eebc9",
+        "commitment": "0xb80b85b81f16af998b9e027a99372209a6b7d9e6cafdfdcf9062745192cdb75e",
+        "committedAt": "1767225715",
+        "verdictHash": "0x73c089fd9b2f68991882007f9cea7d0337984c20c1a0c976f6ff6b4eff3459b1",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x1d1d8489f6e9ea4b5be9f1fc5f383214aa9ddc31d9fbe9c25a24469ffd00d863",
+        "verdictFile": "evidence/hunt/live-2026-11-25T23-04-33-007Z/verdicts/0xcc7d94b863acf7bb40176fd77e0eab2f339e3c0976ce7379a7e872e2665eebc9.json"
+      },
+      "post_tx": "0xe4f77b4c128c8e899cac8ace752715e83580e0adbcfca5ac02330dc971029dc5",
+      "second_opinion": {
+        "reviewer": null,
+        "review_cost_usd": null,
+        "review_settle_tx": null,
+        "review_defect_found": null,
+        "review_classes": [],
+        "review_summary": null,
+        "triage_cvss": [],
+        "ground_truth_class": "share-inflation",
+        "verifier_proved_bug": true,
+        "verdict": "no_second_opinion",
+        "line": "no second opinion: the review was answered by the router's last-resort model, not a miner"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "3",
+            "proofHash": "0xcc7d94b863acf7bb40176fd77e0eab2f339e3c0976ce7379a7e872e2665eebc9",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x73c089fd9b2f68991882007f9cea7d0337984c20c1a0c976f6ff6b4eff3459b1"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "token-vault",
+      "target_hash": "0x2189c57cb3f951f764cb12bb5b854152c6758a9efcbaf2dfb1b0ff4bcd78be31",
+      "bounty_id": "4",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:06:34.815Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "live",
+          "status": 402,
+          "miner_id": null,
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": false,
+          "cost_usd": null,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": null,
+          "signal_hash": null,
+          "warnings": null,
+          "result": null,
+          "at": "2026-11-25T23:06:46.295Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        },
+        {
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "reason": "no candidate issues to triage"
+        }
+      ],
+      "ranked_candidates": [],
+      "attempts": [
+        {
+          "target_id": "token-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "cli",
+          "prompt_sha256": "5c9baf5e2a249520421030801207af49646fe0caa6096723514b7892e46b782d",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-25T23:06:34.818Z",
+          "usage": {
+            "input_tokens": 2,
+            "cache_creation_input_tokens": 2708,
+            "cache_read_input_tokens": 0,
+            "output_tokens": 624,
+            "output_tokens_details": {
+              "thinking_tokens": 329
+            },
+            "server_tool_use": {
+              "web_search_requests": 0,
+              "web_fetch_requests": 0
+            },
+            "service_tier": "standard",
+            "cache_creation": {
+              "ephemeral_1h_input_tokens": 2708,
+              "ephemeral_5m_input_tokens": 0
+            },
+            "inference_geo": "global",
+            "iterations": [
+              {
+                "input_tokens": 2,
+                "output_tokens": 624,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 2708,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 2708
+                },
+                "type": "message"
+              }
+            ],
+            "speed": "standard",
+            "fallback_credit": null
+          },
+          "cost_usd": 0.017076,
+          "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+          "stop_reason": "end_turn",
+          "llm_ms": 6830,
+          "response_sha256": "caf173567788f2d5797eb68fcc87e7f751f12dcb2ab84cdb99837c6f24b5c5b5",
+          "proof_hash": "0xd1bfa83f97acc2d7546bf2c19384a296234b878d2c0502d5337df8921dc96e91",
+          "verdict_hash": "0xada861dd1aa893b2e29cfff41d011932198bbc1a854d777a33d80c8662503912",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "61024",
+              "after": null,
+              "observed": {
+                "vault_token_balance": "10000000000000000000",
+                "total_deposits": "11000000000000000000"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "32304",
+              "after": null,
+              "observed": {
+                "vault_token_balance": "10000000000000000000",
+                "total_deposits": "10000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 644
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0xd1bfa83f97acc2d7546bf2c19384a296234b878d2c0502d5337df8921dc96e91",
+      "verdict_hash_selfcheck": "0xada861dd1aa893b2e29cfff41d011932198bbc1a854d777a33d80c8662503912",
+      "commitment": "0xc4bcab893464298e9b658a9948d5c96940db1fd76a90e43eb71cfb0f31ad2d40",
+      "submit_tx": "0x944bdf0ea9be5732dff821fcd8b452129b2f8b9a18a5e9aebfd8d7741f1095b3",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0xd1bfa83f97acc2d7546bf2c19384a296234b878d2c0502d5337df8921dc96e91",
+        "commitment": "0xc4bcab893464298e9b658a9948d5c96940db1fd76a90e43eb71cfb0f31ad2d40",
+        "committedAt": "1767225730",
+        "verdictHash": "0xada861dd1aa893b2e29cfff41d011932198bbc1a854d777a33d80c8662503912",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x1ac1d486184f5e036f629bc360e069209f6d51c9255b586e338af791ace7f743",
+        "verdictFile": "evidence/hunt/live-2026-11-25T23-04-33-007Z/verdicts/0xd1bfa83f97acc2d7546bf2c19384a296234b878d2c0502d5337df8921dc96e91.json"
+      },
+      "post_tx": "0xf36fac82f4c5c23041b2f38a2b7f3efcea28f52800e0a0add27fb55e961751e4",
+      "second_opinion": {
+        "reviewer": null,
+        "review_cost_usd": null,
+        "review_settle_tx": null,
+        "review_defect_found": null,
+        "review_classes": [],
+        "review_summary": null,
+        "triage_cvss": [],
+        "ground_truth_class": "unchecked-return",
+        "verifier_proved_bug": true,
+        "verdict": "no_second_opinion",
+        "line": "no second opinion: the review was answered by the router's last-resort model, not a miner"
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "4",
+            "proofHash": "0xd1bfa83f97acc2d7546bf2c19384a296234b878d2c0502d5337df8921dc96e91",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0xada861dd1aa893b2e29cfff41d011932198bbc1a854d777a33d80c8662503912"
+          }
+        }
+      ]
+    }
+  ],
+  "escrow": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "hunter_owed_wei": "5000000000000000000",
+  "withdraw": {
+    "tx": "0x623c0c46481325db98b4c11d9045f9ae441982db62c39080b25247cce1d559fe",
+    "events": [
+      {
+        "event": "Withdrawn",
+        "args": {
+          "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "amount": "5000000000000000000"
+        }
+      }
+    ]
+  },
+  "telegraph_live_spend_this_run_usd": 0.1,
+  "attempts_total": 6,
+  "model_calls": 6,
+  "model_cost_usd": 0.14588600000000002,
+  "solved": 5,
+  "second_opinion_tally": {
+    "no_second_opinion": 5
+  }
+}

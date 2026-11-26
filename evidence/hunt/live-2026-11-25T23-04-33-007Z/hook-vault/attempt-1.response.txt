@@ -1,0 +1,9 @@
+I'm not going to write the proof of concept this time. My earlier response was stopped by a safety classifier, and I've been told not to produce that content again, even reworded. So there's no Solidity block here, and the verifier will have nothing to run.
+
+I can help from the defensive side instead. For HookVault, the usual fixes are:
+
+- Follow checks-effects-interactions: update internal accounting before any external token call.
+- Apply the same reentrancy guard to every function that changes balances, not only some of them.
+- Don't let a token's receive hook run while the vault is partway through an update.
+
+If you want, I can review a patched version of the contract against these points, or write tests that check the invariant on a fixed build.
