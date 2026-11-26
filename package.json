@@ -10,7 +10,8 @@
     "mock": "node mock/ask-server.js",
     "demo": "node scripts/demo.js",
     "break": "node scripts/demo.js --break-only",
-    "demo:hunt": "node scripts/demo-hunt.js"
+    "demo:hunt": "node scripts/demo-hunt.js",
+    "explorer": "node scripts/build-explorer.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.7.0",
