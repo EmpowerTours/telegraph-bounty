@@ -68,7 +68,7 @@ The README's "Run it" and "Run it with your own keys (live mode)" sections cover
 - Security: Ultrafuzz bounty-002 findings and fixes (README "Security fixes after Ultrafuzz"),
   bounty-003 re-fuzz of the fixed escrow: clean, no Critical/High/Medium (`audit/ultrafuzz-bounty-003.md`);
   its two Lows in the deploy script are fixed.
-- Demo video: TODO: link after upload.
+- Demo video: https://youtu.be/6qlN9XzqQq8 (2:29).
 
 ## Original H2 updates (public)
 - LinkedIn, 2026-11-24: "I paid an AI security reviewer 8 times…"

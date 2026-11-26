@@ -3,6 +3,8 @@
 A bug bounty paid to the machine that proved the bug.
 Entry for Telegraph Hackathon Season II, Apps & Agents track, mission "Web3 Native and DeFi".
 
+**Demo video (2:29):** https://youtu.be/6qlN9XzqQq8
+
 **Explorer:** https://empowertours.github.io/telegraph-bounty/ shows every recorded hunt: what the paid
 review said, what the hunter proved, each Telegraph payment with its Base Sepolia transaction, and
 the exploit. It is a static page built from `evidence/` by `npm run explorer`.
