@@ -129,3 +129,17 @@ test("live wallet: TELEGRAPH_PRIVATE_KEY wins, then TELEGRAPH_WALLET_FILE; bad i
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("spend counts settled and unknown payments, not facilitator-reported failures", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tg-ledger-"));
+  const ledger = path.join(dir, "l.ndjson");
+  const rows = [
+    { mode: "live", signed_amount_atomic: "10000", payment: { success: true, transaction: "0xabc" } },
+    { mode: "live", signed_amount_atomic: "10000", payment: { success: false, transaction: "", errorReason: "batch_send_failed:stale_pending_nonce" } },
+    { mode: "live", signed_amount_atomic: "10000" },
+    { mode: "live", signed_amount_atomic: "10000", payment: { success: false, transaction: "0xdef" } },
+    { mode: "mock", signed_amount_atomic: "10000", payment: { success: true, transaction: "0x1" } },
+  ];
+  fs.writeFileSync(ledger, rows.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  assert.equal(liveSpentAtomic(ledger), 30000n);
+});
