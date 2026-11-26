@@ -1,0 +1,53 @@
+{
+  "target_id": "lend-pool",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "replay",
+  "prompt_sha256": "a5b7e75f72e636a3c4bbc6775783533dd5eed0a3f108fdbfc46da335277897a9",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-26T22:38:10.844Z",
+  "usage": null,
+  "cost_usd": 0,
+  "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+  "stop_reason": "replay",
+  "llm_ms": 0,
+  "response_sha256": "53b01b8b7b4cfdd400ea888ea921b669f2a70dc8c50248b05360c16384e02d31",
+  "proof_hash": "0x27ee6d50a8c080498e19dd9833f739c2b9c2a060ea55077979f93d248ecce6e6",
+  "verdict_hash": "0x1c76202ebdaf1d8fefb259e4fabc3e5cc0efb45c1f657975e1641beeba4a4191",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "148461",
+      "after": null,
+      "observed": {
+        "total_collateral_gov_wei": "4992488733099649474211",
+        "collateral_value_at_fair_price_wei": "4992488733099649474",
+        "total_debt_wei": "10000000000000000000",
+        "exchange_reserve_eth_wei": "20000000000000000000",
+        "exchange_reserve_gov_wei": "5007511266900350525789"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "reverted",
+      "run_gas_used": "163204",
+      "after": null,
+      "observed": {
+        "total_collateral_gov_wei": "0",
+        "collateral_value_at_fair_price_wei": "0",
+        "total_debt_wei": "0",
+        "exchange_reserve_eth_wei": "10000000000000000000",
+        "exchange_reserve_gov_wei": "10000000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 586
+}

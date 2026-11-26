@@ -1,0 +1,101 @@
+{
+  "verdict_hash": "0x213e7548157d9ba068fc251181b952650fc43bce4ed9beac1e2055034eaaeda3",
+  "schema": "telegraph-bounty/verdict@2",
+  "target_id": "hook-vault",
+  "proof_hash": "0xdd55e952af1a724a3db12f7ca4ef8029df0120c8bb2b2f7c1e8986bf5b039d4d",
+  "target_hash": "0xedc5aeeac525e77f5a2cdeb75153f858f96974d7280ca882cb3ad9cf102a3e39",
+  "invariant": "after the attack, every honest depositor can withdraw their full vault balance and ends up holding at least the tokens they deposited",
+  "invariant_hash": "0x46eff03fa1d89fd7c39d3cbd09af9fc649a3caf47d148ea43ed35d13b555b839",
+  "scenario": {
+    "attack_value_wei": "1000000000000000000",
+    "run_gas": "5000000",
+    "genesis_timestamp": 1767225600
+  },
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "results": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "543946",
+      "after": [
+        {
+          "user": 0,
+          "step": "withdraw",
+          "amount": "3000000000000000000",
+          "status": "reverted"
+        },
+        {
+          "user": 1,
+          "step": "withdraw",
+          "amount": "3000000000000000000",
+          "status": "reverted"
+        },
+        {
+          "user": 2,
+          "step": "withdraw",
+          "amount": "4000000000000000000",
+          "status": "reverted"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "3000000000000000000",
+          "3000000000000000000",
+          "4000000000000000000"
+        ],
+        "honest_token_balance_wei": [
+          "0",
+          "0",
+          "0"
+        ],
+        "vault_token_balance_wei": "0",
+        "total_deposits_wei": "0"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "reverted",
+      "run_gas_used": "130510",
+      "after": [
+        {
+          "user": 0,
+          "step": "withdraw",
+          "amount": "3000000000000000000",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "withdraw",
+          "amount": "3000000000000000000",
+          "status": "success"
+        },
+        {
+          "user": 2,
+          "step": "withdraw",
+          "amount": "4000000000000000000",
+          "status": "success"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "3000000000000000000",
+          "3000000000000000000",
+          "4000000000000000000"
+        ],
+        "honest_token_balance_wei": [
+          "3000000000000000000",
+          "3000000000000000000",
+          "4000000000000000000"
+        ],
+        "vault_token_balance_wei": "1000000000000000000",
+        "total_deposits_wei": "1000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  }
+}

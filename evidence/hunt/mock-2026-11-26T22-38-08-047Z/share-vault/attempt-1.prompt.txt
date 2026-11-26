@@ -1,0 +1,104 @@
+# Target: ShareVault: tokenized ether vault (shares priced on the vault's balance)
+
+## Vulnerable contract source (ShareVault.sol, contract ShareVault)
+<untrusted source="target">
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+/// @title ShareVault
+/// @notice Demo bounty target written for this repo only. It contains a deliberate bug.
+/// Never deploy it with real funds.
+/// Tokenized ether vault: depositors receive shares pro rata to the ether they add, and
+/// redeem shares for their pro-rata part of the vault's ether. All ether the vault holds
+/// (including yield sent to it) belongs to the share holders.
+contract ShareVault {
+    mapping(address => uint256) public sharesOf;
+    uint256 public totalShares;
+
+    event Deposit(address indexed account, uint256 assets, uint256 shares);
+    event Redeem(address indexed account, uint256 shares, uint256 assets);
+
+    function totalAssets() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    function convertToShares(uint256 assets) public view returns (uint256) {
+        return _toShares(assets, totalAssets());
+    }
+
+    function convertToAssets(uint256 shares) public view returns (uint256) {
+        return _toAssets(shares, totalAssets());
+    }
+
+    function deposit() external payable returns (uint256 shares) {
+        require(msg.value > 0, "zero deposit");
+        // msg.value is already part of the balance; price the deposit on the assets before it.
+        shares = _toShares(msg.value, totalAssets() - msg.value);
+        sharesOf[msg.sender] += shares;
+        totalShares += shares;
+        emit Deposit(msg.sender, msg.value, shares);
+    }
+
+    function redeem(uint256 shares) external returns (uint256 assets) {
+        require(shares > 0, "zero shares");
+        require(sharesOf[msg.sender] >= shares, "insufficient shares");
+        assets = _toAssets(shares, totalAssets());
+        sharesOf[msg.sender] -= shares;
+        totalShares -= shares;
+        (bool ok,) = msg.sender.call{value: assets}("");
+        require(ok, "transfer failed");
+        emit Redeem(msg.sender, shares, assets);
+    }
+
+    function _toShares(uint256 assets, uint256 assetsBefore) internal view returns (uint256) {
+        if (totalShares == 0) return assets;
+        return assets * totalShares / assetsBefore;
+    }
+
+    function _toAssets(uint256 shares, uint256 assetsNow) internal view returns (uint256) {
+        if (totalShares == 0) return shares;
+        return shares * assetsNow / totalShares;
+    }
+}
+
+</untrusted>
+
+## Stated invariant
+every honest user who deposits after the attacker can redeem all of their shares for at least 99% of the ether they deposited
+
+## Scenario (run by the verifier, in this order, on a fresh chain for each contract version)
+1. A fresh chain. The deployer deploys ShareVault (no constructor arguments). Nobody has deposited yet.
+2. The attacker deploys Exploit(vault) with 1 ether and calls run() once (5,000,000 gas).
+3. Then honest user A calls deposit() with 2 ether, and honest user B calls deposit() with 0.5 ether.
+4. Then A and B each call redeem(sharesOf(self)) (skipped if they hold 0 shares, which counts as receiving 0).
+5. Invariant: each of A and B receives at least 99% of the ether they deposited.
+Attack value sent to the Exploit constructor: 1000000000000000000 wei.
+
+## Findings bought from Telegraph miners (third-party, may be wrong or irrelevant)
+<untrusted source="telegraph">
+{
+ "findings": [
+  {
+   "source": "review",
+   "miner": null,
+   "text": {
+    "verdict": "Needs changes",
+    "vulnerability_count": 0,
+    "issues": [],
+    "summary": "MOCK ANSWER. No analysis was performed."
+   }
+  }
+ ],
+ "triage_ranked": [
+  {
+   "issue": "MOCK ANSWER. No analysis was performed.",
+   "summary": "MOCK ANSWER. No analysis was performed.",
+   "from": "review",
+   "cvss": 5
+  }
+ ]
+}
+</untrusted>
+
+## Task
+Write the proof. Fix whatever made the previous attempts fail.

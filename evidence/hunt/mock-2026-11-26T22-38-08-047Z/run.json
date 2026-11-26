@@ -1,0 +1,1109 @@
+{
+  "run_id": "mock-2026-11-26T22-38-08-047Z",
+  "at": "2026-11-26T22:38:08.416Z",
+  "telegraph_mode": "mock",
+  "llm_backend": "replay",
+  "llm_source": "evidence/hunt/live-2026-11-26T15-37-34-563Z",
+  "chain": "local anvil (chainid 31337)",
+  "intents_source": "snapshot evidence/hunt/intents-latest.json (2026-11-26T15:37:36.535Z)",
+  "intents": {
+    "SMART_CONTRACT_AUDIT_GENERAL": {
+      "miner_count": 20,
+      "lifecycle": "registered",
+      "lifecycle_reasons": [
+        "output schema: it has no response format, its own or its family's",
+        "input schema: no response format declares inputs, its own or its family's"
+      ],
+      "request_params": [],
+      "usable": false,
+      "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+    },
+    "SECURITY_REVIEW_GENERAL": {
+      "miner_count": 37,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "target"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "VULNERABILITY_TRIAGE_GENERAL": {
+      "miner_count": 41,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "cve_id"
+      ],
+      "usable": true,
+      "reason": null
+    },
+    "CODE_PATCH_VERIFY_GENERAL": {
+      "miner_count": 25,
+      "lifecycle": "active",
+      "lifecycle_reasons": [],
+      "request_params": [
+        "patch"
+      ],
+      "usable": true,
+      "reason": null
+    }
+  },
+  "targets": [
+    {
+      "target_id": "hook-vault",
+      "target_hash": "0xedc5aeeac525e77f5a2cdeb75153f858f96974d7280ca882cb3ad9cf102a3e39",
+      "bounty_id": "0",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-ef77677affde175e",
+          "signal_hash": "0xef77677affde175ee7cba01cffdd5f5f61bd2df41908e0b78c645855fd782b33",
+          "warnings": null,
+          "result": {
+            "verdict": "Needs changes",
+            "vulnerability_count": 0,
+            "issues": [],
+            "summary": "MOCK ANSWER. No analysis was performed."
+          },
+          "at": "2026-11-26T22:38:08.540Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-6b1c2680a6bede17",
+          "signal_hash": "0x6b1c2680a6bede175b16c75bd76a520551b437868a223521ac5714ecb3219c68",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 5
+          },
+          "at": "2026-11-26T22:38:08.553Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-ae895a506be05413",
+          "signal_hash": "0xae895a506be054139595e38b664a687ea8918f463a9f4ba02d4cfcd60a2d412d",
+          "warnings": null,
+          "result": {
+            "conclusion": "neutral",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-26T22:38:09.355Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "MOCK ANSWER. No analysis was performed.",
+          "summary": "MOCK ANSWER. No analysis was performed.",
+          "from": "review",
+          "cvss": 5
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "hook-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "replay",
+          "prompt_sha256": "6c21fe1251604fa9aee7563d669126db546e0cb78fb098c20c23a0d0be711596",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-26T22:38:08.555Z",
+          "usage": null,
+          "cost_usd": 0,
+          "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+          "stop_reason": "replay",
+          "llm_ms": 0,
+          "response_sha256": "d49541accfb737b24e8244226fbe0bf502b826dd29a9c26f86bfa33ac0dfd049",
+          "proof_hash": "0xdd55e952af1a724a3db12f7ca4ef8029df0120c8bb2b2f7c1e8986bf5b039d4d",
+          "verdict_hash": "0x213e7548157d9ba068fc251181b952650fc43bce4ed9beac1e2055034eaaeda3",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "543946",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "reverted"
+                },
+                {
+                  "user": 1,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "reverted"
+                },
+                {
+                  "user": 2,
+                  "step": "withdraw",
+                  "amount": "4000000000000000000",
+                  "status": "reverted"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "honest_token_balance_wei": [
+                  "0",
+                  "0",
+                  "0"
+                ],
+                "vault_token_balance_wei": "0",
+                "total_deposits_wei": "0"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "130510",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "withdraw",
+                  "amount": "3000000000000000000",
+                  "status": "success"
+                },
+                {
+                  "user": 2,
+                  "step": "withdraw",
+                  "amount": "4000000000000000000",
+                  "status": "success"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "honest_token_balance_wei": [
+                  "3000000000000000000",
+                  "3000000000000000000",
+                  "4000000000000000000"
+                ],
+                "vault_token_balance_wei": "1000000000000000000",
+                "total_deposits_wei": "1000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 780
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0xdd55e952af1a724a3db12f7ca4ef8029df0120c8bb2b2f7c1e8986bf5b039d4d",
+      "verdict_hash_selfcheck": "0x213e7548157d9ba068fc251181b952650fc43bce4ed9beac1e2055034eaaeda3",
+      "commitment": "0xd8cabc969a03ef637bbe8e48ba464ea2a3ffca240013ad907bc512b2e4461544",
+      "submit_tx": "0xaed999436f275ba28182fad92a26a37bc038ff5436dd7380b93f85092ca3450d",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0xdd55e952af1a724a3db12f7ca4ef8029df0120c8bb2b2f7c1e8986bf5b039d4d",
+        "commitment": "0xd8cabc969a03ef637bbe8e48ba464ea2a3ffca240013ad907bc512b2e4461544",
+        "committedAt": "1767225601",
+        "verdictHash": "0x213e7548157d9ba068fc251181b952650fc43bce4ed9beac1e2055034eaaeda3",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0xca6be4a733149fe3762ebd70c06870b720ef955df30f0ac44a0a3eee3bc38559",
+        "verdictFile": "evidence/hunt/mock-2026-11-26T22-38-08-047Z/verdicts/0xdd55e952af1a724a3db12f7ca4ef8029df0120c8bb2b2f7c1e8986bf5b039d4d.json"
+      },
+      "post_tx": "0xc338129891eb92f98c4237a29ba009ec46d6564a864d70462eaffe2c9c3fa047",
+      "second_opinion": {
+        "reviewer": "mock-miner",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": null,
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "MOCK ANSWER. No analysis was performed.",
+        "triage_cvss": [
+          5
+        ],
+        "ground_truth_class": "reentrancy",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "[mock answer, not a real review] mock-miner reported no defect; the verifier proved the bug (reentrancy): review WRONG (missed it)",
+        "mock": true
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "0",
+            "proofHash": "0xdd55e952af1a724a3db12f7ca4ef8029df0120c8bb2b2f7c1e8986bf5b039d4d",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x213e7548157d9ba068fc251181b952650fc43bce4ed9beac1e2055034eaaeda3"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "init-vault",
+      "target_hash": "0x325f76265e5727583fe4c99c52ab4b732b1a518308b983e46c667034be9c5500",
+      "bounty_id": "1",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-27f18c50bdc1fb8f",
+          "signal_hash": "0x27f18c50bdc1fb8f7013775b5b8590459a576c6f8e4e6f33407268c99d772f23",
+          "warnings": null,
+          "result": {
+            "verdict": "Needs changes",
+            "vulnerability_count": 0,
+            "issues": [],
+            "summary": "MOCK ANSWER. No analysis was performed."
+          },
+          "at": "2026-11-26T22:38:09.892Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-aaf71228295dd4e4",
+          "signal_hash": "0xaaf71228295dd4e4ca043d9be8f28adc42381708a9d76527ff5b87ae4a22aa95",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 5
+          },
+          "at": "2026-11-26T22:38:09.902Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-45a4db267ad1900d",
+          "signal_hash": "0x45a4db267ad1900d2fe55358ebf3551bf21c025ffa1894520a1232fd7b916f89",
+          "warnings": null,
+          "result": {
+            "conclusion": "neutral",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-26T22:38:10.453Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "MOCK ANSWER. No analysis was performed.",
+          "summary": "MOCK ANSWER. No analysis was performed.",
+          "from": "review",
+          "cvss": 5
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "init-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "replay",
+          "prompt_sha256": "48b8a6421dc9412c17692a19b6f30b2f8c42124e6bec3277461d3ca3edacd975",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-26T22:38:09.903Z",
+          "usage": null,
+          "cost_usd": 0,
+          "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+          "stop_reason": "replay",
+          "llm_ms": 0,
+          "response_sha256": "0cb92ec2c19903cbf7f69c915c85e14a5cfaf8eb673e1b004570702fa5863c7c",
+          "proof_hash": "0x982b8fe42d86de170a44016c4d17646491df22b86137edb15876405fbd889f87",
+          "verdict_hash": "0x135b03c1eb41e1370c037a5453d89afd75b3a55de31fb7e0653b920d07104a93",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "69129",
+              "after": null,
+              "observed": {
+                "vault_balance_wei": "0",
+                "total_deposits_wei": "10000000000000000000"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "28818",
+              "after": null,
+              "observed": {
+                "vault_balance_wei": "10000000000000000000",
+                "total_deposits_wei": "10000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 536
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x982b8fe42d86de170a44016c4d17646491df22b86137edb15876405fbd889f87",
+      "verdict_hash_selfcheck": "0x135b03c1eb41e1370c037a5453d89afd75b3a55de31fb7e0653b920d07104a93",
+      "commitment": "0x6e2473fdebb5232a1dcaacd54341d337edbe68ba27f350b648f0315c246d6969",
+      "submit_tx": "0x7f423f346a0662be7d302798143fdbd5d0bdc59f049d853f791d4994cb144f1a",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0x982b8fe42d86de170a44016c4d17646491df22b86137edb15876405fbd889f87",
+        "commitment": "0x6e2473fdebb5232a1dcaacd54341d337edbe68ba27f350b648f0315c246d6969",
+        "committedAt": "1767225602",
+        "verdictHash": "0x135b03c1eb41e1370c037a5453d89afd75b3a55de31fb7e0653b920d07104a93",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0xf1cf50a19b24e6d18c3b8ecf1ebf6b9d368f103fd2ce763a2b5e243c8d1d8131",
+        "verdictFile": "evidence/hunt/mock-2026-11-26T22-38-08-047Z/verdicts/0x982b8fe42d86de170a44016c4d17646491df22b86137edb15876405fbd889f87.json"
+      },
+      "post_tx": "0xf99ba6d5c20088300886ab91a349db8a9d911a0acc14c2e8e80bbed22221426a",
+      "second_opinion": {
+        "reviewer": "mock-miner",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": null,
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "MOCK ANSWER. No analysis was performed.",
+        "triage_cvss": [
+          5
+        ],
+        "ground_truth_class": "access-control",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "[mock answer, not a real review] mock-miner reported no defect; the verifier proved the bug (access-control): review WRONG (missed it)",
+        "mock": true
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "1",
+            "proofHash": "0x982b8fe42d86de170a44016c4d17646491df22b86137edb15876405fbd889f87",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x135b03c1eb41e1370c037a5453d89afd75b3a55de31fb7e0653b920d07104a93"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "lend-pool",
+      "target_hash": "0x6cd37e86a767e3b2d07e7457299f0414b702ae60f650e337312bfbd34f5565c8",
+      "bounty_id": "2",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-ae7b20c59b832dcc",
+          "signal_hash": "0xae7b20c59b832dcc028afb97292dfde3f169b0a84b1ab6d59d8f2b1f2041b6e8",
+          "warnings": null,
+          "result": {
+            "verdict": "Needs changes",
+            "vulnerability_count": 0,
+            "issues": [],
+            "summary": "MOCK ANSWER. No analysis was performed."
+          },
+          "at": "2026-11-26T22:38:10.834Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-4aaecd132cbda53c",
+          "signal_hash": "0x4aaecd132cbda53cc378ba656db51684c4d9b03791ec5ae6242dbe9d85ac3a71",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 5
+          },
+          "at": "2026-11-26T22:38:10.843Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-d066e7f30b960f49",
+          "signal_hash": "0xd066e7f30b960f49f982ad9c7bdc8ea9fffbca8405a1e2193ee822453d1584cf",
+          "warnings": null,
+          "result": {
+            "conclusion": "neutral",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-26T22:38:11.446Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "MOCK ANSWER. No analysis was performed.",
+          "summary": "MOCK ANSWER. No analysis was performed.",
+          "from": "review",
+          "cvss": 5
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "lend-pool",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "replay",
+          "prompt_sha256": "a5b7e75f72e636a3c4bbc6775783533dd5eed0a3f108fdbfc46da335277897a9",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-26T22:38:10.844Z",
+          "usage": null,
+          "cost_usd": 0,
+          "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+          "stop_reason": "replay",
+          "llm_ms": 0,
+          "response_sha256": "53b01b8b7b4cfdd400ea888ea921b669f2a70dc8c50248b05360c16384e02d31",
+          "proof_hash": "0x27ee6d50a8c080498e19dd9833f739c2b9c2a060ea55077979f93d248ecce6e6",
+          "verdict_hash": "0x1c76202ebdaf1d8fefb259e4fabc3e5cc0efb45c1f657975e1641beeba4a4191",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "148461",
+              "after": null,
+              "observed": {
+                "total_collateral_gov_wei": "4992488733099649474211",
+                "collateral_value_at_fair_price_wei": "4992488733099649474",
+                "total_debt_wei": "10000000000000000000",
+                "exchange_reserve_eth_wei": "20000000000000000000",
+                "exchange_reserve_gov_wei": "5007511266900350525789"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "reverted",
+              "run_gas_used": "163204",
+              "after": null,
+              "observed": {
+                "total_collateral_gov_wei": "0",
+                "collateral_value_at_fair_price_wei": "0",
+                "total_debt_wei": "0",
+                "exchange_reserve_eth_wei": "10000000000000000000",
+                "exchange_reserve_gov_wei": "10000000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 586
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x27ee6d50a8c080498e19dd9833f739c2b9c2a060ea55077979f93d248ecce6e6",
+      "verdict_hash_selfcheck": "0x1c76202ebdaf1d8fefb259e4fabc3e5cc0efb45c1f657975e1641beeba4a4191",
+      "commitment": "0x4aedb903a42a3cbcfe767b7b89a4de68fe4d8786446483ea3cf01c601e7b051a",
+      "submit_tx": "0x7484944fb610aa8f60ebff536c583d6ce4181b81dd7c31873bdbfcb28dc780f2",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0x27ee6d50a8c080498e19dd9833f739c2b9c2a060ea55077979f93d248ecce6e6",
+        "commitment": "0x4aedb903a42a3cbcfe767b7b89a4de68fe4d8786446483ea3cf01c601e7b051a",
+        "committedAt": "1767225603",
+        "verdictHash": "0x1c76202ebdaf1d8fefb259e4fabc3e5cc0efb45c1f657975e1641beeba4a4191",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x375904f04eb9e4293b186f049f2a627dfd2bd8928e8f785caa0a1f3887bef8ad",
+        "verdictFile": "evidence/hunt/mock-2026-11-26T22-38-08-047Z/verdicts/0x27ee6d50a8c080498e19dd9833f739c2b9c2a060ea55077979f93d248ecce6e6.json"
+      },
+      "post_tx": "0x46ccb2cefba699ef0a476c55afbada3d5ca08cc8264cd29df17e9022c52843df",
+      "second_opinion": {
+        "reviewer": "mock-miner",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": null,
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "MOCK ANSWER. No analysis was performed.",
+        "triage_cvss": [
+          5
+        ],
+        "ground_truth_class": "oracle-manipulation",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "[mock answer, not a real review] mock-miner reported no defect; the verifier proved the bug (oracle-manipulation): review WRONG (missed it)",
+        "mock": true
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "2",
+            "proofHash": "0x27ee6d50a8c080498e19dd9833f739c2b9c2a060ea55077979f93d248ecce6e6",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x1c76202ebdaf1d8fefb259e4fabc3e5cc0efb45c1f657975e1641beeba4a4191"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "share-vault",
+      "target_hash": "0x5b6cf2cd4777ec588951ec76e0fc0cb627ddf0422a77d2522ac12196137b4c6e",
+      "bounty_id": "3",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-9d2ba8c9557bb47e",
+          "signal_hash": "0x9d2ba8c9557bb47e56097e297df6c98b20accabb544ef023694ab3cc0f6cb28b",
+          "warnings": null,
+          "result": {
+            "verdict": "Needs changes",
+            "vulnerability_count": 0,
+            "issues": [],
+            "summary": "MOCK ANSWER. No analysis was performed."
+          },
+          "at": "2026-11-26T22:38:11.856Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-666b4dd590a9313d",
+          "signal_hash": "0x666b4dd590a9313d581950f01dde9d0ad8fbe2391bbbf97ed9b506f45299e5a0",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 5
+          },
+          "at": "2026-11-26T22:38:11.868Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-12bce7a1f330a96a",
+          "signal_hash": "0x12bce7a1f330a96a48abaddf7d5b98bc45fafba01219daf51b346aec2c51018e",
+          "warnings": null,
+          "result": {
+            "conclusion": "neutral",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-26T22:38:12.404Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "MOCK ANSWER. No analysis was performed.",
+          "summary": "MOCK ANSWER. No analysis was performed.",
+          "from": "review",
+          "cvss": 5
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "share-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "replay",
+          "prompt_sha256": "52ca74ae88f504e4d4a83867ffbaf3f57f17e8757e48ee53547625dfc750136f",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-26T22:38:11.869Z",
+          "usage": null,
+          "cost_usd": 0,
+          "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+          "stop_reason": "replay",
+          "llm_ms": 0,
+          "response_sha256": "4eb6afc92b3f1cdea46c98eba766121b3a96bd8c15d16b1d03de6467a0f3e5ab",
+          "proof_hash": "0x937af5ffd905139faa3d3c617ed281bbc578b621a2b595ca05a47019fd833198",
+          "verdict_hash": "0x7ca32a487ce47b2e140b837c2eaa3bc6113ce07d56b19a750bb5a8a2513b082f",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "117071",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "2",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "0",
+                  "status": "skipped"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "2000000000000000000",
+                  "500000000000000000"
+                ],
+                "redeemed_wei": [
+                  "2333333333333333333",
+                  "0"
+                ]
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "117354",
+              "after": [
+                {
+                  "user": 0,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "user": 1,
+                  "step": "deposit",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "3999999999",
+                  "status": "success"
+                },
+                {
+                  "step": "redeem",
+                  "shares": "999999999",
+                  "status": "success"
+                }
+              ],
+              "observed": {
+                "deposited_wei": [
+                  "2000000000000000000",
+                  "500000000000000000"
+                ],
+                "redeemed_wei": [
+                  "2000000000071428572",
+                  "499999999642857142"
+                ]
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 520
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0x937af5ffd905139faa3d3c617ed281bbc578b621a2b595ca05a47019fd833198",
+      "verdict_hash_selfcheck": "0x7ca32a487ce47b2e140b837c2eaa3bc6113ce07d56b19a750bb5a8a2513b082f",
+      "commitment": "0x966e31943e3c00d9091d466349f71366c4e451de33657d16abd3a1a9fa90185c",
+      "submit_tx": "0x17ef4b22476ff167e65eaa69f6c531fc2b4fbc1f63e2793148505464d203cae6",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0x937af5ffd905139faa3d3c617ed281bbc578b621a2b595ca05a47019fd833198",
+        "commitment": "0x966e31943e3c00d9091d466349f71366c4e451de33657d16abd3a1a9fa90185c",
+        "committedAt": "1767225604",
+        "verdictHash": "0x7ca32a487ce47b2e140b837c2eaa3bc6113ce07d56b19a750bb5a8a2513b082f",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x1626b5647867416ed1243dfa9d6cc12e0e9a236b504940ab4ff463bfc006b910",
+        "verdictFile": "evidence/hunt/mock-2026-11-26T22-38-08-047Z/verdicts/0x937af5ffd905139faa3d3c617ed281bbc578b621a2b595ca05a47019fd833198.json"
+      },
+      "post_tx": "0x5840585de1fa39282e17ff2982d6886552d4a6050d56f9196a60fc3bf981da81",
+      "second_opinion": {
+        "reviewer": "mock-miner",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": null,
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "MOCK ANSWER. No analysis was performed.",
+        "triage_cvss": [
+          5
+        ],
+        "ground_truth_class": "share-inflation",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "[mock answer, not a real review] mock-miner reported no defect; the verifier proved the bug (share-inflation): review WRONG (missed it)",
+        "mock": true
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "3",
+            "proofHash": "0x937af5ffd905139faa3d3c617ed281bbc578b621a2b595ca05a47019fd833198",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x7ca32a487ce47b2e140b837c2eaa3bc6113ce07d56b19a750bb5a8a2513b082f"
+          }
+        }
+      ]
+    },
+    {
+      "target_id": "token-vault",
+      "target_hash": "0x2189c57cb3f951f764cb12bb5b854152c6758a9efcbaf2dfb1b0ff4bcd78be31",
+      "bounty_id": "4",
+      "reward_wei": "1000000000000000000",
+      "purchases": [
+        {
+          "role": "review",
+          "intent": "SECURITY_REVIEW_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-2427c45355354adc",
+          "signal_hash": "0x2427c45355354adcb7826125f5afc21d2ddaa03c6ecd76ded6cf51e5835cd3e3",
+          "warnings": null,
+          "result": {
+            "verdict": "Needs changes",
+            "vulnerability_count": 0,
+            "issues": [],
+            "summary": "MOCK ANSWER. No analysis was performed."
+          },
+          "at": "2026-11-26T22:38:12.756Z"
+        },
+        {
+          "role": "triage",
+          "intent": "VULNERABILITY_TRIAGE_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-9d5bea5e9274eec4",
+          "signal_hash": "0x9d5bea5e9274eec4a890a85588fb86ad25f85ac3abb1726882b30de357a07f26",
+          "warnings": null,
+          "result": {
+            "cvss_base_score": 5
+          },
+          "at": "2026-11-26T22:38:12.769Z"
+        },
+        {
+          "role": "patch_verify",
+          "intent": "CODE_PATCH_VERIFY_GENERAL",
+          "mode": "mock",
+          "status": 200,
+          "miner_id": "mock-miner",
+          "miner_name": null,
+          "delivery": null,
+          "miner_answered": true,
+          "cost_usd": 0.01,
+          "signed_amount_atomic": "10000",
+          "settle_tx": null,
+          "receipt": "mock-receipt-cf6d3896d8b13639",
+          "signal_hash": "0xcf6d3896d8b136395600c371af0b617818d60c2475be62190be9798b45849182",
+          "warnings": null,
+          "result": {
+            "conclusion": "neutral",
+            "passed": null,
+            "commit": null,
+            "pipeline": null
+          },
+          "at": "2026-11-26T22:38:13.395Z"
+        }
+      ],
+      "skipped_intents": [
+        {
+          "intent": "SMART_CONTRACT_AUDIT_GENERAL",
+          "reason": "intent is registered, not active: the router answers it with a last-resort general model, not a miner"
+        }
+      ],
+      "ranked_candidates": [
+        {
+          "issue": "MOCK ANSWER. No analysis was performed.",
+          "summary": "MOCK ANSWER. No analysis was performed.",
+          "from": "review",
+          "cvss": 5
+        }
+      ],
+      "attempts": [
+        {
+          "target_id": "token-vault",
+          "attempt": 1,
+          "model": "claude-sonnet-5-5",
+          "backend": "replay",
+          "prompt_sha256": "2517679c6e44dd6913668da07fb7c1034cf98768faea73d2d994f060f30cc339",
+          "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+          "at": "2026-11-26T22:38:12.770Z",
+          "usage": null,
+          "cost_usd": 0,
+          "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+          "stop_reason": "replay",
+          "llm_ms": 0,
+          "response_sha256": "70e569845ded9b1df39674ae52057ce9ae3c8a3e4cb64379f1cc3e4540b7d34d",
+          "proof_hash": "0xf56c15e5d133e6ce0ac39d3069ae8db54f9f12b7ff449da11c57a887e191dbea",
+          "verdict_hash": "0x1a8e75aac4dc6d44d90e221d76d8d8e9a07b838b3a345bbb9597cf45b340f6b0",
+          "valid": true,
+          "stage": "execute",
+          "reason": "breaks invariant on vulnerable, holds on patched",
+          "forge_result": {
+            "vulnerable": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "61024",
+              "after": null,
+              "observed": {
+                "vault_token_balance": "10000000000000000000",
+                "total_deposits": "1000010000000000000000000"
+              },
+              "invariant_holds": false
+            },
+            "patched": {
+              "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+              "deploy_status": "success",
+              "run_status": "success",
+              "run_gas_used": "32304",
+              "after": null,
+              "observed": {
+                "vault_token_balance": "10000000000000000000",
+                "total_deposits": "10000000000000000000"
+              },
+              "invariant_holds": true
+            }
+          },
+          "verify_ms": 611
+        }
+      ],
+      "budget_exhausted": false,
+      "solved": true,
+      "proof_hash": "0xf56c15e5d133e6ce0ac39d3069ae8db54f9f12b7ff449da11c57a887e191dbea",
+      "verdict_hash_selfcheck": "0x1a8e75aac4dc6d44d90e221d76d8d8e9a07b838b3a345bbb9597cf45b340f6b0",
+      "commitment": "0xdcbfb35059b3233d910c86d031e9d0af4eba2eea4370e6ca888c4b60cbbdc29d",
+      "submit_tx": "0x52314c6054e0f85e663782cebb496e3035d12b72b12c17f7f761956f80f540a7",
+      "resolution": {
+        "hunter": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+        "proofHash": "0xf56c15e5d133e6ce0ac39d3069ae8db54f9f12b7ff449da11c57a887e191dbea",
+        "commitment": "0xdcbfb35059b3233d910c86d031e9d0af4eba2eea4370e6ca888c4b60cbbdc29d",
+        "committedAt": "1767225605",
+        "verdictHash": "0x1a8e75aac4dc6d44d90e221d76d8d8e9a07b838b3a345bbb9597cf45b340f6b0",
+        "valid": true,
+        "reason": "breaks invariant on vulnerable, holds on patched",
+        "resolveTx": "0x78c2463ff71c15351754276baf6bd1c2a5ea44e972d79682526b44ad4af5b128",
+        "verdictFile": "evidence/hunt/mock-2026-11-26T22-38-08-047Z/verdicts/0xf56c15e5d133e6ce0ac39d3069ae8db54f9f12b7ff449da11c57a887e191dbea.json"
+      },
+      "post_tx": "0x3f0cb5878503854c712487ad76d067431bf27ce438190a61acc0950c0c16ce47",
+      "second_opinion": {
+        "reviewer": "mock-miner",
+        "review_cost_usd": 0.01,
+        "review_settle_tx": null,
+        "review_defect_found": false,
+        "review_classes": [],
+        "review_summary": "MOCK ANSWER. No analysis was performed.",
+        "triage_cvss": [
+          5
+        ],
+        "ground_truth_class": "unchecked-return",
+        "verifier_proved_bug": true,
+        "verdict": "wrong",
+        "line": "[mock answer, not a real review] mock-miner reported no defect; the verifier proved the bug (unchecked-return): review WRONG (missed it)",
+        "mock": true
+      },
+      "resolve_events": [
+        {
+          "event": "Paid",
+          "args": {
+            "id": "4",
+            "proofHash": "0xf56c15e5d133e6ce0ac39d3069ae8db54f9f12b7ff449da11c57a887e191dbea",
+            "hunter": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "reward": "1000000000000000000",
+            "verdictHash": "0x1a8e75aac4dc6d44d90e221d76d8d8e9a07b838b3a345bbb9597cf45b340f6b0"
+          }
+        }
+      ]
+    }
+  ],
+  "escrow": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "hunter_owed_wei": "5000000000000000000",
+  "withdraw": {
+    "tx": "0x87c80a59e0aad239573e0b956698ab2ea508faccf437878fc9d81b40e2027f16",
+    "events": [
+      {
+        "event": "Withdrawn",
+        "args": {
+          "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+          "amount": "5000000000000000000"
+        }
+      }
+    ]
+  },
+  "telegraph_live_spend_this_run_usd": 0,
+  "attempts_total": 5,
+  "model_calls": 0,
+  "model_cost_usd": 0,
+  "solved": 5,
+  "second_opinion_tally": {
+    "wrong": 5
+  }
+}

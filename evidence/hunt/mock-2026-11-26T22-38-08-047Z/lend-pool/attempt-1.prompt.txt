@@ -1,0 +1,141 @@
+# Target: LendPool: ether money market with GOV collateral and a built-in GOV/ETH exchange
+
+## Vulnerable contract source (LendPool.sol, contract LendPool)
+<untrusted source="target">
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+/// @notice Demo bounty target written for this repo only. It contains a deliberate bug.
+/// Never deploy it with real funds.
+/// Ether money market with GOV as collateral. GOV balances live in this contract, and the
+/// contract also runs the GOV/ETH exchange where GOV is bought and sold.
+contract LendPool {
+    mapping(address => uint) public govOf;
+    uint public reserveEth;
+    uint public reserveGov;
+
+    mapping(address => uint) public supplied;
+    mapping(address => uint) public collateral;
+    mapping(address => uint) public debt;
+    uint public totalSupplied;
+    uint public totalCollateral;
+    uint public totalDebt;
+
+    constructor() {
+        govOf[msg.sender] = 1_000_000 ether;
+    }
+
+    function addLiquidity(uint amount) external payable {
+        govOf[msg.sender] -= amount;
+        reserveGov += amount;
+        reserveEth += msg.value;
+    }
+
+    function buyGov() external payable {
+        uint out = (msg.value * 997 * reserveGov) / (reserveEth * 1000 + msg.value * 997);
+        reserveEth += msg.value;
+        reserveGov -= out;
+        govOf[msg.sender] += out;
+    }
+
+    function sellGov(uint amount) external {
+        uint out = (amount * 997 * reserveEth) / (reserveGov * 1000 + amount * 997);
+        govOf[msg.sender] -= amount;
+        reserveGov += amount;
+        reserveEth -= out;
+        _send(msg.sender, out);
+    }
+
+    function govPrice() public view returns (uint) {
+        return (reserveEth * 1e18) / reserveGov;
+    }
+
+    function maxBorrow(address user) public view returns (uint) {
+        return (collateral[user] * govPrice() * 75) / 1e20;
+    }
+
+    function supply() external payable {
+        supplied[msg.sender] += msg.value;
+        totalSupplied += msg.value;
+    }
+
+    function withdraw(uint amount) external {
+        supplied[msg.sender] -= amount;
+        totalSupplied -= amount;
+        require(totalDebt <= totalSupplied, "no liquidity");
+        _send(msg.sender, amount);
+    }
+
+    function depositCollateral(uint amount) external {
+        govOf[msg.sender] -= amount;
+        collateral[msg.sender] += amount;
+        totalCollateral += amount;
+    }
+
+    function withdrawCollateral(uint amount) external {
+        collateral[msg.sender] -= amount;
+        totalCollateral -= amount;
+        govOf[msg.sender] += amount;
+        require(debt[msg.sender] <= maxBorrow(msg.sender), "unhealthy");
+    }
+
+    function borrow(uint amount) external {
+        debt[msg.sender] += amount;
+        totalDebt += amount;
+        require(totalDebt <= totalSupplied, "no liquidity");
+        require(debt[msg.sender] <= maxBorrow(msg.sender), "unhealthy");
+        _send(msg.sender, amount);
+    }
+
+    function repay() external payable {
+        debt[msg.sender] -= msg.value;
+        totalDebt -= msg.value;
+    }
+
+    function _send(address to, uint amount) private {
+        (bool ok,) = to.call{value: amount}("");
+        require(ok, "send failed");
+    }
+}
+
+</untrusted>
+
+## Stated invariant
+the pool's debt is fully backed at the fair GOV price: pool.totalCollateral() * 0.001 ether / 1e18 >= pool.totalDebt(), where 0.001 ether per GOV is the exchange's launch price (10 ETH / 10,000 GOV)
+
+## Scenario (run by the verifier, in this order, on a fresh chain for each contract version)
+1. A fresh chain. The deployer deploys LendPool (no constructor arguments) and holds the initial 1,000,000 GOV.
+2. The deployer calls addLiquidity(10,000 GOV) with 10 ether, so the exchange opens at 0.001 ether per GOV.
+3. Three honest lenders call supply() with 3, 3 and 4 ether.
+4. The attacker deploys Exploit(pool) with 10 ether (its own capital, standing in for flash-loaned funds) and calls run() once (5,000,000 gas).
+5. Then the invariant is checked: pool.totalCollateral() * 0.001 ether / 1e18 >= pool.totalDebt().
+Attack value sent to the Exploit constructor: 10000000000000000000 wei.
+
+## Findings bought from Telegraph miners (third-party, may be wrong or irrelevant)
+<untrusted source="telegraph">
+{
+ "findings": [
+  {
+   "source": "review",
+   "miner": null,
+   "text": {
+    "verdict": "Needs changes",
+    "vulnerability_count": 0,
+    "issues": [],
+    "summary": "MOCK ANSWER. No analysis was performed."
+   }
+  }
+ ],
+ "triage_ranked": [
+  {
+   "issue": "MOCK ANSWER. No analysis was performed.",
+   "summary": "MOCK ANSWER. No analysis was performed.",
+   "from": "review",
+   "cvss": 5
+  }
+ ]
+}
+</untrusted>
+
+## Task
+Write the proof. Fix whatever made the previous attempts fail.

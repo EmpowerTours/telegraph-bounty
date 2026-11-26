@@ -1,0 +1,47 @@
+{
+  "target_id": "init-vault",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "replay",
+  "prompt_sha256": "48b8a6421dc9412c17692a19b6f30b2f8c42124e6bec3277461d3ca3edacd975",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-26T22:38:09.903Z",
+  "usage": null,
+  "cost_usd": 0,
+  "cost_basis": "replayed from evidence/hunt/live-2026-11-26T15-37-34-563Z, no model called",
+  "stop_reason": "replay",
+  "llm_ms": 0,
+  "response_sha256": "0cb92ec2c19903cbf7f69c915c85e14a5cfaf8eb673e1b004570702fa5863c7c",
+  "proof_hash": "0x982b8fe42d86de170a44016c4d17646491df22b86137edb15876405fbd889f87",
+  "verdict_hash": "0x135b03c1eb41e1370c037a5453d89afd75b3a55de31fb7e0653b920d07104a93",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "69129",
+      "after": null,
+      "observed": {
+        "vault_balance_wei": "0",
+        "total_deposits_wei": "10000000000000000000"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "reverted",
+      "run_gas_used": "28818",
+      "after": null,
+      "observed": {
+        "vault_balance_wei": "10000000000000000000",
+        "total_deposits_wei": "10000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 536
+}

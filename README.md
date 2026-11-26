@@ -3,6 +3,10 @@
 A bug bounty paid to the machine that proved the bug.
 Entry for Telegraph Hackathon Season II, Apps & Agents track, mission "Web3 Native and DeFi".
 
+**Explorer:** https://empowertours.github.io/telegraph-bounty/ shows every recorded hunt: what the paid
+review said, what the hunter proved, each Telegraph payment with its Base Sepolia transaction, and
+the exploit. It is a static page built from `evidence/` by `npm run explorer`.
+
 A poster locks a reward in `BountyEscrow` for a target (a hash of the vulnerable and the patched
 source) and a stated invariant. A hunter agent buys a security review from Telegraph over x402,
 writes or picks a proof, commits `keccak256(abi.encode(proofHash, hunter, bountyId))` on-chain, and
