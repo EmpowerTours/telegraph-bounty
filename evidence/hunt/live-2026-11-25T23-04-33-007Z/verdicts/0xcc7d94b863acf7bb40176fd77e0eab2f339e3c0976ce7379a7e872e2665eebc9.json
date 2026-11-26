@@ -1,0 +1,97 @@
+{
+  "verdict_hash": "0x73c089fd9b2f68991882007f9cea7d0337984c20c1a0c976f6ff6b4eff3459b1",
+  "schema": "telegraph-bounty/verdict@2",
+  "target_id": "share-vault",
+  "proof_hash": "0xcc7d94b863acf7bb40176fd77e0eab2f339e3c0976ce7379a7e872e2665eebc9",
+  "target_hash": "0x5b6cf2cd4777ec588951ec76e0fc0cb627ddf0422a77d2522ac12196137b4c6e",
+  "invariant": "every honest user who deposits after the attacker can redeem all of their shares for at least 99% of the ether they deposited",
+  "invariant_hash": "0xb19fc55a483d5ca4d38640e6d746088a8f52547107c362c4ae5cda344e8b67ed",
+  "scenario": {
+    "attack_value_wei": "1000000000000000000",
+    "run_gas": "5000000",
+    "genesis_timestamp": 1767225600
+  },
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "results": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "117071",
+      "after": [
+        {
+          "user": 0,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "2",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "0",
+          "status": "skipped"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "2000000000000000000",
+          "500000000000000000"
+        ],
+        "redeemed_wei": [
+          "2333333333333333333",
+          "0"
+        ]
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "117354",
+      "after": [
+        {
+          "user": 0,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "user": 1,
+          "step": "deposit",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "3999999999",
+          "status": "success"
+        },
+        {
+          "step": "redeem",
+          "shares": "999999999",
+          "status": "success"
+        }
+      ],
+      "observed": {
+        "deposited_wei": [
+          "2000000000000000000",
+          "500000000000000000"
+        ],
+        "redeemed_wei": [
+          "2000000000071428572",
+          "499999999642857142"
+        ]
+      },
+      "invariant_holds": true
+    }
+  }
+}

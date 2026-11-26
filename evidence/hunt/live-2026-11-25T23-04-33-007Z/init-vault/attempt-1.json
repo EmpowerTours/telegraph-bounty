@@ -1,0 +1,80 @@
+{
+  "target_id": "init-vault",
+  "attempt": 1,
+  "model": "claude-sonnet-5-5",
+  "backend": "cli",
+  "prompt_sha256": "d874d56ea508e0430fc2f031767ddfed28c6227d5140ed9ad12819841fa594d9",
+  "system_sha256": "577a6d207885ccd76aff2dbe305e2b3c7e228459ac13878dbc54b87b26e14ecd",
+  "at": "2026-11-25T23:05:46.066Z",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 2638,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 579,
+    "output_tokens_details": {
+      "thinking_tokens": 208
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2638,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 579,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 2638,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2638
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "cost_usd": 0.016346,
+  "cost_basis": "reported by claude CLI (list price; billed to the CLI plan)",
+  "stop_reason": "end_turn",
+  "llm_ms": 6183,
+  "response_sha256": "2d98254519334fd257180283f9aabedea9932a97c71bf7945f23e06b4b2e5c83",
+  "proof_hash": "0x63eb709836698585a4ee642a12aa7f9cbd9aa2b2d556c54852dcb1eae8f3f6b3",
+  "verdict_hash": "0xbe15f20321dc65d338c1c3fd58fe199b56852ffdfaf555e094caeee465594eb9",
+  "valid": true,
+  "stage": "execute",
+  "reason": "breaks invariant on vulnerable, holds on patched",
+  "forge_result": {
+    "vulnerable": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "success",
+      "run_gas_used": "71729",
+      "after": null,
+      "observed": {
+        "vault_balance_wei": "0",
+        "total_deposits_wei": "10000000000000000000"
+      },
+      "invariant_holds": false
+    },
+    "patched": {
+      "target": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deploy_status": "success",
+      "run_status": "reverted",
+      "run_gas_used": "28826",
+      "after": null,
+      "observed": {
+        "vault_balance_wei": "10000000000000000000",
+        "total_deposits_wei": "10000000000000000000"
+      },
+      "invariant_holds": true
+    }
+  },
+  "verify_ms": 604
+}

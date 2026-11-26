@@ -15,7 +15,7 @@ Scope: every contract tested here is written in this repo. `VulnerableVault` is 
 vulnerable and exists only as a demo bounty target. Nothing here targets third-party or deployed
 contracts, and nothing has been deployed to any chain.
 
-## Status (2026-11-23)
+## Status (2026-11-26)
 
 | Item | State |
 |---|---|
@@ -24,9 +24,9 @@ contracts, and nothing has been deployed to any chain.
 | End-to-end local demo (escrow on anvil, payout, Break it) | done |
 | Real paid Telegraph request | **done 2026-11-23**: `SECURITY_REVIEW_GENERAL`, $0.01 test USDC on Base Sepolia, settled on-chain in tx `0x670f7fe100f43f9f572a68d02e0664005f71399f35e81fb9cbce445a8bae7423` (status 1, block 62835685). Recorded in `evidence/telegraph-receipts.ndjson` (`mode:"live"`). |
 | Telegraph purchase in the demo | **live** with `TELEGRAPH_MODE=live` (real endpoint, real payment); the default `npm run demo` still uses the local mock so it runs without funds |
-| Real hunter on 5 held-out targets (mission 14) | **done 2026-11-24**, live: 3/3 solved in two runs, then 5/5 in a third run with 2 harder multi-step targets, every one on the first model attempt. See "Real hunter" below |
-| Ultrafuzz campaign | **run 2026-11-24** (bounty-002): 1 High, 1 Medium, 2 Low, all fixed on branch `fix-escrow-commit`; re-run on the fixed commit pending. It is a hard gate before any deploy |
-| Deploy | none, by design. The code stops at "ready to deploy" |
+| Real hunter on 5 held-out targets (mission 14) | **done**, live: 3/3 solved in two runs (2026-11-24), then 5/5 in each of three 5-target runs (2026-11-24, 11-25, 11-26), all but one on the first model attempt. See "Real hunter" below |
+| Ultrafuzz campaign | **run 2026-11-24** (bounty-002): 1 High, 1 Medium, 2 Low, all fixed. **Re-run 2026-11-25** (bounty-003) on the fixed commit: no Critical, High or Medium; its 2 Lows (deploy script) fixed. See `audit/ultrafuzz-bounty-003.md` |
+| Deploy | **Monad testnet (chain 10143), 2026-11-25**: BountyEscrow `0x36dc4b67d1875D7c47ddb6fa29122219DC471Fec`, demo targets VulnerableVault `0xb663397b926E49DBA9283EAff0940b37eccfDdfd` and PatchedVault `0x55E0cED018F066a4e928B15893804a90FA68538d` (`deployments/monad-testnet.json`; on-chain bytecode matches the build). Live hunts still settle on a local anvil chain |
 
 ## Layout
 
@@ -357,9 +357,9 @@ over a full mocked hunt that also checks the prompts.
 | Intent | Miners | Used? | What actually answered |
 |---|---|---|---|
 | `SMART_CONTRACT_AUDIT_GENERAL` | 20 | **skipped** | The intent is `registered`, not `active` (it has no input or output schema). Two probes ($0.02) were answered by the router's last-resort general model, not a miner |
-| `SECURITY_REVIEW_GENERAL` | 37 | yes | Salence (miner 905227). Parameters over 2000 characters are rejected and fall to the last-resort model |
+| `SECURITY_REVIEW_GENERAL` | 37 | yes | Salence (miner 905227) on 11-24; VulnRank (miner 7310099) on 11-26. Parameters over 2000 characters are rejected and fall to the last-resort model |
 | `VULNERABILITY_TRIAGE_GENERAL` | 41 | yes | ChainSight. It returns only `cvss_base_score`. A `vulnerability` parameter is rejected; only `cve_id` is accepted |
-| `CODE_PATCH_VERIFY_GENERAL` | 25 | yes | Judge0 CE (a compile-and-run sandbox). It always returned `conclusion: failure` for Solidity, so it is uninformative. The LLM patch-verify miner (CodeWire) was never selected by the router |
+| `CODE_PATCH_VERIFY_GENERAL` | 25 | yes | Judge0 CE (a compile-and-run sandbox) on 11-24: it always returned `conclusion: failure` for Solidity, so it is uninformative. Telegraph Verity Intelligence on 11-26. The LLM patch-verify miner (CodeWire) was never selected by the router |
 
 ### Measured results (live, Telegraph live + local Claude CLI)
 
@@ -368,6 +368,8 @@ over a full mocked hunt that also checks the prompts.
 | `live-2026-11-24T03-31-07-896Z` | every review was over 2000 characters, so last-resort answers only: **no findings reached the model** | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | (not yet added) | (not yet added) | 3 (sonnet) | $0.0535 | $0.06 |
 | `live-2026-11-24T03-34-53-159Z` (after the 2000-character fix) | Salence said "no security defect" for all three (wrong); ChainSight scored that 2.0 to 2.3 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | (not yet added) | (not yet added) | 3 (sonnet) | $0.0571 | $0.09 |
 | `live-2026-11-24T03-54-24-021Z` (5 targets) | Salence said "no security defect" for all five (wrong); ChainSight scored 0 to 2.3 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | 5 (sonnet) | $0.1072 | $0.15 |
+| `live-2026-11-25T23-04-33-007Z` (5 targets) | Telegraph's payment facilitator was failing (`402 batch_send_failed:stale_pending_nonce`): no purchase settled and no finding reached the model | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | solved, **attempt 2** (attempt 1 had no Solidity code block; the retry got that feedback) | 6 (sonnet) | $0.1459 | $0 settled |
+| `live-2026-11-26T15-37-34-563Z` (5 targets) | VulnRank said "no security defect" for all five (wrong); ChainSight scored 0; all 15 purchases settled | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | solved, attempt 1 | 5 (sonnet) | $0.1101 | $0.15 |
 
 Per target, third run (`evidence/hunt/live-2026-11-24T03-54-24-021Z/run.json`). Every row: 1
 attempt, `claude-sonnet-5-5` only, Telegraph $0.03 (review + triage + patch-verify, $0.01 each), 1 ETH
@@ -388,8 +390,12 @@ the credit. Both are the intended bugs, written without the patched source or th
 
 These are local anvil txs from a deterministic chain, so the same inputs reproduce the same hashes.
 The Base Sepolia settlement tx of each purchase is in `run.json` and in the ledger. Total live
-Telegraph spend for this work: $0.37 (7 probes, then 6, 9 and 15 purchases), all settled. The whole
-ledger stands at $0.40 of the $1.50 cap.
+Telegraph spend for this work: $0.37 (7 probes, then 6, 9 and 15 purchases), all settled. Later
+additions to the ledger (2026-11-25 to 11-26): the 11-25 run settled nothing (facilitator outage); the
+11-26 run settled all 15 purchases ($0.15). Our facilitator probe sent a malformed request (`query`
+instead of `params.target`), so once the facilitator recovered, 14 probe payments settled and got
+`400 invalid_params` back ($0.14, not refunded: Telegraph's reply says the payment settled but was not
+credited); one corrected probe got a 200 ($0.01). The ledger counts $0.70 of the $1.50 cap.
 
 ### What the paid Telegraph review was worth here
 
@@ -399,30 +405,33 @@ by keyword), whether the deterministic verifier later proved a bug, and so wheth
 was right. Ground truth classes are in `targets/ground-truth.json`; they are used only for this
 scoring and never reach a prompt (tested). `npm run demo:hunt` prints the line for each target.
 
-In our runs, Telegraph's review missed every bug: 8 of 8 miner-answered reviews over runs 2 and 3
-said there was no security defect, and the verifier proved one on every target. The triage miner
+In our runs, Telegraph's review missed every bug: 13 of 13 miner-answered reviews, from two different
+miners (Salence in runs 2 and 3, VulnRank on 2026-11-26), said there was no security defect, and the
+verifier proved one on every target. The triage miner
 scored those "no defect" summaries 0 to 2.3 out of 10. The hunter still passes the findings to the
 model, marked untrusted, but they did not contribute to any proof.
 
 Payout does not depend on any of it. The escrow pays only when the deterministic verifier shows the
 stated invariant broken on the vulnerable contract and holding on the patched one. That is the
 point of the design: a review, from a Telegraph miner or from our own model, is an opinion, and an
-opinion that was wrong 8 times out of 8 here moved no money. The verifier's check moved all of it.
-This covers one miner (Salence) on one intent, on small single-file targets. It says nothing about
+opinion that was wrong 13 times out of 13 here moved no money. The verifier's check moved all of it.
+This covers two miners (Salence, VulnRank) on one intent, on small single-file targets. It says nothing about
 other miners or about larger codebases.
 
 ### Limitations
 
 - **The targets are still known bug classes.** All five, including the two multi-step ones, were
-  solved on the first attempt. So the live runs have never exercised the feedback loop or the Opus
-  fallback; only unit tests with a mocked model cover them. Spot-price oracle manipulation and
+  solved on the first attempt, except one retry on 2026-11-25 after a format error (no code block). So
+  the live runs have exercised the feedback loop only for a format failure, never for a wrong exploit,
+  and never the Opus fallback; unit tests with a mocked model cover those. Spot-price oracle manipulation and
   cross-function re-entrancy are well-documented exploit patterns, and each target is a single file
   under 2000 characters (compacted) that states its invariant and scenario. This shows that the
   pipeline works end to end on unseen code, including exploits that need a helper contract and
   several calls in one transaction. It does not show that the hunter finds bugs in large or
   unfamiliar codebases.
 - **Telegraph did not help find these bugs.** In run 1, no finding reached the model. In runs 2 and
-  3, the only review miner reported no defect on all 8 targets reviewed, which was wrong each time.
+  3 and on 2026-11-26, the review miner reported no defect on all 13 targets reviewed, which was
+  wrong each time.
   The model found the bugs from the source, the invariant and the scenario. The purchases are real,
   settled and ledgered, but today they are evidence of machine-to-machine payment, not of better
   hunting.
@@ -440,20 +449,18 @@ other miners or about larger codebases.
   but they are not independently sourced.
 - The offline `npm run demo:hunt` replays recorded model outputs (labelled `replay`). It calls no model.
 
-## Remaining before deploy / submission
+## Deploy and submission status
 
-1. Fund the testnet wallet with test USDC and run `TELEGRAPH_MODE=live npm run demo`. That records a
-   real receipt (`miner_id`, `signal_hash`, `X-TELEGRAPH-RECEIPT`, `PAYMENT-RESPONSE`). The
-   hackathon requires at least one real machine-to-machine purchase.
-2. Re-run Ultrafuzz on the fixed commit and triage it. This is a hard gate before any deploy:
+1. Real machine-to-machine purchases: done (first on 2026-11-23; every live row is in
+   `evidence/telegraph-receipts.ndjson`).
+2. Ultrafuzz on the fixed commit: done (bounty-003, triaged). This stays a hard gate:
    `script/deploy-monad-testnet.sh` refuses unless an `audit/ultrafuzz-*.md` report says
    `Triage: done` and names a `Commit:` (or `Source-tree:`, i.e. `git rev-parse HEAD:src`) whose
    `src/` equals the `src/` being deployed (`--check` runs the gate alone). `VulnerableVault` is the
    deliberately vulnerable demo target; the script deploys it on purpose, to testnet only, and it
    must never be deployed with funds.
-3. Optional, per the mission page ("bounty payout simulated on Sepolia"): deploy `BountyEscrow` to a
-   testnet after step 2.
-4. Record the 2-5 min demo video and fill in the submission.
+3. Testnet deploy: done on Monad testnet (see Status).
+4. Demo video and submission: in progress.
 
 Known limits (for mainnet readiness):
 
