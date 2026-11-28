@@ -5,9 +5,11 @@ Entry for Telegraph Hackathon Season II, Apps & Agents track, mission "Web3 Nati
 
 **Demo video (2:29):** https://youtu.be/6qlN9XzqQq8
 
-**Explorer:** https://empowertours.github.io/telegraph-bounty/ shows every recorded hunt: what the paid
+**Explorer:** https://telegraph-bounty-site-production.up.railway.app shows every recorded hunt: what the paid
 review said, what the hunter proved, each Telegraph payment with its Base Sepolia transaction, and
-the exploit. It is a static page built from `evidence/` by `npm run explorer`.
+the exploit. It is a static page built from `evidence/` by `npm run explorer`. GitHub Pages remains a
+mirror at https://empowertours.github.io/telegraph-bounty/. After DNS is added, the same page will also
+be at https://telegraph.empowertours.xyz.
 
 A poster locks a reward in `BountyEscrow` for a target (a hash of the vulnerable and the patched
 source) and a stated invariant. A hunter agent buys a security review from Telegraph over x402,
@@ -476,7 +478,8 @@ other miners or about larger codebases.
    deliberately vulnerable demo target; the script deploys it on purpose, to testnet only, and it
    must never be deployed with funds.
 3. Testnet deploy: done on Monad testnet (see Status).
-4. Demo video and submission: in progress.
+4. Demo video: done (https://youtu.be/6qlN9XzqQq8). Explorer is live at
+   https://telegraph-bounty-site-production.up.railway.app. Official H2 form submission is not confirmed.
 
 Known limits (for mainnet readiness):
 
